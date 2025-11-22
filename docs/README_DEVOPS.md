@@ -10,7 +10,7 @@ Grafana → Connections → Prometheus → URL: `http://prometheus:9090`
 
 ### Scrape targets (inside Docker network)
 - `api-gateway:9005`, `auth-service:9005`
-- `application-service:8080`, `monitoring-service:8080`, `materials-service:8080`, `user-service:8080`, `personal-flashcard-service:8080`,`testing-service`, `payment-service`,`management-service`
+- `materials-service:8080`, `user-service:8080`, `payment-service: 8080`
 
 ### Verify endpoints
 ```bash

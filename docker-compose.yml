@@ -86,14 +86,6 @@ services:
 
   #quiz-mongo:
 
-
-  application-mongo:
-    image: mongo:6.0
-    container_name: application-mongo
-    environment:
-      MONGO_INITDB_DATABASE: app-db
-    networks: [ treedu-net ]
-
   user-postgres:
     image: postgres:15
     container_name: user-postgres
@@ -170,18 +162,6 @@ services:
         condition: service_healthy
     networks: [ treedu-net ]
 
-  application-service:
-    build:
-      context: ./services/application-service
-    env_file:
-      - .env.local
-    ports:
-      - "8085:8080"
-    depends_on:
-      - consul
-      - application-mongo
-    networks: [ treedu-net ]
-
   api-gateway:
     build:
       context: ./services/api-gateway
@@ -206,17 +186,6 @@ services:
     container_name: api-redis
     ports:
       - "6380:6379"
-    networks: [ treedu-net ]
-
-  monitoring-service:
-    build:
-      context: ./services/monitoring-service
-    env_file:
-      - .env.local
-    ports:
-      - "9080:8080"
-    depends_on:
-      - consul
     networks: [ treedu-net ]
 
   vault:

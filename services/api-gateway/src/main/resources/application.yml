@@ -1,0 +1,64 @@
+server:
+  port: ${API_GATEWAY_PORT_DOCKER:8088}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # ? new key path for Discovery Locator on Spring Cloud Gateway (server-webflux)
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+    consul:
+      host: ${CONSUL_HOST:consul}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        register: true
+        prefer-ip-address: true
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        instance-id: ${spring.application.name}-${server.port}
+        deregister: true
+        health-check-critical-timeout: 1m
+  data:
+    redis:
+      host: ${REDIS_GATEWAY_HOST:api-redis}
+      port: ${REDIS_GATEWAY_PORT:6379}
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+
+management:
+  endpoint:
+    gateway:
+      access: read_only
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+service:
+  auth:
+    url: ${AUTH_SERVICE_URL:http://auth-service:9005}
+
+auth:
+  jwt:
+    issuer: auth-service
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.consul: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+    reactor.netty.http.client.HttpClient: WARN
+    org.workfitai.apigateway.filter.OpaqueToJwtPreFilter: DEBUG
+    org.workfitai.apigateway.service.impl.RedisOpaqueTokenService: DEBUG
