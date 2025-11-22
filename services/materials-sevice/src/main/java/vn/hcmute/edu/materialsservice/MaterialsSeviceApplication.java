@@ -1,4 +1,4 @@
-package vn.hcmute.edu.materialssevice;
+package vn.hcmute.edu.materialsservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
