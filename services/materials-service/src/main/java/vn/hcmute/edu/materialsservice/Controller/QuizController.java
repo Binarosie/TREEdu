@@ -10,21 +10,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.SubmitQuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.ApiResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.QuizAttemptResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.QuizResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.QuizResponseWithQuestion;
 import vn.hcmute.edu.materialsservice.Dto.response.StartQuizResponse;
 import vn.hcmute.edu.materialsservice.Service.QuizAttemptService;
 import vn.hcmute.edu.materialsservice.Service.QuizService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/quiz")
+@RequestMapping("/quiz")
 @RequiredArgsConstructor
 @Slf4j
 public class QuizController {
@@ -33,16 +31,15 @@ public class QuizController {
     private final QuizAttemptService quizAttemptService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
+    public ResponseEntity<ApiResponse<QuizResponseWithQuestion>> createQuiz(
             @Valid @RequestBody QuizRequest requestDTO) {
-
         log.info("REST request to create quiz: {}", requestDTO.getTitle());
 
-        QuizResponse response = quizService.createQuiz(requestDTO);
+        QuizResponseWithQuestion response = quizService.createQuiz(requestDTO);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.<QuizResponse>builder()
+                .body(ApiResponse.<QuizResponseWithQuestion>builder()
                         .success(true)
                         .message("Quiz created successfully")
                         .data(response)
@@ -50,21 +47,21 @@ public class QuizController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
+    public ResponseEntity<ApiResponse<QuizResponseWithQuestion>> getQuizById(
             @PathVariable String id) {
 
         log.info("REST request to get quiz by ID: {}", id);
 
-        QuizResponse response = quizService.getQuizById(id);
+        QuizResponseWithQuestion response = quizService.getQuizById(id);
 
-        return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
+        return ResponseEntity.ok(ApiResponse.<QuizResponseWithQuestion>builder()
                 .success(true)
                 .message("Quiz retrieved successfully")
                 .data(response)
                 .build());
     }
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<QuizResponse>>> getAllQuizzes(
+    public ResponseEntity<ApiResponse<Page<QuizResponseWithQuestion>>> getAllQuizzes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
@@ -78,25 +75,23 @@ public class QuizController {
         Sort sortBy = Sort.by(direction, sort[0]);
 
         Pageable pageable = PageRequest.of(page, size, sortBy);
-        Page<QuizResponse> response = quizService.getAllQuizzes(pageable);
+        Page<QuizResponseWithQuestion> response = quizService.getQuizWithQuestion(pageable);
 
-        return ResponseEntity.ok(ApiResponse.<Page<QuizResponse>>builder()
+        return ResponseEntity.ok(ApiResponse.<Page<QuizResponseWithQuestion>>builder()
                 .success(true)
                 .message("Quizzes retrieved successfully")
                 .data(response)
                 .build());
     }
-
-
     @GetMapping("/topic/{topic}")
-    public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByTopic(
+    public ResponseEntity<ApiResponse<List<QuizResponseWithQuestion>>> getQuizzesByTopic(
             @PathVariable String topic) {
 
         log.info("REST request to get quizzes by topic: {}", topic);
 
-        List<QuizResponse> response = quizService.getQuizzesByTopic(topic);
+        List<QuizResponseWithQuestion> response = quizService.getQuizzesByTopic(topic);
 
-        return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
+        return ResponseEntity.ok(ApiResponse.<List<QuizResponseWithQuestion>>builder()
                 .success(true)
                 .message("Quizzes retrieved successfully")
                 .data(response)
@@ -105,14 +100,14 @@ public class QuizController {
 
 
     @GetMapping("/level/{level}")
-    public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByLevel(
+    public ResponseEntity<ApiResponse<List<QuizResponseWithQuestion>>> getQuizzesByLevel(
             @PathVariable Integer level) {
 
         log.info("REST request to get quizzes by level: {}", level);
 
-        List<QuizResponse> response = quizService.getQuizzesByLevel(level);
+        List<QuizResponseWithQuestion> response = quizService.getQuizzesByLevel(level);
 
-        return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
+        return ResponseEntity.ok(ApiResponse.<List<QuizResponseWithQuestion>>builder()
                 .success(true)
                 .message("Quizzes retrieved successfully")
                 .data(response)
@@ -121,14 +116,14 @@ public class QuizController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
+    public ResponseEntity<ApiResponse<List<QuizResponseWithQuestion>>> searchQuizzes(
             @RequestParam String topic) {
 
         log.info("REST request to search quizzes by topic: {}", topic);
 
-        List<QuizResponse> response = quizService.searchQuizzesByTopic(topic);
+        List<QuizResponseWithQuestion> response = quizService.searchQuizzesByTopic(topic);
 
-        return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
+        return ResponseEntity.ok(ApiResponse.<List<QuizResponseWithQuestion>>builder()
                 .success(true)
                 .message("Search completed successfully")
                 .data(response)
@@ -137,15 +132,15 @@ public class QuizController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<QuizResponse>> updateQuiz(
+    public ResponseEntity<ApiResponse<QuizResponseWithQuestion>> updateQuiz(
             @PathVariable String id,
             @Valid @RequestBody QuizRequest requestDTO) {
 
         log.info("REST request to update quiz with ID: {}", id);
 
-        QuizResponse response = quizService.updateQuiz(id, requestDTO);
+        QuizResponseWithQuestion response = quizService.updateQuiz(id, requestDTO);
 
-        return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
+        return ResponseEntity.ok(ApiResponse.<QuizResponseWithQuestion>builder()
                 .success(true)
                 .message("Quiz updated successfully")
                 .data(response)
@@ -173,7 +168,6 @@ public class QuizController {
                 .data(response)
                 .build());
     }
-
     @PostMapping("/{quizId}/submit")
     public ResponseEntity<ApiResponse<QuizAttemptResponse>> submitQuiz(
             @PathVariable String quizId,

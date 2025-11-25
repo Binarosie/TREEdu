@@ -7,7 +7,7 @@ import vn.hcmute.edu.materialsservice.Dto.request.QuestionRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.AnswerResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.QuestionResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.QuizResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.QuizResponseWithQuestion;
 import vn.hcmute.edu.materialsservice.Model.Answer;
 import vn.hcmute.edu.materialsservice.Model.Question;
 import vn.hcmute.edu.materialsservice.Model.Quiz;
@@ -19,7 +19,6 @@ import java.util.List;
 )
 public interface QuizMapper {
 
-    // Request to Entity mappings
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "questionCount", expression = "java(request.getQuestions().size())")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
@@ -33,13 +32,13 @@ public interface QuizMapper {
     Answer toEntity(AnswerRequest request);
 
     // Entity to Response mappings
-    QuizResponse toResponse(Quiz quiz);
+    QuizResponseWithQuestion toResponse(Quiz quiz);
 
     QuestionResponse toResponse(Question question);
 
     @Mapping(target = "answerId", source = "answerId")
     @Mapping(target = "content", source = "content")
-        // isCorrect is intentionally not mapped for security
+    @Mapping(target = "isCorrect", source = "isCorrect")
     AnswerResponse toResponse(Answer answer);
 
     // List mappings
@@ -51,7 +50,6 @@ public interface QuizMapper {
 
     List<AnswerResponse> toAnswerResponseList(List<Answer> answers);
 
-    // Update mapping
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")

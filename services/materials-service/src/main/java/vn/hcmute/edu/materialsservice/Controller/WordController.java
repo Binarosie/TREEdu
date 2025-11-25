@@ -14,7 +14,7 @@ import vn.hcmute.edu.materialsservice.Service.WordService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/flashcards/{flashcardId}/words")
+@RequestMapping("/flashcards/{flashcardId}/words")
 @RequiredArgsConstructor
 @Slf4j
 public class WordController {

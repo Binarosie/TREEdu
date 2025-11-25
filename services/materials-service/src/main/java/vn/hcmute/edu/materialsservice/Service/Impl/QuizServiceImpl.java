@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.QuizResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.QuizResponseWithQuestion;
 import vn.hcmute.edu.materialsservice.Mapper.QuizMapper;
 import vn.hcmute.edu.materialsservice.Model.Quiz;
 import vn.hcmute.edu.materialsservice.Repository.QuizRepository;
@@ -31,7 +31,7 @@ public class QuizServiceImpl implements QuizService {
     private final QuizMapper quizMapper;
 
     @Override
-    public QuizResponse createQuiz(QuizRequest requestDTO) {
+    public QuizResponseWithQuestion createQuiz(QuizRequest requestDTO) {
 
 
         // Check if quiz with same title already exists
@@ -54,7 +54,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public QuizResponse getQuizById(String id) {
+    public QuizResponseWithQuestion getQuizById(String id) {
         log.info("Fetching quiz with ID: {}", id);
 
         Quiz quiz = quizRepository.findById(id)
@@ -65,17 +65,20 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuizResponse> getAllQuizzes(Pageable pageable) {
-        log.info("Fetching all quizzes with pagination: page {}, size {}",
-                pageable.getPageNumber(), pageable.getPageSize());
-
+    public Page<QuizResponseWithQuestion> getQuizWithQuestion(Pageable pageable) {
         Page<Quiz> quizPage = quizRepository.findAll(pageable);
         return quizPage.map(quizMapper::toResponse);
     }
 
     @Override
+    public Page<QuizResponse> getAllQuizzes(Pageable pageable) {
+        return null;
+    }
+
+
+    @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> getQuizzesByTopic(String topic) {
+    public List<QuizResponseWithQuestion> getQuizzesByTopic(String topic) {
         log.info("Fetching quizzes by topic: {}", topic);
 
         List<Quiz> quizzes = quizRepository.findByTopic(topic);
@@ -86,7 +89,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> getQuizzesByLevel(Integer level) {
+    public List<QuizResponseWithQuestion> getQuizzesByLevel(Integer level) {
         log.info("Fetching quizzes by level: {}", level);
 
         List<Quiz> quizzes = quizRepository.findByLevel(level);
@@ -96,7 +99,7 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public QuizResponse updateQuiz(String id, QuizRequest requestDTO) {
+    public QuizResponseWithQuestion updateQuiz(String id, QuizRequest requestDTO) {
         log.info("Updating quiz with ID: {}", id);
 
         Quiz existingQuiz = quizRepository.findById(id)
@@ -135,7 +138,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> searchQuizzesByTopic(String topic) {
+    public List<QuizResponseWithQuestion> searchQuizzesByTopic(String topic) {
         log.info("Searching quizzes by topic keyword: {}", topic);
 
         List<Quiz> quizzes = quizRepository.findByTopicIgnoreCase(topic);

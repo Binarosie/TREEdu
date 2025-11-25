@@ -7,12 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class QuizResponse {
+public class QuizResponseWithQuestion {
     private String id;
 
     private String title;
@@ -23,6 +25,8 @@ public class QuizResponse {
 
     private Integer timer;
 
+    private List<QuestionResponse> questions;
+
     private Integer questionCount;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -31,4 +35,3 @@ public class QuizResponse {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 }
-

@@ -15,7 +15,7 @@ import vn.hcmute.edu.materialsservice.Service.FlashcardService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/flashcards")
+@RequestMapping("/flashcards")
 @RequiredArgsConstructor
 @Slf4j
 public class FlashcardController {
