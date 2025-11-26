@@ -1,0 +1,22 @@
+package vn.hcmute.edu.userservice.specification;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
+import vn.hcmute.edu.userservice.model.MemberEntity;
+
+@Component
+public class MemberSpecification {
+    public Specification<MemberEntity> filter(String keyword) {
+        return (root, query, cb) -> {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                return cb.conjunction();
+            }
+            String like = "%" + keyword.toLowerCase() + "%";
+
+            Predicate p1 = cb.like(cb.lower(root.get("fullName")), like);
+            Predicate p2 = cb.like(cb.lower(root.get("email")), like);
+
+            return cb.or(p1, p2);
+        };
+    }
+}
