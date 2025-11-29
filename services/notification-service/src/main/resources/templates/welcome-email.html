@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào mừng đến với TREEdu!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+        .subtitle {
+            color: #e8f0fe;
+            margin: 10px 0 0 0;
+            font-size: 16px;
+        }
+        .success-icon {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .celebration {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .message {
+            font-size: 16px;
+            color: #5a6c7d;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .feature-grid {
+            display: table;
+            width: 100%;
+            margin: 30px 0;
+        }
+        .feature-row {
+            display: table-row;
+        }
+        .feature-item {
+            display: table-cell;
+            padding: 20px;
+            text-align: center;
+            vertical-align: top;
+        }
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+            color: white;
+        }
+        .cta-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .cta-subtitle {
+            font-size: 16px;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        .btn {
+            display: inline-block;
+            background: #ffffff;
+            color: #f5576c;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .getting-started {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .getting-started h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 0;
+        }
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+        .step-text {
+            color: #495057;
+            font-size: 15px;
+        }
+        .stats {
+            display: table;
+            width: 100%;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .stat-item {
+            display: table-cell;
+            padding: 20px;
+            border-right: 1px solid #dee2e6;
+        }
+        .stat-item:last-child {
+            border-right: none;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            display: block;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .footer {
+            background-color: #2c3e50;
+            color: #bdc3c7;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer h3 {
+            color: #ffffff;
+            margin: 0 0 15px 0;
+            font-size: 20px;
+        }
+        .footer p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="logo">🌳 TREEdu</h1>
+            <p class="subtitle">Nền tảng giáo dục trực tuyến</p>
+            <div class="success-icon">🎉</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <h2 class="greeting">Chào mừng <span th:text="${fullName}">User</span>!</h2>
+            <div class="celebration">🎊 Tài khoản của bạn đã được kích hoạt thành công! 🎊</div>
+            
+            <div class="message">
+                <p>Chúc mừng bạn đã chính thức trở thành thành viên của <strong>TREEdu</strong>! Bạn đã hoàn tất quá trình đăng ký và có thể bắt đầu hành trình học tập tuyệt vời cùng chúng tôi.</p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="feature-grid">
+                <div class="feature-row">
+                    <div class="feature-item">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-title">Khóa học đa dạng</div>
+                        <div class="feature-desc">Hàng trăm khóa học từ cơ bản đến nâng cao</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">👨‍🏫</div>
+                        <div class="feature-title">Giảng viên chất lượng</div>
+                        <div class="feature-desc">Đội ngũ giảng viên giàu kinh nghiệm</div>
+                    </div>
+                </div>
+                <div class="feature-row">
+                    <div class="feature-item">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-title">Chứng chỉ uy tín</div>
+                        <div class="feature-desc">Chứng chỉ được công nhận rộng rãi</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💬</div>
+                        <div class="feature-title">Hỗ trợ 24/7</div>
+                        <div class="feature-desc">Đội ngũ hỗ trợ tận tình</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <h3 class="cta-title">Sẵn sàng bắt đầu học?</h3>
+                <p class="cta-subtitle">Khám phá hàng trăm khóa học hấp dẫn và bắt đầu hành trình phát triển bản thân ngay hôm nay!</p>
+                <a href="https://treedu.edu.vn/courses" class="btn">
+                    🚀 Khám phá khóa học
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">10,000+</span>
+                    <div class="stat-label">Học viên</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <div class="stat-label">Khóa học</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <div class="stat-label">Hài lòng</div>
+                </div>
+            </div>
+
+            <!-- Getting Started -->
+            <div class="getting-started">
+                <h3>🎯 Bắt đầu như thế nào?</h3>
+                <ul class="step-list">
+                    <li class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Hoàn thiện hồ sơ cá nhân của bạn</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Tìm kiếm khóa học phù hợp với mục tiêu</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Đăng ký và bắt đầu học ngay</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-text">Nhận chứng chỉ sau khi hoàn thành</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="message">
+                <p><strong>Lưu ý quan trọng:</strong> Hãy đăng nhập vào tài khoản và cập nhật đầy đủ thông tin cá nhân để có trải nghiệm học tập tốt nhất. Chúng tôi cũng khuyên bạn nên theo dõi email để nhận được thông báo về các khóa học mới và ưu đãi đặc biệt.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h3>TREEdu Education Platform</h3>
+            <p>📧 Email hỗ trợ: <span th:text="${supportEmail}">support@treedu.edu.vn</span></p>
+            <p>📞 Hotline: 1900-XXX-XXX</p>
+            <p>🌐 Website: https://treedu.edu.vn</p>
+            
+            <div class="social-links">
+                <a href="#">Facebook</a> |
+                <a href="#">LinkedIn</a> |
+                <a href="#">YouTube</a>
+            </div>
+            
+            <p style="font-size: 12px; margin-top: 20px;">
+                © 2024 TREEdu. Tất cả quyền được bảo lưu.<br>
+                Cảm ơn bạn đã tin tưởng và lựa chọn TREEdu!
+            </p>
+        </div>
+    </div>
+</body>
+</html>

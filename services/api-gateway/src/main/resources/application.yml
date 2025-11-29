@@ -6,13 +6,36 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      # ? new key path for Discovery Locator on Spring Cloud Gateway (server-webflux)
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-              lower-case-service-id: true
+      routes:
+        # Auth Service Routes
+        - id: auth-service
+          uri: lb://auth
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<remaining>.*), /$\{remaining}
+        
+        # User Service Routes  
+        - id: user-service
+          uri: lb://user
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users/(?<remaining>.*), /$\{remaining}
+            
+        # Notification Service Routes
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - RewritePath=/api/notifications/(?<remaining>.*), /$\{remaining}
+      
+      # Discovery Locator for fallback
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
     consul:
       host: ${CONSUL_HOST:consul}
       port: ${CONSUL_PORT:8500}

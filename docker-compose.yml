@@ -1,3 +1,6 @@
+x-env: &env-file
+  - .env.local
+
 services:
   ### Service Discovery: Consul ###
   consul:
@@ -7,7 +10,7 @@ services:
     ports:
       - "8500:8500" # HTTP UI/API
       - "8600:8600/udp" # DNS
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   ### Zookeeper (for Kafka) ###
   zookeeper:
@@ -18,11 +21,11 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SYNC_LIMIT: 2
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "2181" ]
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
       interval: 10s
       timeout: 5s
       retries: 3
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   ### Kafka ###
   kafka:
@@ -46,12 +49,13 @@ services:
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_NUM_PARTITIONS: 3
     healthcheck:
-      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list" ]
+      test:
+        ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 30s
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   ### Kafka UI for Monitoring ###
   kafka-ui:
@@ -67,7 +71,7 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
       DYNAMIC_CONFIG_ENABLED: "true"
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   ### Databases & infra ###
   auth-mongo:
@@ -77,12 +81,27 @@ services:
       MONGO_INITDB_DATABASE: auth-db
     ports:
       - "27017:27017" # mở cổng ra máy Mac
-    networks: [ treedu-net ]
+    volumes:
+      - auth-mongo-data:/data/db
+    networks: [treedu-net]
+
+  notification-mongo:
+    image: mongo:6.0
+    container_name: notification-mongo
+    environment:
+      MONGO_INITDB_DATABASE: treedu_notification
+    ports:
+      - "27018:27017"
+    volumes:
+      - notification-mongo-data:/data/db
+    networks: [treedu-net]
 
   auth-redis:
     image: redis:6-alpine
     container_name: auth-redis
-    networks: [ treedu-net ]
+    volumes:
+      - auth-redis-data:/data
+    networks: [treedu-net]
 
   #quiz-mongo:
 
@@ -99,10 +118,9 @@ services:
       POSTGRES_PASSWORD: ${USER_DB_PASS:-pass}
     volumes:
       - user-postgres-data:/var/lib/postgresql/data
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   #db-postgres:
-
 
   ### Spring-Boot Services ###
   auth-service:
@@ -133,12 +151,12 @@ services:
       kafka:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9005/actuator/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:9005/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 5
       start_period: 10s
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   user-service:
     build:
@@ -160,7 +178,32 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    networks: [ treedu-net ]
+    networks: [treedu-net]
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+    env_file:
+      - .env.local
+    ports:
+      - "8084:8084"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_APPLICATION_NAME=notification-service
+      - SERVER_PORT=8084
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - JAVA_TOOL_OPTIONS=-Dserver.address=0.0.0.0
+    depends_on:
+      consul:
+        condition: service_started
+      notification-mongo:
+        condition: service_started
+      auth-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks: [treedu-net]
 
   api-gateway:
     build:
@@ -179,14 +222,16 @@ services:
         condition: service_started
       auth-service:
         condition: service_healthy
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   api-redis:
     image: redis:6-alpine
     container_name: api-redis
     ports:
       - "6380:6379"
-    networks: [ treedu-net ]
+    volumes:
+      - api-redis-data:/data
+    networks: [treedu-net]
 
   vault:
     image: vault:1.13.3
@@ -199,7 +244,7 @@ services:
       - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
       - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
     command: vault server -dev
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   prometheus:
     image: prom/prometheus:v2.53.0
@@ -211,7 +256,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
   grafana:
     image: grafana/grafana:11.1.0
@@ -225,14 +270,15 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - prometheus
-    networks: [ treedu-net ]
+    networks: [treedu-net]
 
 volumes:
   user-postgres-data:
-  #db-postgres-data:
-  #db-mongo-data:
+  auth-mongo-data:
+  notification-mongo-data:
+  auth-redis-data:
+  api-redis-data:
   prometheus-data:
-
 
 networks:
   treedu-net:
