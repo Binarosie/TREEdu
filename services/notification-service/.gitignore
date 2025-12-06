@@ -32,8 +32,3 @@ build/
 
 ### VS Code ###
 .vscode/
-.keys/
-*.pem
-*.key
-!**/src/main/resources/**/*.pem
-!**/src/main/resources/**/*.key

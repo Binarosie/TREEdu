@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác thực tài khoản TREEdu</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+            text-decoration: none;
+        }
+        .subtitle {
+            color: #e8f0fe;
+            margin: 10px 0 0 0;
+            font-size: 16px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .message {
+            font-size: 16px;
+            color: #5a6c7d;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .verification-button {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .alternative-link {
+            background-color: #f8f9fa;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .alternative-link p {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+        .link-text {
+            word-break: break-all;
+            color: #007bff;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .security-note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .security-note h4 {
+            color: #856404;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .security-note p {
+            color: #856404;
+            margin: 0;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #2c3e50;
+            color: #bdc3c7;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer h3 {
+            color: #ffffff;
+            margin: 0 0 15px 0;
+            font-size: 20px;
+        }
+        .footer p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        .expiry-time {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="logo">🌳 TREEdu</h1>
+            <p class="subtitle">Nền tảng giáo dục trực tuyến</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <h2 class="greeting">Xin chào <span th:text="${fullName}">User</span>!</h2>
+            
+            <div class="message">
+                <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>TREEdu</strong>. Để hoàn tất quá trình đăng ký và bắt đầu hành trình học tập, vui lòng xác thực địa chỉ email của bạn.</p>
+                
+                <p>Việc xác thực email giúp:</p>
+                <ul style="color: #5a6c7d; margin: 15px 0;">
+                    <li>Bảo mật tài khoản của bạn</li>
+                    <li>Nhận thông báo khóa học quan trọng</li>
+                    <li>Khôi phục mật khẩu khi cần thiết</li>
+                </ul>
+            </div>
+
+            <!-- Verification Button -->
+            <div class="verification-button">
+                <a th:href="${verificationUrl}" class="btn">
+                    ✅ Xác thực tài khoản ngay
+                </a>
+            </div>
+
+            <!-- Alternative Link -->
+            <div class="alternative-link">
+                <p><strong>Nếu nút trên không hoạt động, vui lòng copy và dán link sau vào trình duyệt:</strong></p>
+                <div class="link-text" th:text="${verificationUrl}">verification-url</div>
+            </div>
+
+            <!-- Security Note -->
+            <div class="security-note">
+                <h4>🔒 Lưu ý bảo mật</h4>
+                <p>Link xác thực này sẽ <span class="expiry-time">hết hạn sau 24 giờ</span> và chỉ có thể sử dụng một lần. Nếu bạn không thực hiện đăng ký này, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi.</p>
+            </div>
+
+            <div class="message">
+                <p>Sau khi xác thực thành công, bạn sẽ có thể:</p>
+                <ul style="color: #5a6c7d; margin: 15px 0;">
+                    <li>Truy cập đầy đủ các khóa học</li>
+                    <li>Tham gia cộng đồng học viên</li>
+                    <li>Nhận chứng chỉ hoàn thành</li>
+                    <li>Sử dụng tất cả tính năng của nền tảng</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h3>TREEdu Education Platform</h3>
+            <p>📧 Email hỗ trợ: <span th:text="${supportEmail}">support@treedu.edu.vn</span></p>
+            <p>📞 Hotline: 1900-XXX-XXX</p>
+            <p>🌐 Website: https://treedu.edu.vn</p>
+            
+            <div class="social-links">
+                <a href="#">Facebook</a> |
+                <a href="#">LinkedIn</a> |
+                <a href="#">YouTube</a>
+            </div>
+            
+            <p style="font-size: 12px; margin-top: 20px;">
+                © 2024 TREEdu. Tất cả quyền được bảo lưu.<br>
+                Email này được gửi tự động, vui lòng không trả lời trực tiếp.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
