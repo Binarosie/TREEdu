@@ -47,8 +47,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        "[spring.json.trusted.packages]": "vn.hcmute.edu.notificationservice.dto.kafka,vn.hcmute.edu.authservice.dto.kafka"
-        "[spring.json.type.mapping]": userRegistrationEvent:vn.hcmute.edu.authservice.dto.kafka.UserRegistrationEvent
+        "[spring.json.trusted.packages]": "*"
+        "[spring.json.type.mapping]": "vn.hcmute.edu.authservice.dto.kafka.UserRegistrationEvent:vn.hcmute.edu.notificationservice.dto.kafka.UserRegistrationEvent"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

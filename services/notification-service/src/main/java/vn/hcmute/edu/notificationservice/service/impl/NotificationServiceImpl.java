@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.hcmute.edu.notificationservice.config.NotificationProperties;
 import vn.hcmute.edu.notificationservice.dto.EmailVerificationRequest;
 import vn.hcmute.edu.notificationservice.dto.kafka.EmailVerificationEvent;
-import vn.hcmute.edu.authservice.dto.kafka.UserRegistrationEvent;
+import vn.hcmute.edu.notificationservice.dto.kafka.UserRegistrationEvent;
 import vn.hcmute.edu.notificationservice.enums.ENotificationStatus;
 import vn.hcmute.edu.notificationservice.enums.ENotificationType;
 import vn.hcmute.edu.notificationservice.model.EmailVerificationToken;

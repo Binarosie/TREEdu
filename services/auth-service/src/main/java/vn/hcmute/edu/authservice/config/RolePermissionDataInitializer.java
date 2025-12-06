@@ -1,14 +1,12 @@
 package vn.hcmute.edu.authservice.config;
 
-
-
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +18,7 @@ import vn.hcmute.edu.authservice.repository.RoleRepository;
 
 @Slf4j
 @Component
+@Order(1) // Run before UserDataSeeder
 @RequiredArgsConstructor
 public class RolePermissionDataInitializer implements ApplicationRunner {
 
@@ -58,7 +57,23 @@ public class RolePermissionDataInitializer implements ApplicationRunner {
                     .build());
         });
 
-        // 3) Ensure ADMIN role exists
+        // 3) Ensure SUPPORTER role exists
+        roleRepository.findByName(UserRole.SUPPORTER.getRoleName()).orElseGet(() -> {
+            log.info("[BOOTSTRAP] creating role SUPPORTER");
+            return roleRepository.save(Role.builder()
+                    .name(UserRole.SUPPORTER.getRoleName())
+                    .description("Support staff with limited admin capabilities")
+                    .permissions(Set.of(
+                            "register",
+                            "login",
+                            "profile:read",
+                            "profile:update",
+                            "role:read",
+                            "perm:read"))
+                    .build());
+        });
+
+        // 4) Ensure ADMIN role exists
         roleRepository.findByName(UserRole.ADMIN.getRoleName()).orElseGet(() -> {
             log.info("[BOOTSTRAP] creating role ADMIN");
             return roleRepository.save(Role.builder()

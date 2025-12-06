@@ -1,7 +1,7 @@
 package vn.hcmute.edu.notificationservice.service;
 
 import vn.hcmute.edu.notificationservice.dto.EmailVerificationRequest;
-import vn.hcmute.edu.authservice.dto.kafka.UserRegistrationEvent;
+import vn.hcmute.edu.notificationservice.dto.kafka.UserRegistrationEvent;
 import vn.hcmute.edu.notificationservice.model.Notification;
 import vn.hcmute.edu.notificationservice.model.NotificationHistory;
 

@@ -49,12 +49,12 @@ public class AuthServiceImpl implements iAuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     Messages.Error.USERNAME_EMAIL_ALREADY_IN_USE);
         }
-
+        //build member
         var user = User.builder()
                 .username(req.getUsername())
                 .email(req.getEmail())
                 .password(encoder.encode(req.getPassword()))
-                .roles(Set.of(UserRole.ADMIN.getRoleName()))
+                .roles(Set.of(UserRole.MEMBER.getRoleName()))
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();
@@ -80,7 +80,7 @@ public class AuthServiceImpl implements iAuthService {
         UserDetails ud = org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .authorities(UserRole.ADMIN.getRoleName())
+                .authorities(UserRole.MEMBER.getRoleName())
                 .build();
 
         String access = jwt.generateAccessToken(ud);
