@@ -42,7 +42,7 @@ public class SecurityConfig {
                         // Public endpoints - Không cần login
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/public/**",
+                                "/api/**",
                                 "/error",
                                 "/actuator/health"
                         ).permitAll()

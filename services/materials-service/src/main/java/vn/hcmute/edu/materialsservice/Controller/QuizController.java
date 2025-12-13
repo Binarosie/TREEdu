@@ -48,7 +48,7 @@ public class QuizController {
      * Response: QuizResponse (KHÔNG có isCorrect)
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+    //@PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<Page<QuizResponse>>> getAllQuizzes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -77,7 +77,7 @@ public class QuizController {
      * Response: QuizResponse (KHÔNG có isCorrect)
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+    //@PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
             @PathVariable String id) {
 
@@ -96,7 +96,7 @@ public class QuizController {
      * TÌM QUIZ THEO TOPIC
      */
     @GetMapping("/topic/{topic}")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByTopic(
             @PathVariable String topic) {
 
@@ -115,7 +115,7 @@ public class QuizController {
      * TÌM QUIZ THEO LEVEL
      */
     @GetMapping("/level/{level}")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByLevel(
             @PathVariable Integer level) {
 
@@ -134,7 +134,7 @@ public class QuizController {
      * TÌM KIẾM QUIZ
      */
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+  //  @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
             @RequestParam String topic) {
 
@@ -155,7 +155,7 @@ public class QuizController {
      * QUAN TRỌNG: Cần track user nào đang làm bài
      */
     @PostMapping("/{quizId}/start")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+  //  @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<StartQuizResponse>> startQuiz(
             @PathVariable String quizId,
             Authentication authentication) { // ← Thêm để biết user nào
@@ -178,7 +178,7 @@ public class QuizController {
      * QUAN TRỌNG: Cần track user nào đang submit
      */
     @PostMapping("/{quizId}/submit")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
+  //  @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<QuizAttemptResponse>> submitQuiz(
             @PathVariable String quizId,
             @RequestBody SubmitQuizRequest request,
@@ -204,7 +204,7 @@ public class QuizController {
      * Chỉ SUPPORTER và ADMIN
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
             @Valid @RequestBody QuizRequest requestDTO) {
 
@@ -227,7 +227,7 @@ public class QuizController {
      * Chỉ SUPPORTER và ADMIN
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+    //@PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<QuizResponse>> updateQuiz(
             @PathVariable String id,
             @Valid @RequestBody QuizRequest requestDTO) {
@@ -249,7 +249,7 @@ public class QuizController {
      * Chỉ SUPPORTER và ADMIN
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteQuiz(@PathVariable String id) {
 
         log.info("REST request to delete quiz with ID: {}", id);
@@ -273,7 +273,7 @@ public class QuizController {
      * - Chỉ SUPPORTER review quiz mới dùng
      */
     @GetMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<QuizEditResponse>> getQuizForEdit(
             @PathVariable String id) {
 
@@ -294,7 +294,7 @@ public class QuizController {
      * Chỉ SUPPORTER và ADMIN
      */
     @PostMapping("/generate-from-file")
-    @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
     public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
             @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
 
@@ -313,7 +313,7 @@ public class QuizController {
      * Chỉ ADMIN
      */
     @GetMapping("/admin/statistics")
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Object>> getQuizStatistics() {
         log.info("Admin is getting quiz statistics");
 
