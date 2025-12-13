@@ -5,9 +5,7 @@ import org.mapstruct.*;
 import vn.hcmute.edu.materialsservice.Dto.request.AnswerRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.QuestionRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
-import vn.hcmute.edu.materialsservice.Dto.response.AnswerResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.QuestionResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.QuizResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.*;
 import vn.hcmute.edu.materialsservice.Model.Answer;
 import vn.hcmute.edu.materialsservice.Model.Question;
 import vn.hcmute.edu.materialsservice.Model.Quiz;
@@ -57,4 +55,15 @@ public interface QuizMapper {
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "questionCount", expression = "java(request.getQuestions().size())")
     void updateEntityFromDTO(QuizRequest request, @MappingTarget Quiz quiz);
+
+
+
+    QuizEditResponse toEditResponse(Quiz quiz);
+    QuestionEditResponse toEditQuestionResponse(Question question);
+
+    @Mapping(target = "isCorrect", source = "isCorrect")
+    AnswerEditResponse toEditAnswerResponse(Answer answer);
+
+    List<QuestionEditResponse> toEditQuestionResponseList(List<Question> questions);
+    List<AnswerEditResponse> toEditAnswerResponseList(List<Answer> answers);
 }

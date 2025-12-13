@@ -13,14 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import vn.hcmute.edu.materialsservice.Dto.request.GenerateQuizFromFileRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.SubmitQuizRequest;
-import vn.hcmute.edu.materialsservice.Dto.response.ApiResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.QuizAttemptResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.QuizResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.StartQuizResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.*;
 import vn.hcmute.edu.materialsservice.Service.QuizAttemptService;
 import vn.hcmute.edu.materialsservice.Service.QuizService;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -183,6 +183,26 @@ public class QuizController {
         return ResponseEntity.ok(ApiResponse.<QuizAttemptResponse>builder()
                 .success(true)
                 .message("Nộp bài thành công!")
+                .data(response)
+                .build());
+    }
+    @PostMapping("/generate-from-file")
+    public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
+            @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
+
+        QuizResponse quiz = quizService.generateQuizFromFile(request);
+        return ResponseEntity.ok(ApiResponse.success(quiz));
+    }
+
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<ApiResponse<QuizEditResponse>> getQuizForEdit(@PathVariable String id) {
+        log.info("REST request to get quiz for editing by ID: {}", id);
+
+        QuizEditResponse response = quizService.getQuizForEdit(id); // mới
+
+        return ResponseEntity.ok(ApiResponse.<QuizEditResponse>builder()
+                .success(true)
+                .message("Quiz retrieved for editing")
                 .data(response)
                 .build());
     }

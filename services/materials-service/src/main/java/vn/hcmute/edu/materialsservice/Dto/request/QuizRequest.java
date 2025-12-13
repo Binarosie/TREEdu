@@ -26,7 +26,6 @@ public class QuizRequest {
     @NotBlank(message = "Topic không được để trống")
     private String topic;
 
-    @NotBlank(message = "Time không được để trống")
     private String timer;
 
     @NotNull(message = "Questions list cannot be null")
