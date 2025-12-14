@@ -21,10 +21,6 @@ public class WordController {
 
     private final WordService wordService;
 
-    /**
-     * Thêm word vào flashcard
-     * POST /api/flashcards/{flashcardId}/words
-     */
     @PostMapping
     public ResponseEntity<ApiResponse<WordResponse>> addWord(
             @PathVariable String flashcardId,
@@ -37,10 +33,6 @@ public class WordController {
                 .body(ApiResponse.success("Thêm từ thành công", response));
     }
 
-    /**
-     * Lấy tất cả words của một flashcard
-     * GET /api/flashcards/{flashcardId}/words
-     */
     @GetMapping
     public ResponseEntity<ApiResponse<List<WordResponse>>> getWordsByFlashcardId(
             @PathVariable String flashcardId) {
@@ -50,10 +42,7 @@ public class WordController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * Cập nhật word
-     * PUT /api/words/{id}
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<WordResponse>> updateWord(
             @PathVariable String flashcardId,
@@ -65,10 +54,6 @@ public class WordController {
         return ResponseEntity.ok(ApiResponse.success("Cập nhật từ thành công", response));
     }
 
-    /**
-     * Xóa word
-     * DELETE /api/words/{id}
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteWord(
             @PathVariable String flashcardId,

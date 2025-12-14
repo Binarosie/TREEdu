@@ -45,10 +45,6 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success("Xóa flashcard thành công", null));
     }
 
-    /**
-     * Lấy chi tiết flashcard (chỉ info, không có words)
-     * GET /api/flashcards/{id}
-     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<FlashcardResponse>> getFlashcardById(
             @PathVariable String id) {

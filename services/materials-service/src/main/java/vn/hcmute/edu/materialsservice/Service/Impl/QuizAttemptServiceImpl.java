@@ -7,6 +7,7 @@ import vn.hcmute.edu.materialsservice.Dto.request.SubmitQuizRequest;
 
 import vn.hcmute.edu.materialsservice.Dto.request.UserAnswerRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.*;
+import vn.hcmute.edu.materialsservice.Mapper.TopicMapper;
 import vn.hcmute.edu.materialsservice.Model.*;
 import vn.hcmute.edu.materialsservice.Repository.QuizAttemptRepository;
 import vn.hcmute.edu.materialsservice.Repository.QuizRepository;
@@ -21,10 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuizAttemptServiceImpl implements QuizAttemptService {
 
+
     private final QuizRepository quizRepository;
     private final QuizAttemptRepository attemptRepository;
 
-    // QuizAttemptServiceImpl.java (chỉ thay đoạn này)
     @Override
     public StartQuizResponse startQuiz(String quizId) {
         Quiz quiz = quizRepository.findById(quizId)
