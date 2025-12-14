@@ -2,13 +2,23 @@ package vn.hcmute.edu.materialsservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import vn.hcmute.edu.materialsservice.Dto.response.ApiResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.*;
+import vn.hcmute.edu.materialsservice.Dto.response.BadRequestError;
+import vn.hcmute.edu.materialsservice.Dto.response.ErrorResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.ForbiddenError;
+import vn.hcmute.edu.materialsservice.Dto.response.UnauthorizedError;
 
 
+
+import java.io.IOException;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,5 +110,58 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ErrorResponse.class)
+    public ResponseEntity<ErrorResponse> handleErrorResponse(ErrorResponse ex) {
+        // Vì ErrorResponse đã có đủ message, statusCode, timestamp
+        // nên ta trả về chính đối tượng ex
+        return ResponseEntity.status(ex.getStatusCode()).body(ex);
+    }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
+//        // Xử lý lỗi không lường trước, mặc định 500
+//        ErrorResponse error = new ErrorResponse("Internal Server Error", 500);
+//        return ResponseEntity.status(500).body(error);
+//    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+        UnauthorizedError error = new UnauthorizedError("Invalid email or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        ForbiddenError error = new ForbiddenError("Access Denied");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
+//        String message = ex.getBindingResult().getFieldErrors().stream()
+//                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+//                .findFirst()
+//                .orElse("Invalid request data");
+//        return ResponseEntity.badRequest().body(new BadRequestError(message));
+//    }
+
+
+    @ExceptionHandler(BadRequestError.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestError ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage(), ex.getStatusCode()));
+    }
+
+    @ExceptionHandler(IOException.class)
+    public BadRequestError handleIO(IOException ex) {
+        return new BadRequestError("Lỗi đọc file: " + ex.getMessage());
     }
 }
