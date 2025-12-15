@@ -21,13 +21,19 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
+    }
+
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    // In JwtAuthenticationFilter - improve error handling
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response,
@@ -89,7 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 e.printStackTrace();
 
                 // Redirect về trang lỗi (HTML)
-                response.sendRedirect("/error");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
         } else {
