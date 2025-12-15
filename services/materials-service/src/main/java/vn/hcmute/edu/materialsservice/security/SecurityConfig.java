@@ -1,6 +1,9 @@
 package vn.hcmute.edu.materialsservice.security;
 
+import org.springframework.security.config.Customizer;
 import vn.hcmute.edu.materialsservice.Model.User;
+import org.springframework.http.HttpMethod;
+
 import vn.hcmute.edu.materialsservice.exception.CustomAccessDeniedHandler;
 import vn.hcmute.edu.materialsservice.exception.CustomAuthenticationEntryPoint;
 import vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest;
@@ -32,7 +35,9 @@ public class SecurityConfig {
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                http.csrf(csrf -> csrf.disable())
+                http
+                        .cors(Customizer.withDefaults())
+                        .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
@@ -47,6 +52,7 @@ public class SecurityConfig {
                                                                 "/api/flashcards",
                                                                 "/api/flashcards/*",
                                                                 "/api/flashcards/*/words",
+                                                                "/api/flashcards/*/words/*",
                                                                 "/api/flashcards/*/details",
                                                                 "/api/flashcards/level/*",
                                                                 "/api/flashcards/topic/*")

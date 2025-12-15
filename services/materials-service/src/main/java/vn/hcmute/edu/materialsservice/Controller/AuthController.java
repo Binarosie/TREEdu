@@ -286,7 +286,7 @@ public class AuthController {
         return ResponseEntity.ok(successResponse);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_SUPPORTER')")
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestParam("oldPassword") String oldPassword,
                                             @RequestParam("newPassword") String newPassword,
@@ -313,7 +313,7 @@ public class AuthController {
         return ResponseEntity.ok(successResponse);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_SUPPORTER')")
     @PostMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
