@@ -1,50 +1,51 @@
 package vn.hcmute.edu.materialsservice.Model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import vn.hcmute.edu.materialsservice.Enum.EUserStatus;
-import vn.hcmute.edu.materialsservice.Enum.ROLE;
+import com.github.f4b6a3.uuid.UuidCreator;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.Date;
+import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Document(collection = "users")
-public class User {
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class User implements Serializable {
     @Id
-    private String id;
-
-    @Indexed(unique = true)
-    private String email;
+    private UUID id;
 
     private String fullName;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
     private String password;
+    private boolean isActive;
+    private LocalDateTime createdOn;
+    private LocalDateTime modifiedOn;
 
-    private String phone;
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null) {
+            id = UUID.randomUUID();
+        }
+        if (this.createdOn == null) {
+            this.createdOn = LocalDateTime.now();
 
-    private ROLE roles;
+        }
+        this.modifiedOn = LocalDateTime.now();
+    }
 
-    private EUserStatus status;
-
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-
+    @PreUpdate
+    public void preUpdate() {
+        this.modifiedOn = LocalDateTime.now();
+    }
 }
