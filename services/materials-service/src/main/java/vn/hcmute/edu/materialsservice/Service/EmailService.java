@@ -22,7 +22,7 @@ public class EmailService {
     private Map<String, String> emailTokenMap = new ConcurrentHashMap<>();
 
     public void sendVerificationEmail(String to, String verificationCode) throws MessagingException {
-        String url = "http://localhost:3001/api/auth/verify-email?code=" + verificationCode + "&email=" + to;
+        String url = "http://localhost:3001/api/auth/verify-email-link?code=" + verificationCode + "&email=" + to;
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
         helper.setTo(to);
