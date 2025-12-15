@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import vn.hcmute.edu.materialsservice.Dto.UserInfoDTO;
 import vn.hcmute.edu.materialsservice.Dto.request.users.LoginRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.users.RegisterRequest;
@@ -32,6 +33,8 @@ import vn.hcmute.edu.materialsservice.Service.Impl.UserServiceImpl;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 import vn.hcmute.edu.materialsservice.security.JwtTokenUtil;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -147,46 +150,79 @@ public class AuthController {
                 LocalDateTime.now());
         return ResponseEntity.ok(successResponse);
     }
+    @GetMapping("/verify-email-link")
+    public RedirectView verifyEmailFromLink(
+            @RequestParam("email") String email,
+            @RequestParam("code") String code) {
 
-    @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
-        String storedCode = emailVerificationService.getVerificationCode(email);
-        if (storedCode == null) {
-            BadRequestError error = new BadRequestError(
-                    "Không tìm thấy mã xác thực cho email này. Có thể đã hết hạn hoặc chưa đăng ký?");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        try {
+            // 1. Lấy code đã lưu
+            String storedCode =  emailVerificationService.getVerificationCode(email);
+
+            if (storedCode == null) {
+                // Code không tồn tại hoặc đã hết hạn
+                return new RedirectView(
+                        "http://localhost:3000/verify-result?status=error&message=" +
+                                URLEncoder.encode("Mã xác thực đã hết hạn hoặc không tồn tại",
+                                        StandardCharsets.UTF_8)
+                );
+            }
+
+            // 2. Kiểm tra code có đúng không
+            if (!storedCode.equals(code)) {
+                return new RedirectView(
+                        "http://localhost:3000/verify-result?status=error&message=" +
+                                URLEncoder.encode("Mã xác thực không chính xác",
+                                        StandardCharsets.UTF_8)
+                );
+            }
+
+            // 3. Tìm user
+            var optionalUser = userServiceImpl.findByEmail(email);
+            if (optionalUser.isEmpty()) {
+                return new RedirectView(
+                        "http://localhost:3000/verify-result?status=error&message=" +
+                                URLEncoder.encode("Không tìm thấy tài khoản",
+                                        StandardCharsets.UTF_8)
+                );
+            }
+
+            var user = optionalUser.get();
+
+            // 4. Kiểm tra đã active chưa
+            if (user.isActive()) {
+                return new RedirectView(
+                        "http://localhost:3000/verify-result?status=already&message=" +
+                                URLEncoder.encode("Tài khoản đã được kích hoạt trước đó",
+                                        StandardCharsets.UTF_8)
+                );
+            }
+
+            // 5. Xóa các user inactive cùng email (dọn duplicate)
+            userRepository.deleteByEmailAndIsActive(email, false);
+
+            // 6. Active user
+            user.setActive(true);
+            userRepository.save(user);
+
+            // 7. Xóa verification code
+            emailVerificationService.removeVerificationCode(email);
+
+            // 8. Redirect về FE với trạng thái success
+            return new RedirectView(
+                    "http://localhost:3000/verify-result?status=success&message=" +
+                            URLEncoder.encode("Xác thực email thành công!",
+                                    StandardCharsets.UTF_8)
+            );
+
+        } catch (Exception e) {
+            // Bắt mọi lỗi khác
+            return new RedirectView(
+                    "http://localhost:3000/verify-result?status=error&message=" +
+                            URLEncoder.encode("Đã xảy ra lỗi: " + e.getMessage(),
+                                    StandardCharsets.UTF_8)
+            );
         }
-
-        if (!storedCode.equals(code)) {
-            BadRequestError error = new BadRequestError("Mã xác thực không chính xác, vui lòng thử lại.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        }
-
-        var optionalUser = userServiceImpl.findByEmail(email);
-        if (optionalUser.isEmpty()) {
-            BadRequestError error = new BadRequestError("Không tìm thấy user với email: " + email);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-
-        var user = optionalUser.get();
-        if (user.isActive()) {
-            SuccessResponse response = new SuccessResponse("Tài khoản này đã được kích hoạt trước đó.",
-                    HttpStatus.OK.value(), null, LocalDateTime.now());
-            return ResponseEntity.ok(response);
-        }
-
-        // AUTO-CLEAN: XÓA TẤT CẢ USER INACTIVE CÙNG EMAIL (dọn duplicate)
-        userRepository.deleteByEmailAndIsActive(email, false);
-
-        // UPDATE USER CŨ - KHÔNG TẠO MỚI
-        user.setActive(true);
-        userRepository.save(user);
-
-        emailVerificationService.removeVerificationCode(email);
-
-        SuccessResponse successResponse = new SuccessResponse("Xác thực email thành công, tài khoản đã được kích hoạt!",
-                HttpStatus.OK.value(), null, LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
     }
 
     @PostMapping("/forgot-password")
