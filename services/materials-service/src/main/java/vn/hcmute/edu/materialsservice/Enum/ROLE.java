@@ -1,7 +1,7 @@
-package vn.hcmute.edu.materialsservice.Enum;
+// package vn.hcmute.edu.materialsservice.Enum;
 
-public enum ROLE {
-    USER,
-    SUPPORTER,
-    ADMIN
-}
+// public enum ROLE {
+//     USER,
+//     SUPPORTER,
+//     ADMIN
+// }

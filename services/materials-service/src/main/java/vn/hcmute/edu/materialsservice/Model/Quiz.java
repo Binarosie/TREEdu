@@ -1,6 +1,5 @@
 package vn.hcmute.edu.materialsservice.Model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,4 +26,6 @@ public class Quiz {
     private Integer questionCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean deleted = false; // Soft delete flag
+    private LocalDateTime deletedAt;
 }

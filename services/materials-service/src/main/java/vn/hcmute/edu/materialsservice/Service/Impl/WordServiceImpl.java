@@ -40,13 +40,14 @@ public class WordServiceImpl implements WordService {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                        a.getAuthority().equals("ROLE_SUPPORTER"));
 
         // ================= RULE: CHỈ OWNER MỚI ADD WORD =================
-        // ADMIN có thể add vào bất kỳ flashcard nào
+        // ADMIN/SUPPORTER có thể add vào bất kỳ flashcard nào
         // User chỉ có thể add vào flashcard BY_MEMBER của chính họ
-        if (!isAdmin) {
+        if (!isAdminOrSupporter) {
             if (flashcard.getType() == FlashcardType.SYSTEM) {
                 throw new AccessDeniedException(
                         "Bạn không có quyền thêm từ vào flashcard hệ thống");
@@ -83,11 +84,12 @@ public class WordServiceImpl implements WordService {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                        a.getAuthority().equals("ROLE_SUPPORTER"));
 
         // ================= RULE: CHỈ OWNER MỚI UPDATE WORD =================
-        if (!isAdmin) {
+        if (!isAdminOrSupporter) {
             if (flashcard.getType() == FlashcardType.SYSTEM) {
                 throw new AccessDeniedException(
                         "Bạn không có quyền cập nhật từ trong flashcard hệ thống");
@@ -126,11 +128,12 @@ public class WordServiceImpl implements WordService {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                        a.getAuthority().equals("ROLE_SUPPORTER"));
 
         // ================= RULE: CHỈ OWNER MỚI DELETE WORD =================
-        if (!isAdmin) {
+        if (!isAdminOrSupporter) {
             if (flashcard.getType() == FlashcardType.SYSTEM) {
                 throw new AccessDeniedException(
                         "Bạn không có quyền xóa từ trong flashcard hệ thống");

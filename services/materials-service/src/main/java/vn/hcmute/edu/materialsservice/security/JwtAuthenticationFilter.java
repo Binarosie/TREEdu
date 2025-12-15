@@ -21,7 +21,6 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         return "OPTIONS".equalsIgnoreCase(request.getMethod());
@@ -32,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -114,4 +112,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/verify-email-link",
             "/api/auth/request-reset-password",
             "/api/auth/reset-password");
+    // Không include /api/quiz - để SecurityConfig permitAll xử lý
 }

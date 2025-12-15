@@ -36,8 +36,8 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
-                        .cors(Customizer.withDefaults())
-                        .csrf(csrf -> csrf.disable())
+                                .cors(Customizer.withDefaults())
+                                .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
@@ -56,6 +56,9 @@ public class SecurityConfig {
                                                                 "/api/flashcards/*/details",
                                                                 "/api/flashcards/level/*",
                                                                 "/api/flashcards/topic/*")
+                                                .permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/quiz") // Guest xem danh sách
+                                                                                              // quiz
                                                 .permitAll()
                                                 .requestMatchers(
                                                                 "/assets/**",
