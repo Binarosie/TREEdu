@@ -1,6 +1,6 @@
 package vn.hcmute.edu.materialsservice.Model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +19,6 @@ public class Answer {
 
     private String content;
 
+    @JsonIgnore // Ẩn isCorrect khi serialize JSON để không lộ đáp án
     private Boolean isCorrect;
 }

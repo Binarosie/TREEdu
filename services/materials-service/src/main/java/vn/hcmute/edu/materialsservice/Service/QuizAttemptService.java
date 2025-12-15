@@ -5,7 +5,22 @@ import vn.hcmute.edu.materialsservice.Dto.request.SubmitQuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.QuizAttemptResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.StartQuizResponse;
 
+import java.util.List;
+
 public interface QuizAttemptService {
-    StartQuizResponse startQuiz(String quizId);
-    QuizAttemptResponse submitQuiz(String quizId, SubmitQuizRequest request);
+
+    // Bắt đầu làm bài quiz (cần userId để track)
+    StartQuizResponse startQuiz(String quizId, String userId);
+
+    // Nộp bài quiz (cần userId để track)
+    QuizAttemptResponse submitQuiz(String quizId, SubmitQuizRequest request, String userId);
+
+    // Lấy lịch sử làm bài của user
+    List<QuizAttemptResponse> getUserAttemptHistory(String userId);
+
+    // Lấy lịch sử làm bài của user cho 1 quiz cụ thể
+    List<QuizAttemptResponse> getUserAttemptsByQuiz(String quizId, String userId);
+
+    // Xem chi tiết 1 lần làm bài
+    QuizAttemptResponse getAttemptDetail(String attemptId, String userId);
 }

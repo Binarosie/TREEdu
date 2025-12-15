@@ -20,9 +20,7 @@ public class QuizAttempt {
     @Id
     private String id;
 
-    // Bỏ userId, dùng tạm anonymous
-    private String sessionId; // Dùng UUID random từ FE hoặc backend tạo
-
+    private String userId; // ID của member làm bài
     private String quizId;
     private LocalDateTime startedAt;
     private LocalDateTime submittedAt;

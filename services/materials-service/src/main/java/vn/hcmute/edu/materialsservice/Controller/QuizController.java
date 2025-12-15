@@ -27,9 +27,9 @@ import java.util.Map;
  * QUIZ CONTROLLER - Với phân quyền rõ ràng
  *
  * PHÂN QUYỀN:
- * - USER: Xem quiz (không có đáp án), làm bài, submit
- * - SUPPORTER: Tất cả quyền của USER + Tạo, Sửa, Xóa quiz + Xem đáp án đúng
- * - ADMIN: Full quyền
+ * - ROLE_MEMBER: Xem quiz (không có đáp án), làm bài, submit, xem lịch sử
+ * - ROLE_SUPPORTER: Tất cả quyền của MEMBER + Tạo, Sửa, Xóa quiz + Xem đáp án đúng
+ * - ROLE_ADMIN: Full quyền
  */
 @RestController
 @RequestMapping("/api/quiz")
@@ -37,296 +37,378 @@ import java.util.Map;
 @Slf4j
 public class QuizController {
 
-    private final QuizService quizService;
-    private final QuizAttemptService quizAttemptService;
+        private final QuizService quizService;
+        private final QuizAttemptService quizAttemptService;
 
-    // ==================== USER + SUPPORTER + ADMIN ====================
+        // ==================== ROLE_MEMBER + ROLE_SUPPORTER + ROLE_ADMIN ====================
 
-    /**
-     * XEM DANH SÁCH QUIZ (Có phân trang)
-     *
-     * Response: QuizResponse (KHÔNG có isCorrect)
-     */
-    @GetMapping
-    //@PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<Page<QuizResponse>>> getAllQuizzes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
+        /**
+         * XEM DANH SÁCH QUIZ (Có phân trang)
+         *
+         * Response: QuizResponse (KHÔNG có isCorrect)
+         * PUBLIC API - Guest có thể truy cập
+         */
+        @GetMapping
+        public ResponseEntity<ApiResponse<Page<QuizResponse>>> getAllQuizzes(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size,
+                        @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
 
-        log.info("REST request to get all quizzes - page: {}, size: {}", page, size);
+                log.info("REST request to get all quizzes - page: {}, size: {}", page, size);
 
-        Sort.Direction direction = sort.length > 1 && sort[1].equalsIgnoreCase("asc")
-                ? Sort.Direction.ASC
-                : Sort.Direction.DESC;
-        Sort sortBy = Sort.by(direction, sort[0]);
+                Sort.Direction direction = sort.length > 1 && sort[1].equalsIgnoreCase("asc")
+                                ? Sort.Direction.ASC
+                                : Sort.Direction.DESC;
+                Sort sortBy = Sort.by(direction, sort[0]);
 
-        Pageable pageable = PageRequest.of(page, size, sortBy);
-        Page<QuizResponse> response = quizService.getAllQuizzes(pageable);
+                Pageable pageable = PageRequest.of(page, size, sortBy);
+                Page<QuizResponse> response = quizService.getAllQuizzes(pageable);
 
-        return ResponseEntity.ok(ApiResponse.<Page<QuizResponse>>builder()
-                .success(true)
-                .message("Quizzes retrieved successfully")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<Page<QuizResponse>>builder()
+                                .success(true)
+                                .message("Quizzes retrieved successfully")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * XEM CHI TIẾT QUIZ
-     *
-     * Response: QuizResponse (KHÔNG có isCorrect)
-     */
-    @GetMapping("/{id}")
-    //@PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
-            @PathVariable String id) {
+        /**
+         * XEM CHI TIẾT QUIZ
+         *
+         * Response: QuizResponse (KHÔNG có isCorrect)
+         */
+        @GetMapping("/{id}")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
+                        @PathVariable String id) {
 
-        log.info("REST request to get quiz by ID: {}", id);
+                log.info("REST request to get quiz by ID: {}", id);
 
-        QuizResponse response = quizService.getQuizById(id);
+                QuizResponse response = quizService.getQuizById(id);
 
-        return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
-                .success(true)
-                .message("Quiz retrieved successfully")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
+                                .success(true)
+                                .message("Quiz retrieved successfully")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * TÌM QUIZ THEO TOPIC
-     */
-    @GetMapping("/topic/{topic}")
-   // @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByTopic(
-            @PathVariable String topic) {
+        /**
+         * TÌM QUIZ THEO TOPIC
+         */
+        @GetMapping("/topic/{topic}")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByTopic(
+                        @PathVariable String topic) {
 
-        log.info("REST request to get quizzes by topic: {}", topic);
+                log.info("REST request to get quizzes by topic: {}", topic);
 
-        List<QuizResponse> response = quizService.getQuizzesByTopic(topic);
+                List<QuizResponse> response = quizService.getQuizzesByTopic(topic);
 
-        return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
-                .success(true)
-                .message("Quizzes retrieved successfully")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
+                                .success(true)
+                                .message("Quizzes retrieved successfully")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * TÌM QUIZ THEO LEVEL
-     */
-    @GetMapping("/level/{level}")
-   // @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByLevel(
-            @PathVariable Integer level) {
+        /**
+         * TÌM QUIZ THEO LEVEL
+         */
+        @GetMapping("/level/{level}")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByLevel(
+                        @PathVariable Integer level) {
 
-        log.info("REST request to get quizzes by level: {}", level);
+                log.info("REST request to get quizzes by level: {}", level);
 
-        List<QuizResponse> response = quizService.getQuizzesByLevel(level);
+                List<QuizResponse> response = quizService.getQuizzesByLevel(level);
 
-        return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
-                .success(true)
-                .message("Quizzes retrieved successfully")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
+                                .success(true)
+                                .message("Quizzes retrieved successfully")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * TÌM KIẾM QUIZ
-     */
-    @GetMapping("/search")
-  //  @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
-            @RequestParam String topic) {
+        /**
+         * TÌM KIẾM QUIZ
+         */
+        @GetMapping("/search")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
+                        @RequestParam String topic) {
 
-        log.info("REST request to search quizzes by topic: {}", topic);
+                log.info("REST request to search quizzes by topic: {}", topic);
 
-        List<QuizResponse> response = quizService.searchQuizzesByTopic(topic);
+                List<QuizResponse> response = quizService.searchQuizzesByTopic(topic);
 
-        return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
-                .success(true)
-                .message("Search completed successfully")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
+                                .success(true)
+                                .message("Search completed successfully")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * BẮT ĐẦU LÀM BÀI QUIZ
-     *
-     * QUAN TRỌNG: Cần track user nào đang làm bài
-     */
-    @PostMapping("/{quizId}/start")
-  //  @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<StartQuizResponse>> startQuiz(
-            @PathVariable String quizId,
-            Authentication authentication) { // ← Thêm để biết user nào
+        /**
+         * BẮT ĐẦU LÀM BÀI QUIZ
+         *
+         * QUAN TRỌNG: Cần track user nào đang làm bài
+         */
+        @PostMapping("/{quizId}/start")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<StartQuizResponse>> startQuiz(
+                        @PathVariable String quizId,
+                        Authentication authentication) {
 
-        String userEmail = authentication.getName();
-        log.info("User {} started quiz {}", userEmail, quizId);
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
+                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                String userId = userDetails.getUser().getId().toString();
+                
+                log.info("User {} started quiz {}", userId, quizId);
 
-        StartQuizResponse response = quizAttemptService.startQuiz(quizId);
+                StartQuizResponse response = quizAttemptService.startQuiz(quizId, userId);
 
-        return ResponseEntity.ok(ApiResponse.<StartQuizResponse>builder()
-                .success(true)
-                .message("Bắt đầu làm bài thành công!")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<StartQuizResponse>builder()
+                                .success(true)
+                                .message("Bắt đầu làm bài thành công!")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * NỘP BÀI QUIZ
-     *
-     * QUAN TRỌNG: Cần track user nào đang submit
-     */
-    @PostMapping("/{quizId}/submit")
-  //  @PreAuthorize("hasAnyRole('USER', 'SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<QuizAttemptResponse>> submitQuiz(
-            @PathVariable String quizId,
-            @RequestBody SubmitQuizRequest request,
-            Authentication authentication) { // ← Thêm để biết user nào
+        /**
+         * NỘP BÀI QUIZ
+         *
+         * QUAN TRỌNG: Cần track user nào đang submit
+         */
+        @PostMapping("/{quizId}/submit")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<QuizAttemptResponse>> submitQuiz(
+                        @PathVariable String quizId,
+                        @RequestBody SubmitQuizRequest request,
+                        Authentication authentication) {
 
-        String userEmail = authentication.getName();
-        log.info("User {} submitted quiz {}", userEmail, quizId);
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
+                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                String userId = userDetails.getUser().getId().toString();
+                
+                log.info("User {} submitted quiz {}", userId, quizId);
 
-        QuizAttemptResponse response = quizAttemptService.submitQuiz(quizId, request);
+                QuizAttemptResponse response = quizAttemptService.submitQuiz(quizId, request, userId);
 
-        return ResponseEntity.ok(ApiResponse.<QuizAttemptResponse>builder()
-                .success(true)
-                .message("Nộp bài thành công!")
-                .data(response)
-                .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<QuizAttemptResponse>builder()
+                                .success(true)
+                                .message("Nộp bài thành công!")
+                                .data(response)
+                                .build());
+        }
 
-    // ==================== SUPPORTER + ADMIN ONLY ====================
+        /**
+         * XEM LỊCH Sử LÀM BÀI CỦA USER
+         * 
+         * Lấy tất cả các lần làm quiz của user hiện tại
+         */
+        @GetMapping("/my-attempts")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<List<QuizAttemptResponse>>> getMyAttempts(
+                        Authentication authentication) {
 
-    /**
-     * TẠO QUIZ MỚI
-     *
-     * Chỉ SUPPORTER và ADMIN
-     */
-    @PostMapping
-   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
-            @Valid @RequestBody QuizRequest requestDTO) {
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
+                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                String userId = userDetails.getUser().getId().toString();
 
-        log.info("REST request to create quiz: {}", requestDTO.getTitle());
+                log.info("User {} getting attempt history", userId);
 
-        QuizResponse response = quizService.createQuiz(requestDTO);
+                List<QuizAttemptResponse> response = quizAttemptService.getUserAttemptHistory(userId);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.<QuizResponse>builder()
-                        .success(true)
-                        .message("Quiz created successfully")
-                        .data(response)
-                        .build());
-    }
+                return ResponseEntity.ok(ApiResponse.<List<QuizAttemptResponse>>builder()
+                                .success(true)
+                                .message("Lịch sử làm bài của bạn")
+                                .data(response)
+                                .build());
+        }
 
-    /**
-     * CẬP NHẬT QUIZ
-     *
-     * Chỉ SUPPORTER và ADMIN
-     */
-    @PutMapping("/{id}")
-    //@PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<QuizResponse>> updateQuiz(
-            @PathVariable String id,
-            @Valid @RequestBody QuizRequest requestDTO) {
+        /**
+         * XEM LỊCH Sử LÀM BÀI CHO 1 QUIZ CỤ THỂ
+         * 
+         * Lấy tất cả các lần user làm một quiz cụ thể
+         */
+        @GetMapping("/{quizId}/my-attempts")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<List<QuizAttemptResponse>>> getMyAttemptsByQuiz(
+                        @PathVariable String quizId,
+                        Authentication authentication) {
 
-        log.info("REST request to update quiz with ID: {}", id);
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
+                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                String userId = userDetails.getUser().getId().toString();
 
-        QuizResponse response = quizService.updateQuiz(id, requestDTO);
+                log.info("User {} getting attempts for quiz {}", userId, quizId);
 
-        return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
-                .success(true)
-                .message("Quiz updated successfully")
-                .data(response)
-                .build());
-    }
+                List<QuizAttemptResponse> response = quizAttemptService.getUserAttemptsByQuiz(quizId, userId);
 
-    /**
-     * XÓA QUIZ
-     *
-     * Chỉ SUPPORTER và ADMIN
-     */
-    @DeleteMapping("/{id}")
-   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteQuiz(@PathVariable String id) {
+                return ResponseEntity.ok(ApiResponse.<List<QuizAttemptResponse>>builder()
+                                .success(true)
+                                .message("Lịch sử làm bài quiz này")
+                                .data(response)
+                                .build());
+        }
 
-        log.info("REST request to delete quiz with ID: {}", id);
+        /**
+         * XEM CHI TIẾT 1 LẦN LÀM BÀI
+         * 
+         * Xem lại kết quả, đáp án của một lần làm bài cũ
+         */
+        @GetMapping("/attempts/{attemptId}")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<QuizAttemptResponse>> getAttemptDetail(
+                        @PathVariable String attemptId,
+                        Authentication authentication) {
 
-        quizService.deleteQuiz(id);
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
+                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                String userId = userDetails.getUser().getId().toString();
 
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true)
-                .message("Quiz deleted successfully")
-                .build());
-    }
+                log.info("User {} viewing attempt {}", userId, attemptId);
 
-    /**
-     * LẤY QUIZ ĐỂ EDIT
-     *
-     * Response: QuizEditResponse (CÓ isCorrect)
-     * Chỉ SUPPORTER và ADMIN
-     *
-     * ĐÂY LÀ ENDPOINT QUAN TRỌNG:
-     * - USER không được truy cập (sẽ thấy đáp án đúng)
-     * - Chỉ SUPPORTER review quiz mới dùng
-     */
-    @GetMapping("/edit/{id}")
-   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<QuizEditResponse>> getQuizForEdit(
-            @PathVariable String id) {
+                QuizAttemptResponse response = quizAttemptService.getAttemptDetail(attemptId, userId);
 
-        log.info("REST request to get quiz for editing by ID: {}", id);
+                return ResponseEntity.ok(ApiResponse.<QuizAttemptResponse>builder()
+                                .success(true)
+                                .message("Chi tiết lần làm bài")
+                                .data(response)
+                                .build());
+        }
 
-        QuizEditResponse response = quizService.getQuizForEdit(id);
+        // ==================== ROLE_SUPPORTER + ROLE_ADMIN ONLY ====================
 
-        return ResponseEntity.ok(ApiResponse.<QuizEditResponse>builder()
-                .success(true)
-                .message("Quiz retrieved for editing")
-                .data(response)
-                .build());
-    }
+        /**
+         * TẠO QUIZ MỚI
+         *
+         * Chỉ SUPPORTER và ADMIN
+         */
+        @PostMapping
+        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
+                        @Valid @RequestBody QuizRequest requestDTO) {
 
-    /**
-     * TẠO QUIZ TỪ FILE (Upload)
-     *
-     * Chỉ SUPPORTER và ADMIN
-     */
-    @PostMapping("/generate-from-file")
-   // @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
-            @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
+                log.info("REST request to create quiz: {}", requestDTO.getTitle());
 
-        log.info("REST request to generate quiz from file");
+                QuizResponse response = quizService.createQuiz(requestDTO);
 
-        QuizResponse quiz = quizService.generateQuizFromFile(request);
+                return ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .body(ApiResponse.<QuizResponse>builder()
+                                                .success(true)
+                                                .message("Quiz created successfully")
+                                                .data(response)
+                                                .build());
+        }
 
-        return ResponseEntity.ok(ApiResponse.success(quiz));
-    }
+        /**
+         * CẬP NHẬT QUIZ
+         *
+         * Chỉ SUPPORTER và ADMIN
+         */
+        @PutMapping("/{id}")
+        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        public ResponseEntity<ApiResponse<QuizResponse>> updateQuiz(
+                        @PathVariable String id,
+                        @Valid @RequestBody QuizRequest requestDTO) {
 
-    // ==================== ADMIN ONLY ====================
+                log.info("REST request to update quiz with ID: {}", id);
 
-    /**
-     * THỐNG KÊ QUIZ (nếu cần)
-     *
-     * Chỉ ADMIN
-     */
-    @GetMapping("/admin/statistics")
-   // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Object>> getQuizStatistics() {
-        log.info("Admin is getting quiz statistics");
+                QuizResponse response = quizService.updateQuiz(id, requestDTO);
 
-        // TODO: Implement statistics
-        Object stats = Map.of(
-                "totalQuizzes", quizService.getAllQuizzes(Pageable.unpaged()).getTotalElements(),
-                "message", "Statistics endpoint - to be implemented"
-        );
+                return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
+                                .success(true)
+                                .message("Quiz updated successfully")
+                                .data(response)
+                                .build());
+        }
 
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .message("Statistics retrieved successfully")
-                .data(stats)
-                .build());
-    }
+        /**
+         * XÓA QUIZ
+         *
+         * Chỉ SUPPORTER và ADMIN
+         */
+        @DeleteMapping("/{id}")
+        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        public ResponseEntity<ApiResponse<Void>> deleteQuiz(@PathVariable String id) {
+
+                log.info("REST request to delete quiz with ID: {}", id);
+
+                quizService.deleteQuiz(id);
+
+                return ResponseEntity.ok(ApiResponse.<Void>builder()
+                                .success(true)
+                                .message("Quiz deleted successfully")
+                                .build());
+        }
+
+        /**
+         * LẤY QUIZ ĐỂ EDIT
+         *
+         * Response: QuizEditResponse (CÓ isCorrect)
+         * Chỉ SUPPORTER và ADMIN
+         *
+         * ĐÂY LÀ ENDPOINT QUAN TRỌNG:
+         * - USER không được truy cập (sẽ thấy đáp án đúng)
+         * - Chỉ SUPPORTER review quiz mới dùng
+         */
+        @GetMapping("/edit/{id}")
+        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        public ResponseEntity<ApiResponse<QuizEditResponse>> getQuizForEdit(
+                        @PathVariable String id) {
+
+                log.info("REST request to get quiz for editing by ID: {}", id);
+
+                QuizEditResponse response = quizService.getQuizForEdit(id);
+
+                return ResponseEntity.ok(ApiResponse.<QuizEditResponse>builder()
+                                .success(true)
+                                .message("Quiz retrieved for editing")
+                                .data(response)
+                                .build());
+        }
+
+        /**
+         * TẠO QUIZ TỪ FILE (Upload)
+         *
+         * Chỉ SUPPORTER và ADMIN
+         */
+        @PostMapping("/generate-from-file")
+        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
+                        @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
+
+                log.info("REST request to generate quiz from file");
+
+                QuizResponse quiz = quizService.generateQuizFromFile(request);
+
+                return ResponseEntity.ok(ApiResponse.success(quiz));
+        }
+
+        // ==================== ADMIN ONLY ====================
+
+        /**
+         * THỐNG KÊ QUIZ (nếu cần)
+         *
+         * Chỉ ADMIN
+         */
+        @GetMapping("/admin/statistics")
+        @PreAuthorize("hasRole('ADMIN')")
+        public ResponseEntity<ApiResponse<Object>> getQuizStatistics() {
+                log.info("Admin is getting quiz statistics");
+
+                // TODO: Implement statistics
+                Object stats = Map.of(
+                                "totalQuizzes", quizService.getAllQuizzes(Pageable.unpaged()).getTotalElements(),
+                                "message", "Statistics endpoint - to be implemented");
+
+                return ResponseEntity.ok(ApiResponse.builder()
+                                .success(true)
+                                .message("Statistics retrieved successfully")
+                                .data(stats)
+                                .build());
+        }
 }
