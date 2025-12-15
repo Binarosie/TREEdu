@@ -24,7 +24,7 @@ public class UserDetailDTO {
 
     public static UserDetailDTO mapTo(User user) {
         UserDetailDTO dto = new UserDetailDTO();
-        dto.setId(user.getUserId().toString());
+        dto.setId(user.getId().toString());
         dto.setEmail(user.getEmail());
         dto.setName(user.getFullName());
         dto.setStatus(user.isActive() ? "Active" : "Inactive");

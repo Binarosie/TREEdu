@@ -95,7 +95,7 @@ public class UserInfoAPIController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping
+    @GetMapping({"", "/"})
     public ResponseEntity<DataTableResponse<UserInfoDTO>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -105,7 +105,7 @@ public class UserInfoAPIController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "modifiedOn,desc") String[] sort
     ) {
-
+        System.out.println(">>> GET /api/users CALLED");
         try {
             // ===== 1. SORT =====
             Sort.Direction direction = Sort.Direction.DESC;
@@ -130,7 +130,7 @@ public class UserInfoAPIController {
             List<UserInfoDTO> userInfoList = usersPage.getContent().stream()
                     .map(user -> {
                         UserInfoDTO dto = new UserInfoDTO();
-                        dto.setId(user.getUserId().toString());
+                        dto.setId(user.getId().toString());
                         dto.setEmail(user.getEmail());
                         dto.setName(user.getFullName());
 
@@ -177,7 +177,7 @@ public class UserInfoAPIController {
 
 
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    @PutMapping("/updateMyProfile")
+    @PutMapping("/update-my-profile/{id}")
     public ResponseEntity<SuccessResponse> updateMyProfile(@PathVariable UUID id, @RequestBody UpdateProfileRequest request) {
         User user = userService.updateMyProfile(id, request);
         SuccessResponse response = new SuccessResponse("User updated successfully", HttpStatus.OK.value(), user, LocalDateTime.now());
@@ -204,7 +204,7 @@ public class UserInfoAPIController {
         UUID userId = getTrueUserId(UUID.fromString(id), authentication);
 
         userService.activateUser(userId);
-        SuccessResponse response = new SuccessResponse("User deactivated successfully", HttpStatus.OK.value(), null, LocalDateTime.now());
+        SuccessResponse response = new SuccessResponse("User activated successfully", HttpStatus.OK.value(), null, LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
@@ -219,7 +219,6 @@ public class UserInfoAPIController {
         SuccessResponse response = new SuccessResponse("User statistics retrieved successfully", HttpStatus.OK.value(), stats, LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
-
 
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
@@ -240,7 +239,7 @@ public class UserInfoAPIController {
         var user = currentUserDetails.getUser();
 
         if(id == null || !(user instanceof Admin)) {
-            return user.getUserId();
+            return user.getId();
         } else {
             return id;
         }

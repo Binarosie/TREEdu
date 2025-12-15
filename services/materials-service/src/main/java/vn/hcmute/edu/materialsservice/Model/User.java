@@ -20,7 +20,7 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User implements Serializable {
     @Id
-    private UUID userId;
+    private UUID id;
 
     private String fullName;
 
@@ -34,8 +34,8 @@ public abstract class User implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        if (this.userId == null) {
-            this.userId = UuidCreator.getTimeOrdered();
+        if (this.id == null) {
+            id = UUID.randomUUID();
         }
         if (this.createdOn == null) {
             this.createdOn = LocalDateTime.now();

@@ -11,6 +11,7 @@ import vn.hcmute.edu.materialsservice.Model.User;
 import vn.hcmute.edu.materialsservice.Repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class UserSeeder implements CommandLineRunner {
 
         // ===== ADMIN =====
         Admin admin1 = Admin.builder()
+                .id(UUID.randomUUID())
                 .fullName("Admin")
                 .email("admin@example.com")
                 .password(passwordEncoder.encode("password123"))
@@ -39,6 +41,7 @@ public class UserSeeder implements CommandLineRunner {
 
         // ===== MODERATOR =====
         Supporter moderator1 = Supporter.builder()
+                .id(UUID.randomUUID())
                 .fullName("Moderator 1")
                 .email("mod1@email.com")
                 .password(passwordEncoder.encode("password123"))
@@ -51,6 +54,7 @@ public class UserSeeder implements CommandLineRunner {
 
         // ===== MEMBER =====
         User member = new Member();
+        member.setId(UUID.randomUUID());
         member.setFullName("Alice Nguyen");
         member.setEmail("alice@gmail.com");
         member.setPassword(passwordEncoder.encode("password123"));
@@ -60,6 +64,7 @@ public class UserSeeder implements CommandLineRunner {
 
         // ===== MEMBER 2 =====
         User member2 = new Member();
+        member2.setId(UUID.randomUUID());
         member2.setFullName("Bob Tran");
         member2.setEmail("bob@gmail.com");
         member2.setPassword(passwordEncoder.encode("password123"));

@@ -149,7 +149,7 @@ public class UserServiceImpl implements iUserService {
 
     @Override
     public boolean existsByUserIdAndIsActive(UUID userId, boolean isActive) {
-        return userRepository.existsByUserIdAndIsActive(userId, isActive);
+        return userRepository.existsByIdAndIsActive(userId, isActive);
     }
 
     // Dùng lại CreateUserRequest để update

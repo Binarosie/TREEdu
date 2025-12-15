@@ -16,7 +16,7 @@ public class UserInfoDTO {
     private String status;
 
     public UserInfoDTO mapToUserInfo(User user) {
-        this.id = user.getUserId().toString();
+        this.id = user.getId().toString();
         this.email = user.getEmail();
         this.name = user.getFullName();
         this.role = user.getClass().getSimpleName();

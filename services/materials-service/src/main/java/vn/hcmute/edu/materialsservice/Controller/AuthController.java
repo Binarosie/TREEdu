@@ -175,7 +175,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
         }
 
-        // 🔥 AUTO-CLEAN: XÓA TẤT CẢ USER INACTIVE CÙNG EMAIL (dọn duplicate)
+        // AUTO-CLEAN: XÓA TẤT CẢ USER INACTIVE CÙNG EMAIL (dọn duplicate)
         userRepository.deleteByEmailAndIsActive(email, false);
 
         // UPDATE USER CŨ - KHÔNG TẠO MỚI
@@ -237,6 +237,9 @@ public class AuthController {
         }
         var user = optUser.get();
 
+        //  AUTO-CLEAN: XÓA TẤT CẢ USER TRÙNG EMAIL KHÁC (giữ lại user hiện tại)
+        userRepository.deleteByEmailAndIdNot(email, user.getId());
+
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
@@ -263,6 +266,9 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
 
+        // AUTO-CLEAN: XÓA TẤT CẢ USER TRÙNG EMAIL KHÁC (giữ lại user hiện tại)
+        userRepository.deleteByEmailAndIdNot(user.getEmail(), user.getId());
+
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
@@ -283,7 +289,7 @@ public class AuthController {
 
         // Chỉ trả về thông tin cần thiết
         UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setId(user.getUserId().toString());
+        userInfoDTO.setId(user.getId().toString());
         userInfoDTO.setEmail(user.getEmail());
         userInfoDTO.setName(user.getFullName());
         userInfoDTO.setRole(currentUserDetails.getAuthorities().iterator().next().getAuthority());

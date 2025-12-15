@@ -15,10 +15,13 @@ public interface UserRepository extends MongoRepository<User, UUID> {
     boolean existsByEmail(String email);
 
     // check user active
-    boolean existsByUserIdAndIsActive(UUID userId, boolean isActive);
+    boolean existsByIdAndIsActive(UUID userId, boolean isActive);
 
-    Optional<User> findByUserId(UUID userId);
+    Optional<User> findById(UUID userId);
 
     // 🔥 XÓA TẤT CẢ USER INACTIVE CÙNG EMAIL (auto-clean duplicates)
     void deleteByEmailAndIsActive(String email, boolean isActive);
+
+    // 🔥 XÓA TẤT CẢ USER KHÁC CÙNG EMAIL TRỪ USER HIỆN TẠI
+    void deleteByEmailAndIdNot(String email, UUID Id);
 }
