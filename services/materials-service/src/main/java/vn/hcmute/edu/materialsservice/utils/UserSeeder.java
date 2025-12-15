@@ -1,7 +1,8 @@
 package vn.hcmute.edu.materialsservice.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import vn.hcmute.edu.materialsservice.Model.Admin;
@@ -15,13 +16,13 @@ import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
-public class UserSeeder implements CommandLineRunner {
+@Slf4j
+public class UserSeeder {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public void run(String... args) {
+    public void seedUsers() {
 
         if (userRepository.count() > 0) {
             return;
@@ -50,7 +51,6 @@ public class UserSeeder implements CommandLineRunner {
                 .modifiedOn(LocalDateTime.of(2024, 3, 3, 11, 11))
                 .build();
         userRepository.save(moderator1);
-
 
         // ===== MEMBER =====
         User member = new Member();

@@ -16,6 +16,10 @@ public class FlashcardResponse {
     private String description;
     private Integer level;
     private String topic;
+    // PHÂN LOẠI
+    private String type; // SYSTEM | BY_MEMBER
+    // (optional) FE có thể dùng để check owner
+    private Boolean isOwner;
     private Integer wordCount;  // Số lượng từ
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
