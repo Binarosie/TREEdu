@@ -2,12 +2,15 @@ package vn.hcmute.edu.materialsservice.Service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.hcmute.edu.materialsservice.Dto.request.FlashcardRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.FlashcardResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.FlashcardWithWordsResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.WordResponse;
+import vn.hcmute.edu.materialsservice.Enum.FlashcardType;
 import vn.hcmute.edu.materialsservice.Mapper.FlashcardMapper;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
 import vn.hcmute.edu.materialsservice.Model.Flashcard;
@@ -18,6 +21,7 @@ import vn.hcmute.edu.materialsservice.Service.FlashcardService;
 import vn.hcmute.edu.materialsservice.exception.FlashcardAlreadyExistsException;
 import vn.hcmute.edu.materialsservice.exception.FlashcardNotFoundException;
 import vn.hcmute.edu.materialsservice.exception.InvalidFlashcardDataException;
+import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,20 +38,37 @@ public class FlashcardServiceImpl implements FlashcardService {
 
     @Override
     @Transactional
-    public FlashcardResponse createFlashcard(FlashcardRequest request) {
+    public FlashcardResponse createFlashcard(
+            FlashcardRequest request,
+            Authentication authentication) {
+
         if (flashcardRepository.countByTitleIgnoreCase(request.getTitle()) > 0) {
             throw new FlashcardAlreadyExistsException(request.getTitle());
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         Flashcard flashcard = flashcardMapper.toEntity(request);
         flashcard.setCreatedAt(LocalDateTime.now());
         flashcard.setUpdatedAt(LocalDateTime.now());
 
-        Flashcard savedFlashcard = flashcardRepository.save(flashcard);
+        // ================= LOGIC PHÂN LOẠI =================
+        boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                        a.getAuthority().equals("ROLE_SUPPORTER"));
 
-        log.info("Flashcard created successfully with ID: {}", savedFlashcard.getId());
+        if (isAdminOrSupporter) {
+            flashcard.setType(FlashcardType.SYSTEM);
+            flashcard.setCreatedBy(null);
+        } else {
+            flashcard.setType(FlashcardType.BY_MEMBER);
+            flashcard.setCreatedBy(userDetails.getUser().getId().toString());
+        }
+        // ===================================================
 
-        FlashcardResponse response = flashcardMapper.toResponse(savedFlashcard);
+        Flashcard saved = flashcardRepository.save(flashcard);
+
+        FlashcardResponse response = flashcardMapper.toResponse(saved);
         response.setWordCount(0);
 
         return response;
@@ -55,9 +76,33 @@ public class FlashcardServiceImpl implements FlashcardService {
 
     @Override
     @Transactional
-    public FlashcardResponse updateFlashcard(String id, FlashcardRequest request) {
+    public FlashcardResponse updateFlashcard(String id, FlashcardRequest request, Authentication authentication) {
         Flashcard existingFlashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        String userId = userDetails.getUser().getId().toString();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isSupporter = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_SUPPORTER"));
+
+        // ================= RULE =================
+        if (existingFlashcard.getType() == FlashcardType.SYSTEM) {
+            if (!isAdmin && !isSupporter) {
+                throw new AccessDeniedException(
+                        "Bạn không có quyền cập nhật flashcard hệ thống");
+            }
+        }
+
+        if (existingFlashcard.getType() == FlashcardType.BY_MEMBER) {
+            if (!isAdmin && !userId.equals(existingFlashcard.getCreatedBy())) {
+                throw new AccessDeniedException(
+                        "Bạn chỉ có thể cập nhật flashcard do chính bạn tạo");
+            }
+        }
+        // ========================================
 
         List<Flashcard> flashcardsWithSameTitle = flashcardRepository
                 .findByTitleContainingIgnoreCase(request.getTitle());
@@ -88,28 +133,71 @@ public class FlashcardServiceImpl implements FlashcardService {
 
     @Override
     @Transactional
-    public void deleteFlashcard(String id) {
-        log.info("Deleting flashcard with ID: {}", id);
+    public void deleteFlashcard(String id, Authentication authentication) {
 
-        if (!flashcardRepository.existsById(id)) {
-            throw new FlashcardNotFoundException(id);
+        Flashcard flashcard = flashcardRepository.findById(id)
+                .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        String userId = userDetails.getUser().getId().toString();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isSupporter = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_SUPPORTER"));
+
+        // ================= RULE =================
+        if (flashcard.getType() == FlashcardType.SYSTEM) {
+            if (!isAdmin && !isSupporter) {
+                throw new AccessDeniedException(
+                        "Bạn không có quyền xóa flashcard hệ thống");
+            }
         }
 
-        // Xóa tất cả words của flashcard
+        if (flashcard.getType() == FlashcardType.BY_MEMBER) {
+            if (!isAdmin && !userId.equals(flashcard.getCreatedBy())) {
+                throw new AccessDeniedException(
+                        "Bạn chỉ có thể xóa flashcard do chính bạn tạo");
+            }
+        }
+        // ========================================
+
         wordRepository.deleteByFlashcardId(id);
-
-        // Xóa flashcard
         flashcardRepository.deleteById(id);
-
-        log.info("Flashcard and its words deleted successfully with ID: {}", id);
     }
 
     @Override
-    public FlashcardResponse getFlashcardById(String id) {
+    public FlashcardResponse getFlashcardById(String id, Authentication authentication) {
         log.info("Getting flashcard with ID: {}", id);
 
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        // ================= FILTER THEO ROLE =================
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                            a.getAuthority().equals("ROLE_SUPPORTER"));
+
+            // MEMBER chỉ xem SYSTEM hoặc flashcard của mình
+            if (!isAdminOrSupporter) {
+                String userId = userDetails.getUser().getId().toString();
+                if (flashcard.getType() == FlashcardType.BY_MEMBER &&
+                        !userId.equals(flashcard.getCreatedBy())) {
+                    throw new AccessDeniedException(
+                            "Bạn không có quyền xem flashcard này");
+                }
+            }
+        } else {
+            // GUEST chỉ xem SYSTEM flashcard
+            if (flashcard.getType() != FlashcardType.SYSTEM) {
+                throw new AccessDeniedException(
+                        "Bạn cần đăng nhập để xem flashcard này");
+            }
+        }
+        // ===================================================
 
         FlashcardResponse response = flashcardMapper.toResponse(flashcard);
         response.setWordCount((int) wordRepository.countByFlashcardId(id));
@@ -117,14 +205,39 @@ public class FlashcardServiceImpl implements FlashcardService {
         return response;
     }
 
-    // ✅ METHOD MỚI: Lấy flashcard kèm tất cả words
+    // METHOD MỚI: Lấy flashcard kèm tất cả words
     @Override
-    public FlashcardWithWordsResponse getFlashcardWithWords(String id) {
+    public FlashcardWithWordsResponse getFlashcardWithWords(String id, Authentication authentication) {
         log.info("Getting flashcard with words, ID: {}", id);
 
         // Lấy flashcard
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        // ================= FILTER THEO ROLE =================
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                            a.getAuthority().equals("ROLE_SUPPORTER"));
+
+            if (!isAdminOrSupporter) {
+                String userId = userDetails.getUser().getId().toString();
+                if (flashcard.getType() == FlashcardType.BY_MEMBER &&
+                        !userId.equals(flashcard.getCreatedBy())) {
+                    throw new AccessDeniedException(
+                            "Bạn không có quyền xem flashcard này");
+                }
+            }
+        } else {
+            // GUEST chỉ xem SYSTEM flashcard
+            if (flashcard.getType() != FlashcardType.SYSTEM) {
+                throw new AccessDeniedException(
+                        "Bạn cần đăng nhập để xem flashcard này");
+            }
+        }
+        // ===================================================
 
         // Lấy tất cả words của flashcard
         List<Word> words = wordRepository.findByFlashcardId(id);
@@ -147,8 +260,35 @@ public class FlashcardServiceImpl implements FlashcardService {
     }
 
     @Override
-    public List<FlashcardResponse> getAllFlashcard() {
+    public List<FlashcardResponse> getAllFlashcard(Authentication authentication) {
         List<Flashcard> flashcards = flashcardRepository.findAll();
+
+        // ================= FILTER THEO ROLE =================
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                            a.getAuthority().equals("ROLE_SUPPORTER"));
+
+            // MEMBER chỉ xem SYSTEM và flashcard của mình
+            if (!isAdminOrSupporter) {
+                String userId = userDetails.getUser().getId().toString();
+                flashcards = flashcards.stream()
+                        .filter(f -> f.getType() == FlashcardType.SYSTEM ||
+                                (f.getType() == FlashcardType.BY_MEMBER &&
+                                        userId.equals(f.getCreatedBy())))
+                        .toList();
+            }
+            // ADMIN/SUPPORTER xem tất cả (không filter)
+        } else {
+            // GUEST (chưa đăng nhập) chệ xem SYSTEM flashcard
+            flashcards = flashcards.stream()
+                    .filter(f -> f.getType() == FlashcardType.SYSTEM)
+                    .toList();
+        }
+        // ===================================================
+
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
         // Set wordCount cho mỗi flashcard
@@ -161,7 +301,7 @@ public class FlashcardServiceImpl implements FlashcardService {
     }
 
     @Override
-    public List<FlashcardResponse> getFlashcardsByTopic(String topic) {
+    public List<FlashcardResponse> getFlashcardsByTopic(String topic, Authentication authentication) {
         log.info("Getting flashcards by topic: {}", topic);
 
         if (topic == null || topic.trim().isEmpty()) {
@@ -169,6 +309,26 @@ public class FlashcardServiceImpl implements FlashcardService {
         }
 
         List<Flashcard> flashcards = flashcardRepository.findByTopicContainingIgnoreCase(topic);
+
+        // ================= FILTER THEO ROLE =================
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                            a.getAuthority().equals("ROLE_SUPPORTER"));
+
+            if (!isAdminOrSupporter) {
+                String userId = userDetails.getUser().getId().toString();
+                flashcards = flashcards.stream()
+                        .filter(f -> f.getType() == FlashcardType.SYSTEM ||
+                                (f.getType() == FlashcardType.BY_MEMBER &&
+                                        userId.equals(f.getCreatedBy())))
+                        .toList();
+            }
+        }
+        // ===================================================
+
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
         responses.forEach(response -> {
@@ -180,12 +340,32 @@ public class FlashcardServiceImpl implements FlashcardService {
     }
 
     @Override
-    public List<FlashcardResponse> getFlashcardsByLevel(Integer level) {
+    public List<FlashcardResponse> getFlashcardsByLevel(Integer level, Authentication authentication) {
         log.info("Getting flashcards by level: {}", level);
 
         validateLevel(level);
 
         List<Flashcard> flashcards = flashcardRepository.findByLevel(level);
+
+        // ================= FILTER THEO ROLE =================
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                            a.getAuthority().equals("ROLE_SUPPORTER"));
+
+            if (!isAdminOrSupporter) {
+                String userId = userDetails.getUser().getId().toString();
+                flashcards = flashcards.stream()
+                        .filter(f -> f.getType() == FlashcardType.SYSTEM ||
+                                (f.getType() == FlashcardType.BY_MEMBER &&
+                                        userId.equals(f.getCreatedBy())))
+                        .toList();
+            }
+        }
+        // ===================================================
+
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
         responses.forEach(response -> {
