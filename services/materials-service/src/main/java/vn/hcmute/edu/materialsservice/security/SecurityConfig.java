@@ -21,60 +21,67 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+        @Autowired
+        private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
+        @Autowired
+        private CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+        @Autowired
+        private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(
-                                        "/api/auth/**",
-                                        "/auth/**",
-                                        "/oauth2/authorization/google",
-                                        "/error"
-                                ).permitAll()
-                                .requestMatchers("/").permitAll()
-//                        .requestMatchers(
-//                                "/member/payment/vn-pay-callback").permitAll()
-                                .requestMatchers(
-                                        "/assets/**",
-                                        "/templates/**",
-                                        "/static/**",
-                                        "/favicon.ico",
-                                        "/css/**", "/js/**", "/images/**"
-                                ).permitAll()
-                                .requestMatchers("/api/users/newMember").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)
-                        .accessDeniedHandler(customAccessDeniedHandler))
-                .oauth2Login(login -> login
-                        .loginPage("/au/login")
-                        .successHandler((request, response, authentication)
-                                -> request.getRequestDispatcher("/auth/login/oauth2Google-submit").forward(request, response))
-                        .permitAll());
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http.csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(
+                                                                "/api/auth/**",
+                                                                "/auth/**",
+                                                                "/oauth2/authorization/google",
+                                                                "/error")
+                                                .permitAll()
+                                                .requestMatchers("/").permitAll()
+                                                .requestMatchers(
+                                                                "/api/flashcards",
+                                                                "/api/flashcards/*",
+                                                                "/api/flashcards/*/words",
+                                                                "/api/flashcards/*/details",
+                                                                "/api/flashcards/level/*",
+                                                                "/api/flashcards/topic/*")
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                "/assets/**",
+                                                                "/templates/**",
+                                                                "/static/**",
+                                                                "/favicon.ico",
+                                                                "/css/**", "/js/**", "/images/**")
+                                                .permitAll()
+                                                .requestMatchers("/api/users/newMember").permitAll()
+                                                .anyRequest().authenticated())
+                                .exceptionHandling(exception -> exception
+                                                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                                                .accessDeniedHandler(customAccessDeniedHandler))
+                                .oauth2Login(login -> login
+                                                .loginPage("/auth/login")
+                                                .successHandler((request, response, authentication) -> request
+                                                                .getRequestDispatcher("/auth/login/oauth2Google-submit")
+                                                                .forward(request, response))
+                                                .permitAll());
 
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+                http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                return http.build();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+                return authConfig.getAuthenticationManager();
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
 }

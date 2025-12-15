@@ -14,7 +14,6 @@ import vn.hcmute.edu.materialsservice.Dto.response.ErrorResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.ForbiddenError;
 import vn.hcmute.edu.materialsservice.Dto.response.UnauthorizedError;
 
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +29,7 @@ public class GlobalExceptionHandler {
             FlashcardNotFoundException ex) {
         ApiResponse<Object> response = ApiResponse.error(
                 HttpStatus.NOT_FOUND.value(),
-                ex.getMessage()
-        );
+                ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -43,8 +41,7 @@ public class GlobalExceptionHandler {
             FlashcardAlreadyExistsException ex) {
         ApiResponse<Object> response = ApiResponse.error(
                 HttpStatus.CONFLICT.value(),
-                ex.getMessage()
-        );
+                ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
@@ -56,8 +53,7 @@ public class GlobalExceptionHandler {
             InvalidFlashcardDataException ex) {
         ApiResponse<Object> response = ApiResponse.error(
                 HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage()
-        );
+                ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -91,8 +87,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception ex) {
         ApiResponse<Object> response = ApiResponse.error(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Đã xảy ra lỗi: " + ex.getMessage()
-        );
+                "Đã xảy ra lỗi: " + ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -104,17 +99,16 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex) {
         ApiResponse<Object> response = ApiResponse.error(
                 HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage()
-        );
+                ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    //    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-//        // Xử lý lỗi không lường trước, mặc định 500
-//        ErrorResponse error = new ErrorResponse("Internal Server Error", 500);
-//        return ResponseEntity.status(500).body(error);
-//    }
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
+    // // Xử lý lỗi không lường trước, mặc định 500
+    // ErrorResponse error = new ErrorResponse("Internal Server Error", 500);
+    // return ResponseEntity.status(500).body(error);
+    // }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
@@ -134,15 +128,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
-//        String message = ex.getBindingResult().getFieldErrors().stream()
-//                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-//                .findFirst()
-//                .orElse("Invalid request data");
-//        return ResponseEntity.badRequest().body(new BadRequestError(message));
-//    }
+    /**
+     * Xử lý ResourceNotFoundException
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(
+            ResourceNotFoundException ex) {
+        ApiResponse<Object> response = ApiResponse.error(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
+    // @ExceptionHandler(MethodArgumentNotValidException.class)
+    // public ResponseEntity<ErrorResponse>
+    // handleValidationErrors(MethodArgumentNotValidException ex) {
+    // String message = ex.getBindingResult().getFieldErrors().stream()
+    // .map(error -> error.getField() + ": " + error.getDefaultMessage())
+    // .findFirst()
+    // .orElse("Invalid request data");
+    // return ResponseEntity.badRequest().body(new BadRequestError(message));
+    // }
 
     @ExceptionHandler(BadRequestError.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestError ex) {
