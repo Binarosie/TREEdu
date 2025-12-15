@@ -1,5 +1,7 @@
 package vn.hcmute.edu.materialsservice.Controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +74,24 @@ public class FlashcardController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getAllFlashcards(
-            Authentication authentication) {
+            Authentication authentication,
+            HttpServletRequest request) {
+
+        System.out.println("=== DEBUG REQUEST ===");
+        System.out.println("URI: " + request.getRequestURI());
+        System.out.println("Authorization header: " + request.getHeader("Authorization"));
+
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                System.out.println("Cookie: " + c.getName() + "=" + c.getValue());
+            }
+        } else {
+            System.out.println("No cookies");
+        }
+
+        System.out.println("Authentication: " + authentication);
+        System.out.println("=====================");
+
         List<FlashcardResponse> responses = flashcardService.getAllFlashcard(authentication);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }

@@ -261,37 +261,62 @@ public class FlashcardServiceImpl implements FlashcardService {
 
     @Override
     public List<FlashcardResponse> getAllFlashcard(Authentication authentication) {
+
+        System.out.println("===== DEBUG GET ALL FLASHCARD =====");
+
         List<Flashcard> flashcards = flashcardRepository.findAll();
+        System.out.println("Total flashcards in DB: " + flashcards.size());
+
+        if (authentication != null) {
+            System.out.println("Authentication class: " + authentication.getClass().getName());
+            System.out.println("isAuthenticated: " + authentication.isAuthenticated());
+            System.out.println("Principal: " + authentication.getPrincipal());
+        } else {
+            System.out.println("Authentication is NULL (GUEST)");
+        }
 
         // ================= FILTER THEO ROLE =================
         if (authentication != null && authentication.isAuthenticated()) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
+
+            String userId = userDetails.getUser().getId().toString();
+            System.out.println(">>> LOGIN USER ID: " + userId);
+            System.out.println(">>> AUTHORITIES: " + userDetails.getAuthorities());
 
             boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
-                            a.getAuthority().equals("ROLE_SUPPORTER"));
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
+                            || a.getAuthority().equals("ROLE_SUPPORTER"));
 
-            // MEMBER chỉ xem SYSTEM và flashcard của mình
+            System.out.println("isAdminOrSupporter: " + isAdminOrSupporter);
+
             if (!isAdminOrSupporter) {
-                String userId = userDetails.getUser().getId().toString();
                 flashcards = flashcards.stream()
-                        .filter(f -> f.getType() == FlashcardType.SYSTEM ||
-                                (f.getType() == FlashcardType.BY_MEMBER &&
-                                        userId.equals(f.getCreatedBy())))
+                        .filter(f -> {
+                            System.out.println("Flashcard ID: " + f.getId()
+                                    + " | type=" + f.getType()
+                                    + " | createdBy=" + f.getCreatedBy());
+
+                            return f.getType() == FlashcardType.SYSTEM ||
+                                    (f.getType() == FlashcardType.BY_MEMBER &&
+                                            userId.equals(f.getCreatedBy()));
+                        })
                         .toList();
             }
-            // ADMIN/SUPPORTER xem tất cả (không filter)
         } else {
-            // GUEST (chưa đăng nhập) chệ xem SYSTEM flashcard
+            System.out.println(">>> GUEST MODE");
             flashcards = flashcards.stream()
                     .filter(f -> f.getType() == FlashcardType.SYSTEM)
                     .toList();
         }
         // ===================================================
 
+        System.out.println("Flashcards after filter: " + flashcards.size());
+        System.out.println("===================================");
+
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
-        // Set wordCount cho mỗi flashcard
         responses.forEach(response -> {
             long count = wordRepository.countByFlashcardId(response.getId());
             response.setWordCount((int) count);
@@ -299,6 +324,7 @@ public class FlashcardServiceImpl implements FlashcardService {
 
         return responses;
     }
+
 
     @Override
     public List<FlashcardResponse> getFlashcardsByTopic(String topic, Authentication authentication) {

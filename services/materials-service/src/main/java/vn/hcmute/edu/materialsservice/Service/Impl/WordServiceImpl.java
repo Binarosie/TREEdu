@@ -2,14 +2,19 @@ package vn.hcmute.edu.materialsservice.Service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.hcmute.edu.materialsservice.Dto.request.WordRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.WordResponse;
+import vn.hcmute.edu.materialsservice.Enum.FlashcardType;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
+import vn.hcmute.edu.materialsservice.Model.Flashcard;
 import vn.hcmute.edu.materialsservice.Model.Word;
 import vn.hcmute.edu.materialsservice.Repository.FlashcardRepository;
 import vn.hcmute.edu.materialsservice.Repository.WordRepository;
+import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 import vn.hcmute.edu.materialsservice.Service.WordService;
 import vn.hcmute.edu.materialsservice.exception.FlashcardNotFoundException;
 import vn.hcmute.edu.materialsservice.exception.WordNotFoundException;
@@ -28,11 +33,31 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional
-    public WordResponse addWord(String flashcardId, WordRequest request) {
+    public WordResponse addWord(String flashcardId, WordRequest request, Authentication authentication) {
         // Kiểm tra flashcard có tồn tại không
-        if (!flashcardRepository.existsById(flashcardId)) {
-            throw new FlashcardNotFoundException(flashcardId);
+        Flashcard flashcard = flashcardRepository.findById(flashcardId)
+                .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId().toString();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // ================= RULE: CHỈ OWNER MỚI ADD WORD =================
+        // ADMIN có thể add vào bất kỳ flashcard nào
+        // User chỉ có thể add vào flashcard BY_MEMBER của chính họ
+        if (!isAdmin) {
+            if (flashcard.getType() == FlashcardType.SYSTEM) {
+                throw new AccessDeniedException(
+                        "Bạn không có quyền thêm từ vào flashcard hệ thống");
+            }
+            if (flashcard.getType() == FlashcardType.BY_MEMBER &&
+                    !userId.equals(flashcard.getCreatedBy())) {
+                throw new AccessDeniedException(
+                        "Bạn chỉ có thể thêm từ vào flashcard do chính bạn tạo");
+            }
         }
+        // ================================================================
 
         Word word = wordMapper.toEntity(request);
         word.setFlashcardId(flashcardId);
@@ -48,9 +73,32 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional
-    public WordResponse updateWord(String id, WordRequest request) {
+    public WordResponse updateWord(String id, WordRequest request, Authentication authentication) {
         Word existingWord = wordRepository.findById(id)
                 .orElseThrow(() -> new WordNotFoundException(id));
+
+        // Lấy flashcard để check quyền
+        Flashcard flashcard = flashcardRepository.findById(existingWord.getFlashcardId())
+                .orElseThrow(() -> new FlashcardNotFoundException(existingWord.getFlashcardId()));
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId().toString();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // ================= RULE: CHỈ OWNER MỚI UPDATE WORD =================
+        if (!isAdmin) {
+            if (flashcard.getType() == FlashcardType.SYSTEM) {
+                throw new AccessDeniedException(
+                        "Bạn không có quyền cập nhật từ trong flashcard hệ thống");
+            }
+            if (flashcard.getType() == FlashcardType.BY_MEMBER &&
+                    !userId.equals(flashcard.getCreatedBy())) {
+                throw new AccessDeniedException(
+                        "Bạn chỉ có thể cập nhật từ trong flashcard do chính bạn tạo");
+            }
+        }
+        // ===================================================================
 
         existingWord.setNewWord(request.getNewWord());
         existingWord.setMeaning(request.getMeaning());
@@ -68,10 +116,32 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public void deleteWord(String id) {
-        if (!wordRepository.existsById(id)) {
-            throw new WordNotFoundException(id);
+    public void deleteWord(String id, Authentication authentication) {
+        Word existingWord = wordRepository.findById(id)
+                .orElseThrow(() -> new WordNotFoundException(id));
+
+        // Lấy flashcard để check quyền
+        Flashcard flashcard = flashcardRepository.findById(existingWord.getFlashcardId())
+                .orElseThrow(() -> new FlashcardNotFoundException(existingWord.getFlashcardId()));
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId().toString();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // ================= RULE: CHỈ OWNER MỚI DELETE WORD =================
+        if (!isAdmin) {
+            if (flashcard.getType() == FlashcardType.SYSTEM) {
+                throw new AccessDeniedException(
+                        "Bạn không có quyền xóa từ trong flashcard hệ thống");
+            }
+            if (flashcard.getType() == FlashcardType.BY_MEMBER &&
+                    !userId.equals(flashcard.getCreatedBy())) {
+                throw new AccessDeniedException(
+                        "Bạn chỉ có thể xóa từ trong flashcard do chính bạn tạo");
+            }
         }
+        // ===================================================================
 
         wordRepository.deleteById(id);
 
@@ -87,7 +157,66 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public List<WordResponse> getWordsByFlashcardId(String flashcardId) {
+    public List<WordResponse> getWordsByFlashcardId(String flashcardId, Authentication authentication) {
+        // Kiểm tra flashcard có tồn tại không
+        Flashcard flashcard = flashcardRepository.findById(flashcardId)
+                .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+
+        System.out.println("=== DEBUG GET WORDS BY FLASHCARD ===");
+        System.out.println("Flashcard ID: " + flashcardId);
+        System.out.println("Flashcard Type: " + flashcard.getType());
+        System.out.println("Flashcard CreatedBy: " + flashcard.getCreatedBy());
+        System.out.println("Authentication: " + authentication);
+        if (authentication != null) {
+            System.out.println("isAuthenticated: " + authentication.isAuthenticated());
+            System.out.println("Principal class: " + authentication.getPrincipal().getClass().getName());
+        }
+
+        // ================= FILTER THEO ROLE =================
+        // Check if user is truly authenticated (not anonymous)
+        boolean isRealUser = authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication.getPrincipal() instanceof String); // Anonymous user has "anonymousUser" string
+
+        if (isRealUser) {
+            try {
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+                System.out.println(">>> LOGGED IN USER: " + userDetails.getUsername());
+
+                boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                                a.getAuthority().equals("ROLE_SUPPORTER"));
+
+                // MEMBER chỉ xem words của SYSTEM hoặc flashcard của mình
+                if (!isAdminOrSupporter) {
+                    String userId = userDetails.getUser().getId().toString();
+                    if (flashcard.getType() == FlashcardType.BY_MEMBER &&
+                            !userId.equals(flashcard.getCreatedBy())) {
+                        throw new AccessDeniedException(
+                                "Bạn không có quyền xem words của flashcard này");
+                    }
+                }
+            } catch (ClassCastException e) {
+                System.out.println(">>> ClassCastException - treating as GUEST");
+                // If cast fails, treat as guest
+                if (flashcard.getType() != FlashcardType.SYSTEM) {
+                    throw new AccessDeniedException(
+                            "Bạn cần đăng nhập để xem words của flashcard này");
+                }
+            }
+        } else {
+            // GUEST chỉ xem words của SYSTEM flashcard
+            System.out.println(">>> GUEST MODE - checking flashcard type");
+            if (flashcard.getType() != FlashcardType.SYSTEM) {
+                System.out.println(">>> ACCESS DENIED: Flashcard is not SYSTEM");
+                throw new AccessDeniedException(
+                        "Bạn cần đăng nhập để xem words của flashcard này");
+            }
+            System.out.println(">>> ACCESS GRANTED: Flashcard is SYSTEM");
+        }
+        System.out.println("===================================");
+        // ===================================================
+
         List<Word> words = wordRepository.findByFlashcardId(flashcardId);
         return wordMapper.toResponseList(words);
     }
