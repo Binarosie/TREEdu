@@ -1,23 +1,23 @@
-// QuizAttemptResponse.java
-package vn.hcmute.edu.materialsservice.Dto.response;
+    // QuizAttemptResponse.java
+    package vn.hcmute.edu.materialsservice.Dto.response;
 
-import lombok.Builder;
-import lombok.Data;
-import vn.hcmute.edu.materialsservice.Model.UserAnswer;
+    import lombok.Builder;
+    import lombok.Data;
+    import vn.hcmute.edu.materialsservice.Model.UserAnswer;
 
-import java.time.LocalDateTime;
-import java.util.List;
+    import java.time.LocalDateTime;
+    import java.util.List;
 
-@Data
-@Builder
-public class QuizAttemptResponse {
-    private String attemptId;
-    private String quizTitle;
-    private Integer score;
-    private Integer totalQuestions;
-    private Double percentage;
-    private List<QuestionResult> results;
-    private LocalDateTime submittedAt;
+    @Data
+    @Builder
+    public class QuizAttemptResponse {
+        private String attemptId;
+        private String quizTitle;
+        private Integer score;
+        private Integer totalQuestions;
+        private Double percentage;
+        private List<QuestionResult> results;
+        private LocalDateTime submittedAt;
 
     @Data
     @Builder
