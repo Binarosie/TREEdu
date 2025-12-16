@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import vn.hcmute.edu.materialsservice.Enum.LearningStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -27,4 +28,7 @@ public class FlashcardProgressResponse {
     private LocalDateTime startedAt;
     private LocalDateTime completedAt;
     private LocalDateTime lastAccessedAt;
+
+    // Danh sách các từ vựng trong flashcard
+    private List<WordResponse> words;
 }

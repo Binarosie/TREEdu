@@ -23,4 +23,7 @@ public interface QuizAttemptService {
 
     // Xem chi tiết 1 lần làm bài
     QuizAttemptResponse getAttemptDetail(String attemptId, String userId);
+
+    // // Đếm tổng số lượt làm quiz trong hệ thống
+    // long countAllAttempts();
 }

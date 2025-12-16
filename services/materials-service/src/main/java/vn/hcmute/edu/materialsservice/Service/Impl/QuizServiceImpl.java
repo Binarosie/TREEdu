@@ -225,6 +225,12 @@ public class QuizServiceImpl implements QuizService {
         return quizMapper.toEditResponse(quiz);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public long countAllQuizzes() {
+        return quizRepository.count();
+    }
+
     private void validateQuestions(QuizRequest requestDTO) {
         requestDTO.getQuestions().forEach(questionDTO -> {
             // Check if exactly one correct answer exists

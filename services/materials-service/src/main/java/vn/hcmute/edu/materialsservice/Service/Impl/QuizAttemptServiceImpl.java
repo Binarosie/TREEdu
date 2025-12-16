@@ -3,6 +3,7 @@ package vn.hcmute.edu.materialsservice.Service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+// import javax.transaction.Transactional;
 import vn.hcmute.edu.materialsservice.Dto.request.SubmitQuizRequest;
 
 import vn.hcmute.edu.materialsservice.Dto.request.UserAnswerRequest;
@@ -248,4 +249,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                                 .submittedAt(attempt.getSubmittedAt())
                                 .build();
         }
+
+        // @Override
+        // @Transactional(readOnly = true)
+        // public long countAllAttempts() {
+        // return attemptRepository.count();
+        // }
 }

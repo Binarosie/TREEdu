@@ -340,9 +340,10 @@ public class QuizController {
          * Chỉ SUPPORTER và ADMIN
          */
         @PostMapping
-        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
-                        @Valid @RequestBody QuizRequest requestDTO) {
+                        @Valid @RequestBody QuizRequest requestDTO,
+                        Authentication authentication) {
 
                 log.info("REST request to create quiz: {}", requestDTO.getTitle());
 
@@ -363,10 +364,11 @@ public class QuizController {
          * Chỉ SUPPORTER và ADMIN
          */
         @PutMapping("/{id}")
-        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> updateQuiz(
                         @PathVariable String id,
-                        @Valid @RequestBody QuizRequest requestDTO) {
+                        @Valid @RequestBody QuizRequest requestDTO,
+                        Authentication authentication) {
 
                 log.info("REST request to update quiz with ID: {}", id);
 
@@ -385,8 +387,10 @@ public class QuizController {
          * Chỉ SUPPORTER và ADMIN
          */
         @DeleteMapping("/{id}")
-        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
-        public ResponseEntity<ApiResponse<Void>> deleteQuiz(@PathVariable String id) {
+        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        public ResponseEntity<ApiResponse<Void>> deleteQuiz(
+                        @PathVariable String id,
+                        Authentication authentication) {
 
                 log.info("REST request to delete quiz with ID: {}", id);
 
@@ -409,9 +413,10 @@ public class QuizController {
          * - Chỉ SUPPORTER review quiz mới dùng
          */
         @GetMapping("/edit/{id}")
-        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizEditResponse>> getQuizForEdit(
-                        @PathVariable String id) {
+                        @PathVariable String id,
+                        Authentication authentication) {
 
                 log.info("REST request to get quiz for editing by ID: {}", id);
 
@@ -430,9 +435,10 @@ public class QuizController {
          * Chỉ SUPPORTER và ADMIN
          */
         @PostMapping("/generate-from-file")
-        @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
-                        @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
+                        @ModelAttribute GenerateQuizFromFileRequest request,
+                        Authentication authentication) throws IOException {
 
                 log.info("REST request to generate quiz from file");
 
@@ -449,20 +455,32 @@ public class QuizController {
          * Chỉ ADMIN
          */
         @GetMapping("/admin/statistics")
-        @PreAuthorize("hasRole('ADMIN')")
+        @PreAuthorize("hasRole('ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<Object>> getQuizStatistics() {
-                log.info("Admin is getting quiz statistics");
-
-                // TODO: Implement statistics
-                Object stats = Map.of(
-                                "totalQuizzes", quizService.getAllQuizzes(Pageable.unpaged()).getTotalElements(),
-                                "message", "Statistics endpoint - to be implemented");
-
-                return ResponseEntity.ok(ApiResponse.builder()
-                                .success(true)
-                                .message("Statistics retrieved successfully")
-                                .data(stats)
-                                .build());
+                log.info("=== START getQuizStatistics ===");
+                try {
+                        log.info("Counting total quizzes...");
+                        long totalQuizzes = quizService.countAllQuizzes();
+                        log.info("Total quizzes: {}", totalQuizzes);
+                        Map<String, Object> stats = new java.util.HashMap<>();
+                        stats.put("totalQuizzes", totalQuizzes);
+                        stats.put("message", "Quiz statistics retrieved successfully");
+                        log.info("Stats map created: {}", stats);
+                        ApiResponse<Object> response = ApiResponse.builder()
+                                        .success(true)
+                                        .message("Statistics retrieved successfully")
+                                        .data(stats)
+                                        .build();
+                        log.info("ApiResponse built successfully");
+                        log.info("=== END getQuizStatistics SUCCESS ===");
+                        return ResponseEntity.ok(response);
+                } catch (Exception e) {
+                        log.error("=== ERROR in getQuizStatistics ===");
+                        log.error("Error type: {}", e.getClass().getName());
+                        log.error("Error message: {}", e.getMessage());
+                        log.error("Stack trace:", e);
+                        throw e;
+                }
         }
 
         // ==================== HELPER METHODS ====================
