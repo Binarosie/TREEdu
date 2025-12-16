@@ -16,6 +16,13 @@ public interface QuizAttemptRepository extends MongoRepository<QuizAttempt, Stri
     // Lấy tất cả lịch sử làm bài của 1 user cho 1 quiz cụ thể
     List<QuizAttempt> findByQuizIdAndUserIdOrderByStartedAtDesc(String quizId, String userId);
 
+    // Chỉ lấy bài ĐÃ NỘP
+    List<QuizAttempt> findByUserIdAndSubmittedTrueOrderBySubmittedAtDesc(String userId);
+
+    // Chỉ lấy bài ĐÃ NỘP theo quiz
+    List<QuizAttempt> findByQuizIdAndUserIdAndSubmittedTrueOrderBySubmittedAtDesc(String quizId, String userId);
+
+
     // Lấy tất cả attempts của 1 quiz (cho admin/supporter xem thống kê)
     List<QuizAttempt> findByQuizIdOrderByStartedAtDesc(String quizId);
 }
