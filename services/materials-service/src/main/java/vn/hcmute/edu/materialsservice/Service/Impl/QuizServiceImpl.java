@@ -94,10 +94,27 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public List<QuizResponse> getQuizzesByTopic(String topic) {
-        log.info("Fetching quizzes by topic: {}", topic);
+        log.info("Fuzzy searching quizzes by topic: {}", topic);
 
-        List<Quiz> quizzes = quizRepository.findByTopic(topic);
-        return quizzes.stream()
+        // Validate min characters
+        if (topic == null || topic.trim().length() < 2) {
+            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+            return List.of();
+        }
+
+        // Lấy tất cả quiz
+        List<Quiz> allQuizzes = quizRepository.findAll();
+
+        // Apply fuzzy filter với threshold 0.4
+        List<Quiz> filteredQuizzes = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
+                allQuizzes,
+                topic,
+                Quiz::getTopic,
+                0.4);
+
+        log.info("Found {} quizzes matching '{}' with fuzzy search", filteredQuizzes.size(), topic);
+
+        return filteredQuizzes.stream()
                 .map(quizMapper::toResponse)
                 .collect(Collectors.toList());
     }
@@ -175,10 +192,27 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public List<QuizResponse> searchQuizzesByTopic(String topic) {
-        log.info("Searching quizzes by topic keyword: {}", topic);
+        log.info("Fuzzy searching quizzes by topic keyword: {}", topic);
 
-        List<Quiz> quizzes = quizRepository.findByTopicIgnoreCase(topic);
-        return quizzes.stream()
+        // Validate min characters
+        if (topic == null || topic.trim().length() < 2) {
+            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+            return List.of();
+        }
+
+        // Lấy tất cả quiz
+        List<Quiz> allQuizzes = quizRepository.findAll();
+
+        // Apply fuzzy filter với threshold 0.4
+        List<Quiz> filteredQuizzes = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
+                allQuizzes,
+                topic,
+                Quiz::getTopic,
+                0.4);
+
+        log.info("Found {} quizzes matching '{}' with fuzzy search", filteredQuizzes.size(), topic);
+
+        return filteredQuizzes.stream()
                 .map(quizMapper::toResponse)
                 .collect(Collectors.toList());
     }

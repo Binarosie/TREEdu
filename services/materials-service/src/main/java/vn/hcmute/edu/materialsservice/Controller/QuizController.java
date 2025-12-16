@@ -28,7 +28,8 @@ import java.util.Map;
  *
  * PHÂN QUYỀN:
  * - ROLE_MEMBER: Xem quiz (không có đáp án), làm bài, submit, xem lịch sử
- * - ROLE_SUPPORTER: Tất cả quyền của MEMBER + Tạo, Sửa, Xóa quiz + Xem đáp án đúng
+ * - ROLE_SUPPORTER: Tất cả quyền của MEMBER + Tạo, Sửa, Xóa quiz + Xem đáp án
+ * đúng
  * - ROLE_ADMIN: Full quyền
  */
 @RestController
@@ -40,19 +41,23 @@ public class QuizController {
         private final QuizService quizService;
         private final QuizAttemptService quizAttemptService;
 
-        // ==================== ROLE_MEMBER + ROLE_SUPPORTER + ROLE_ADMIN ====================
+        // ==================== ROLE_MEMBER + ROLE_SUPPORTER + ROLE_ADMIN
+        // ====================
 
         /**
          * XEM DANH SÁCH QUIZ (Có phân trang)
          *
-         * Response: QuizResponse (KHÔNG có isCorrect)
+         * Response: QuizResponse
+         * - Guest/ROLE_MEMBER: KHÔNG có explanation
+         * - ROLE_ADMIN/SUPPORTER: CÓ explanation
          * PUBLIC API - Guest có thể truy cập
          */
         @GetMapping
         public ResponseEntity<ApiResponse<Page<QuizResponse>>> getAllQuizzes(
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
-                        @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
+                        @RequestParam(defaultValue = "createdAt,desc") String[] sort,
+                        Authentication authentication) {
 
                 log.info("REST request to get all quizzes - page: {}, size: {}", page, size);
 
@@ -64,6 +69,18 @@ public class QuizController {
                 Pageable pageable = PageRequest.of(page, size, sortBy);
                 Page<QuizResponse> response = quizService.getAllQuizzes(pageable);
 
+                // Filter response dựa trên role (nếu đã login)
+                if (authentication != null && authentication.isAuthenticated()) {
+                        response.getContent().forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
+                } else {
+                        // Guest: cũng ẩn explanation
+                        response.getContent().forEach(quiz -> {
+                                if (quiz.getQuestions() != null) {
+                                        quiz.getQuestions().forEach(question -> question.setExplanation(null));
+                                }
+                        });
+                }
+
                 return ResponseEntity.ok(ApiResponse.<Page<QuizResponse>>builder()
                                 .success(true)
                                 .message("Quizzes retrieved successfully")
@@ -74,16 +91,22 @@ public class QuizController {
         /**
          * XEM CHI TIẾT QUIZ
          *
-         * Response: QuizResponse (KHÔNG có isCorrect)
+         * Response: QuizResponse
+         * - ROLE_MEMBER: KHÔNG có explanation (để tránh gợi ý đáp án)
+         * - ROLE_ADMIN/SUPPORTER: CÓ explanation (để review quiz)
          */
         @GetMapping("/{id}")
-        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        // @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
-                        @PathVariable String id) {
+                        @PathVariable String id,
+                        Authentication authentication) {
 
                 log.info("REST request to get quiz by ID: {}", id);
 
                 QuizResponse response = quizService.getQuizById(id);
+
+                // Filter response dựa trên role
+                filterQuizResponseByRole(response, authentication);
 
                 return ResponseEntity.ok(ApiResponse.<QuizResponse>builder()
                                 .success(true)
@@ -93,16 +116,25 @@ public class QuizController {
         }
 
         /**
-         * TÌM QUIZ THEO TOPIC
+         * TÌM QUIZ THEO TOPIC (Fuzzy Search)
+         * 
+         * Sử dụng Fuzzy Search với:
+         * - Threshold: 0.4 (40% similarity)
+         * - Min characters: 2
+         * 
+         * PUBLIC API - Guest có thể truy cập
          */
         @GetMapping("/topic/{topic}")
-        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByTopic(
-                        @PathVariable String topic) {
+                        @PathVariable String topic,
+                        Authentication authentication) {
 
                 log.info("REST request to get quizzes by topic: {}", topic);
 
                 List<QuizResponse> response = quizService.getQuizzesByTopic(topic);
+
+                // Filter response dựa trên role
+                response.forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
 
                 return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
                                 .success(true)
@@ -113,15 +145,20 @@ public class QuizController {
 
         /**
          * TÌM QUIZ THEO LEVEL
+         * 
+         * PUBLIC API - Guest có thể truy cập
          */
         @GetMapping("/level/{level}")
-        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByLevel(
-                        @PathVariable Integer level) {
+                        @PathVariable Integer level,
+                        Authentication authentication) {
 
                 log.info("REST request to get quizzes by level: {}", level);
 
                 List<QuizResponse> response = quizService.getQuizzesByLevel(level);
+
+                // Filter response dựa trên role
+                response.forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
 
                 return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
                                 .success(true)
@@ -131,16 +168,25 @@ public class QuizController {
         }
 
         /**
-         * TÌM KIẾM QUIZ
+         * TÌM KIẾM QUIZ (Fuzzy Search)
+         * 
+         * Sử dụng Fuzzy Search với:
+         * - Threshold: 0.4 (40% similarity)
+         * - Min characters: 2
+         * 
+         * PUBLIC API - Guest có thể truy cập
          */
         @GetMapping("/search")
-        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
-                        @RequestParam String topic) {
+                        @RequestParam String topic,
+                        Authentication authentication) {
 
                 log.info("REST request to search quizzes by topic: {}", topic);
 
                 List<QuizResponse> response = quizService.searchQuizzesByTopic(topic);
+
+                // Filter response dựa trên role
+                response.forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
 
                 return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
                                 .success(true)
@@ -152,7 +198,9 @@ public class QuizController {
         /**
          * BẮT ĐẦU LÀM BÀI QUIZ
          *
-         * QUAN TRỌNG: Cần track user nào đang làm bài
+         * QUAN TRỌNG:
+         * - Cần track user nào đang làm bài
+         * - MỌI USER (kể cả ADMIN/SUPPORTER) đều KHÔNG thấy explanation khi làm bài
          */
         @PostMapping("/{quizId}/start")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
@@ -160,13 +208,18 @@ public class QuizController {
                         @PathVariable String quizId,
                         Authentication authentication) {
 
-                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
-                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication
+                                .getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
-                
+
                 log.info("User {} started quiz {}", userId, quizId);
 
                 StartQuizResponse response = quizAttemptService.startQuiz(quizId, userId);
+
+                // ẨN EXPLANATION cho MỌI USER khi làm bài (kể cả ADMIN/SUPPORTER)
+                if (response.getQuiz() != null && response.getQuiz().getQuestions() != null) {
+                        response.getQuiz().getQuestions().forEach(question -> question.setExplanation(null));
+                }
 
                 return ResponseEntity.ok(ApiResponse.<StartQuizResponse>builder()
                                 .success(true)
@@ -187,10 +240,10 @@ public class QuizController {
                         @RequestBody SubmitQuizRequest request,
                         Authentication authentication) {
 
-                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
-                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication
+                                .getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
-                
+
                 log.info("User {} submitted quiz {}", userId, quizId);
 
                 QuizAttemptResponse response = quizAttemptService.submitQuiz(quizId, request, userId);
@@ -212,8 +265,8 @@ public class QuizController {
         public ResponseEntity<ApiResponse<List<QuizAttemptResponse>>> getMyAttempts(
                         Authentication authentication) {
 
-                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
-                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication
+                                .getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
                 log.info("User {} getting attempt history", userId);
@@ -238,8 +291,8 @@ public class QuizController {
                         @PathVariable String quizId,
                         Authentication authentication) {
 
-                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
-                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication
+                                .getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
                 log.info("User {} getting attempts for quiz {}", userId, quizId);
@@ -264,8 +317,8 @@ public class QuizController {
                         @PathVariable String attemptId,
                         Authentication authentication) {
 
-                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = 
-                        (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication.getPrincipal();
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication
+                                .getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
                 log.info("User {} viewing attempt {}", userId, attemptId);
@@ -410,5 +463,39 @@ public class QuizController {
                                 .message("Statistics retrieved successfully")
                                 .data(stats)
                                 .build());
+        }
+
+        // ==================== HELPER METHODS ====================
+
+        /**
+         * Filter quiz response dựa trên role:
+         * - Guest (chưa login): Ẩn explanation
+         * - ROLE_MEMBER: Ẩn explanation (tránh gợi ý đáp án)
+         * - ROLE_ADMIN/SUPPORTER: Hiển thị đầy đủ (để review quiz)
+         */
+        private void filterQuizResponseByRole(QuizResponse quiz, Authentication authentication) {
+                if (quiz == null || quiz.getQuestions() == null) {
+                        return;
+                }
+
+                // Guest (chưa login): ẩn explanation
+                if (authentication == null || !authentication.isAuthenticated()) {
+                        quiz.getQuestions().forEach(question -> question.setExplanation(null));
+                        return;
+                }
+
+                vn.hcmute.edu.materialsservice.security.CustomUserDetails userDetails = (vn.hcmute.edu.materialsservice.security.CustomUserDetails) authentication
+                                .getPrincipal();
+
+                // Kiểm tra xem user có phải là ADMIN hoặc SUPPORTER không
+                boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+                                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")
+                                                || auth.getAuthority().equals("ROLE_SUPPORTER"));
+
+                // Nếu KHÔNG phải ADMIN/SUPPORTER (tức là MEMBER): ẩn explanation
+                if (!isAdminOrSupporter) {
+                        quiz.getQuestions().forEach(question -> question.setExplanation(null));
+                }
+                // ROLE_ADMIN và ROLE_SUPPORTER: giữ nguyên (có explanation)
         }
 }

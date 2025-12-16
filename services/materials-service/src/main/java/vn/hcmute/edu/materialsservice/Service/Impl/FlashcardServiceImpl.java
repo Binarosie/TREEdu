@@ -278,8 +278,7 @@ public class FlashcardServiceImpl implements FlashcardService {
         // ================= FILTER THEO ROLE =================
         if (authentication != null && authentication.isAuthenticated()) {
 
-            CustomUserDetails userDetails =
-                    (CustomUserDetails) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
             String userId = userDetails.getUser().getId().toString();
             System.out.println(">>> LOGIN USER ID: " + userId);
@@ -325,16 +324,27 @@ public class FlashcardServiceImpl implements FlashcardService {
         return responses;
     }
 
-
     @Override
     public List<FlashcardResponse> getFlashcardsByTopic(String topic, Authentication authentication) {
-        log.info("Getting flashcards by topic: {}", topic);
+        log.info("Fuzzy searching flashcards by topic: {}", topic);
 
-        if (topic == null || topic.trim().isEmpty()) {
-            throw new InvalidFlashcardDataException("Topic không được để trống");
+        // Validate min characters
+        if (topic == null || topic.trim().length() < 2) {
+            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+            return List.of();
         }
 
-        List<Flashcard> flashcards = flashcardRepository.findByTopicContainingIgnoreCase(topic);
+        // Lấy tất cả flashcards trước
+        List<Flashcard> allFlashcards = flashcardRepository.findAll();
+
+        // Apply fuzzy filter với threshold 0.4
+        List<Flashcard> flashcards = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
+                allFlashcards,
+                topic,
+                Flashcard::getTopic,
+                0.4);
+
+        log.info("Found {} flashcards matching '{}' with fuzzy search", flashcards.size(), topic);
 
         // ================= FILTER THEO ROLE =================
         if (authentication != null && authentication.isAuthenticated()) {

@@ -53,6 +53,10 @@ public interface QuizRepository extends MongoRepository<Quiz, String> {
     @Query("{ 'topic': { $regex: ?0, $options: 'i' }, 'deleted': { $ne: true } }")
     List<Quiz> findByTopicIgnoreCase(String topic);
 
+    // Fuzzy search: Tìm quiz theo topic với regex pattern cho fuzzy matching
+    @Query("{ 'topic': { $regex: ?0, $options: 'i' }, 'deleted': { $ne: true } }")
+    List<Quiz> findByTopicFuzzy(String regexPattern);
+
     // Check if quiz exists by title (chỉ check quiz chưa bị xóa)
     @Query(value = "{ 'title': ?0, 'deleted': { $ne: true } }", exists = true)
     boolean existsByTitle(String title);
