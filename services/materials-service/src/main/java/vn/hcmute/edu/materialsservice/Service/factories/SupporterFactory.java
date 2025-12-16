@@ -1,16 +1,16 @@
 package vn.hcmute.edu.materialsservice.Service.factories;
 
 import vn.hcmute.edu.materialsservice.Model.User;
-import vn.hcmute.edu.materialsservice.Model.Member;
+import vn.hcmute.edu.materialsservice.Model.Supporter; // ← FIX: Đổi thành Supporter
 import vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SupporterFactory implements iUserFactory {
@@ -24,12 +24,17 @@ public class SupporterFactory implements iUserFactory {
 
     @Override
     public User createUser(CreateUserRequest request) {
-        return Member.builder()
+        log.info("🔧 Creating SUPPORTER with email: {}", request.getEmail());
+
+        Supporter supporter = Supporter.builder() // ← FIX: Đổi thành Supporter
                 .id(UUID.randomUUID())
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .isActive(false)
                 .build();
+
+        log.info(" Supporter created: {} (class: {})", supporter.getEmail(), supporter.getClass().getSimpleName());
+        return supporter;
     }
 }

@@ -2,6 +2,7 @@ package vn.hcmute.edu.materialsservice.Controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserInfoAPIController {
 
     private final UserServiceImpl userService;
@@ -60,10 +62,31 @@ public class UserInfoAPIController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+//    @PostMapping("/newSupporter")
+//    public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
+//        User user = userService.createManager(request);
+//        CreatedResponse response = new CreatedResponse("User created successfully", user);
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/newSupporter")
     public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
+        log.info("🎯 === CREATE SUPPORTER ENDPOINT CALLED ===");
+        log.info("📋 Request Body:");
+        log.info("  - userType: {}", request.getUserType());
+        log.info("  - fullName: {}", request.getFullName());
+        log.info("  - email: {}", request.getEmail());
+        log.info("  - password: {}", request.getPassword() != null ? "***" : "null");
+
         User user = userService.createManager(request);
+
+        log.info("✅ User created successfully:");
+        log.info("  - ID: {}", user.getId());
+        log.info("  - Class: {}", user.getClass().getSimpleName());
+        log.info("  - Email: {}", user.getEmail());
+
         CreatedResponse response = new CreatedResponse("User created successfully", user);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

@@ -2,6 +2,7 @@ package vn.hcmute.edu.materialsservice.Service.Impl;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements iUserService {
 
     private final UserRepository userRepository;
@@ -104,15 +106,38 @@ public class UserServiceImpl implements iUserService {
                 });
     }
 
+//    @Override
+//    public User createManager(CreateUserRequest request) {
+//        if (userRepository.existsByEmail(request.getEmail())) {
+//            throw new ConflictError("User already exists with email: " + request.getEmail());
+//        }
+//
+//        iUserFactory factory = getFactory("SUPPORTER");
+////        iUserFactory factory = getFactory(request.getUserType());
+//        User user = factory.createUser(request);
+//        return userRepository.save(user);
+//    }
+
     @Override
     public User createManager(CreateUserRequest request) {
+        log.info("📨 Received createManager request for: {}", request.getEmail());
+        log.info("📝 Request details - userType: {}, fullName: {}", request.getUserType(), request.getFullName());
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ConflictError("User already exists with email: " + request.getEmail());
         }
 
+        // FIX: Uncomment dòng này để dùng userType từ request
         iUserFactory factory = getFactory(request.getUserType());
+        log.info("🏭 Selected factory: {}", factory.getClass().getSimpleName());
+
         User user = factory.createUser(request);
-        return userRepository.save(user);
+        log.info("💾 Saving user to database - Type: {}, Email: {}", user.getClass().getSimpleName(), user.getEmail());
+
+        User savedUser = userRepository.save(user);
+        log.info("✅ User saved successfully with ID: {}", savedUser.getId());
+
+        return savedUser;
     }
 
     @Override
