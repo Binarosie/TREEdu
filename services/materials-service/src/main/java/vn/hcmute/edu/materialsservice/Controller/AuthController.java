@@ -250,40 +250,79 @@ public class AuthController {
         return ResponseEntity.ok(successResponse);
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam("code") String code, @RequestParam("email") String email,
-                                           @RequestParam("newPassword") String newPassword) {
-        // 1. Lấy code đã lưu
-        String storedCode = emailVerificationService.getVerificationCode(email);
-        if (storedCode == null) {
-            BadRequestError error = new BadRequestError(
-                    "Không tìm thấy mã xác thực cho email này. Có thể đã hết hạn hoặc chưa đăng ký?");
-            return ResponseEntity.badRequest().body(error);
+    @GetMapping("/reset-password-link")
+    public RedirectView resetPasswordFromLink(
+            @RequestParam("email") String email,
+            @RequestParam("code") String code,
+            @RequestParam("newPassword") String newPassword
+    ) {
+        try {
+            // 1. Lấy code đã lưu
+            String storedCode = emailVerificationService.getVerificationCode(email);
+
+            if (storedCode == null) {
+                return new RedirectView(
+                        "http://localhost:3000/login?status=error&message=" +
+                                URLEncoder.encode(
+                                        "Mã đặt lại mật khẩu đã hết hạn hoặc không tồn tại",
+                                        StandardCharsets.UTF_8
+                                )
+                );
+            }
+
+            // 2. So sánh code
+            if (!storedCode.equals(code)) {
+                return new RedirectView(
+                        "http://localhost:3000/login?status=error&message=" +
+                                URLEncoder.encode(
+                                        "Mã xác thực không chính xác",
+                                        StandardCharsets.UTF_8
+                                )
+                );
+            }
+
+            // 3. Tìm user
+            var optUser = userServiceImpl.findByEmail(email);
+            if (optUser.isEmpty()) {
+                return new RedirectView(
+                        "http://localhost:3000/login?status=error&message=" +
+                                URLEncoder.encode(
+                                        "Không tìm thấy tài khoản với email này",
+                                        StandardCharsets.UTF_8
+                                )
+                );
+            }
+
+            var user = optUser.get();
+
+            // 4. Dọn duplicate user (nếu có)
+            userRepository.deleteByEmailAndIdNot(email, user.getId());
+
+            // 5. Update password
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+
+            // 6. Xóa verification code
+            emailVerificationService.removeVerificationCode(email);
+
+            // 7. Redirect về trang login (success)
+            return new RedirectView(
+                    "http://localhost:3000/login?status=success&message=" +
+                            URLEncoder.encode(
+                                    "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.",
+                                    StandardCharsets.UTF_8
+                            )
+            );
+
+        } catch (Exception e) {
+            return new RedirectView(
+                    "http://localhost:3000/login?status=error&message=" +
+                            URLEncoder.encode(
+                                    "Đã xảy ra lỗi: " + e.getMessage(),
+                                    StandardCharsets.UTF_8
+                            )
+            );
         }
-
-        if (!storedCode.equals(code)) {
-            BadRequestError error = new BadRequestError("Mã xác thực không chính xác, vui lòng thử lại.");
-            return ResponseEntity.badRequest().body(error);
-        }
-
-        var optUser = userServiceImpl.findByEmail(email);
-        if (optUser.isEmpty()) {
-            BadRequestError error = new BadRequestError("Không tìm thấy user với email: " + email);
-            return ResponseEntity.badRequest().body(error);
-        }
-        var user = optUser.get();
-
-        //  AUTO-CLEAN: XÓA TẤT CẢ USER TRÙNG EMAIL KHÁC (giữ lại user hiện tại)
-        userRepository.deleteByEmailAndIdNot(email, user.getId());
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        emailVerificationService.removeVerificationCode(email);
-
-        SuccessResponse successResponse = new SuccessResponse("Đặt lại mật khẩu thành công!", HttpStatus.OK.value(),
-                null, LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_SUPPORTER')")
