@@ -22,6 +22,12 @@ public interface FlashcardRepository extends MongoRepository<Flashcard, String> 
     List<Flashcard> findByTopicContainingIgnoreCase(String topic);
 
     /**
+     * Fuzzy search: Tìm flashcard theo topic với regex pattern
+     */
+    @Query("{'topic': {$regex: ?0, $options: 'i'}}")
+    List<Flashcard> findByTopicFuzzy(String regexPattern);
+
+    /**
      * Tìm flashcard theo cả level và topic
      */
     @Query("{'level': ?0, 'topic': {$regex: ?1, $options: 'i'}}")
