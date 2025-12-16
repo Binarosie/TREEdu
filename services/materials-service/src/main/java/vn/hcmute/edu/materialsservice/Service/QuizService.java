@@ -12,16 +12,13 @@ import java.util.List;
 
 public interface QuizService {
 
-
     QuizResponse createQuiz(QuizRequest requestDTO);
 
     QuizResponse getQuizById(String id);
 
     Page<QuizResponse> getAllQuizzes(Pageable pageable);
 
-
     List<QuizResponse> getQuizzesByTopic(String topic);
-
 
     List<QuizResponse> getQuizzesByLevel(Integer level);
 
@@ -34,4 +31,6 @@ public interface QuizService {
     QuizEditResponse getQuizForEdit(String id);
 
     QuizResponse generateQuizFromFile(GenerateQuizFromFileRequest request) throws IOException;
+
+    long countAllQuizzes();
 }
