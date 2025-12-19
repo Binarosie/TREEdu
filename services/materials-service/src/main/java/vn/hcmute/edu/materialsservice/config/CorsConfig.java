@@ -17,7 +17,9 @@ public class CorsConfig {
                         .allowedOrigins("http://localhost:3000")  // Frontend React của bạn
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
+                        //.exposedHeaders("Authorization")  // THÊM: expose Authorization
                         .allowCredentials(true);
+                        //.maxAge(3600);  // THÊM: cache preflight response
             }
         };
     }
