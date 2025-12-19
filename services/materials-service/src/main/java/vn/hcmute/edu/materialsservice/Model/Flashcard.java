@@ -28,6 +28,9 @@ public class Flashcard {
     // OWNER (MEMBER tạo)
     private String createdBy; // userId (UUID string)
 
+    private Boolean deleted = false;
+    private LocalDateTime deletedAt;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

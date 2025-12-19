@@ -15,8 +15,10 @@ import vn.hcmute.edu.materialsservice.Mapper.FlashcardMapper;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
 import vn.hcmute.edu.materialsservice.Model.Flashcard;
 import vn.hcmute.edu.materialsservice.Model.Word;
+import vn.hcmute.edu.materialsservice.Repository.FlashcardProgressRepository;
 import vn.hcmute.edu.materialsservice.Repository.FlashcardRepository;
 import vn.hcmute.edu.materialsservice.Repository.WordRepository;
+import vn.hcmute.edu.materialsservice.Service.FlashcardLearningService;
 import vn.hcmute.edu.materialsservice.Service.FlashcardService;
 import vn.hcmute.edu.materialsservice.exception.FlashcardAlreadyExistsException;
 import vn.hcmute.edu.materialsservice.exception.FlashcardNotFoundException;
@@ -35,6 +37,7 @@ public class FlashcardServiceImpl implements FlashcardService {
     private final WordRepository wordRepository;
     private final FlashcardMapper flashcardMapper;
     private final WordMapper wordMapper;
+    private final FlashcardProgressRepository progressRepository;
 
     @Override
     @Transactional
@@ -51,6 +54,7 @@ public class FlashcardServiceImpl implements FlashcardService {
         Flashcard flashcard = flashcardMapper.toEntity(request);
         flashcard.setCreatedAt(LocalDateTime.now());
         flashcard.setUpdatedAt(LocalDateTime.now());
+        flashcard.setDeleted(false);
 
         // ================= LOGIC PHÂN LOẠI =================
         boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
@@ -79,6 +83,13 @@ public class FlashcardServiceImpl implements FlashcardService {
     public FlashcardResponse updateFlashcard(String id, FlashcardRequest request, Authentication authentication) {
         Flashcard existingFlashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        long progressCount = progressRepository.findByFlashcardId(id).size();
+        if (progressCount > 0) {
+            throw new IllegalStateException(
+                    "Không thể cập nhật flashcard này vì đã có " + progressCount + " người học. "
+                            + "Chỉ được cập nhật flashcard chưa có ai học.");
+        }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -138,6 +149,13 @@ public class FlashcardServiceImpl implements FlashcardService {
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
 
+        long progressCount = progressRepository.findByFlashcardId(id).size();
+        if (progressCount > 0) {
+            throw new IllegalStateException(
+                    "Không thể xóa flashcard này vì đã có " + progressCount + " người học. "
+                            + "Chỉ được xóa flashcard chưa có ai học.");
+        }
+
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String userId = userDetails.getUser().getId().toString();
@@ -162,8 +180,11 @@ public class FlashcardServiceImpl implements FlashcardService {
         }
         // ========================================
 
-        wordRepository.deleteByFlashcardId(id);
-        flashcardRepository.deleteById(id);
+        flashcard.setDeleted(true);
+        flashcard.setDeletedAt(LocalDateTime.now());
+        flashcardRepository.save(flashcard);
+
+        log.info("Flashcard soft deleted successfully with ID: {}", id);
     }
 
     @Override

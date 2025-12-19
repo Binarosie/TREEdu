@@ -21,10 +21,8 @@ import vn.hcmute.edu.materialsservice.Dto.UserInfoDTO;
 import vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.users.UpdateProfileRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.users.UpdateUserRequest;
-import vn.hcmute.edu.materialsservice.Dto.response.CreatedResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.DataTableResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.NotFoundError;
-import vn.hcmute.edu.materialsservice.Dto.response.SuccessResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.*;
+import vn.hcmute.edu.materialsservice.Enum.EUserRole;
 import vn.hcmute.edu.materialsservice.Model.Admin;
 import vn.hcmute.edu.materialsservice.Model.Member;
 import vn.hcmute.edu.materialsservice.Model.Supporter;
@@ -188,14 +186,66 @@ public class UserInfoAPIController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
+//    @PutMapping("/{id}")
+//    public ResponseEntity<SuccessResponse> updateUser(@PathVariable UUID id,
+//                                                      @ModelAttribute UpdateUserRequest request,
+//                                                      Authentication authentication) {
+//        UUID trueUserId = getTrueUserId(id, authentication);
+//        userService.updateUserByID(trueUserId, request);
+//        return ResponseEntity.ok(new SuccessResponse("User updated successfully", 200, null, LocalDateTime.now()));
+//    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPPORTER', 'ROLE_MEMBER')")
     @PutMapping("/{id}")
-    public ResponseEntity<SuccessResponse> updateUser(@PathVariable UUID id,
-                                                      @ModelAttribute UpdateUserRequest request,
-                                                      Authentication authentication) {
-        UUID trueUserId = getTrueUserId(id, authentication);
-        userService.updateUserByID(trueUserId, request);
-        return ResponseEntity.ok(new SuccessResponse("User updated successfully", 200, null, LocalDateTime.now()));
+    public ResponseEntity<SuccessResponse> updateUser(
+            @PathVariable UUID id,
+            @RequestBody UpdateUserRequest request,
+            Authentication authentication) {
+
+        CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User currentUser = currentUserDetails.getUser();
+
+        EUserRole currentUserRole = EUserRole.fromUser(currentUser);  // ← Sử dụng ở đây
+
+        System.out.println("=== Update User Request ===");
+        System.out.println("Current User: " + currentUser.getEmail());
+        System.out.println("Current User Type: " + currentUser.getClass().getSimpleName());
+        System.out.println("Current User Role: " + currentUserRole);
+        System.out.println("Target User ID: " + id);
+
+        if (currentUser.getId().equals(id)) {
+            System.out.println(" User updating themselves");
+
+            if (request.getRole() != null && !request.getRole().isBlank()) {
+                throw new BadRequestError("Bạn không thể tự thay đổi role của mình");
+            }
+
+            userService.updateUserByID(id, request);
+
+            return ResponseEntity.ok(new SuccessResponse(
+                    "Cập nhật thông tin thành công",
+                    200,
+                    null,
+                    LocalDateTime.now()
+            ));
+        }
+
+        if (currentUserRole == EUserRole.ADMIN) {
+            System.out.println("Admin updating another user");
+
+            userService.adminUpdateUser(id, request, currentUserRole);
+
+            return ResponseEntity.ok(new SuccessResponse(
+                    "Admin cập nhật user thành công",
+                    200,
+                    null,
+                    LocalDateTime.now()
+            ));
+        }
+
+        System.out.println("Non-admin trying to update another user");
+        throw new BadRequestError("Bạn không có quyền cập nhật thông tin user khác");
     }
 
 

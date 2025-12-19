@@ -12,6 +12,7 @@ import vn.hcmute.edu.materialsservice.Enum.FlashcardType;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
 import vn.hcmute.edu.materialsservice.Model.Flashcard;
 import vn.hcmute.edu.materialsservice.Model.Word;
+import vn.hcmute.edu.materialsservice.Repository.FlashcardProgressRepository;
 import vn.hcmute.edu.materialsservice.Repository.FlashcardRepository;
 import vn.hcmute.edu.materialsservice.Repository.WordRepository;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
@@ -30,6 +31,7 @@ public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final FlashcardRepository flashcardRepository;
     private final WordMapper wordMapper;
+    private final FlashcardProgressRepository progressRepository;
 
     @Override
     @Transactional
@@ -37,6 +39,13 @@ public class WordServiceImpl implements WordService {
         // Kiểm tra flashcard có tồn tại không
         Flashcard flashcard = flashcardRepository.findById(flashcardId)
                 .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+
+        long progressCount = progressRepository.findByFlashcardId(flashcardId).size();
+        if (progressCount > 0) {
+            throw new IllegalStateException(
+                    "Không thể thêm từ vào flashcard này vì đã có " + progressCount + " người học. "
+                            + "Chỉ được thêm từ vào flashcard chưa có ai học.");
+        }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();
@@ -82,6 +91,13 @@ public class WordServiceImpl implements WordService {
         Flashcard flashcard = flashcardRepository.findById(existingWord.getFlashcardId())
                 .orElseThrow(() -> new FlashcardNotFoundException(existingWord.getFlashcardId()));
 
+        long progressCount = progressRepository.findByFlashcardId(flashcard.getId()).size();
+        if (progressCount > 0) {
+            throw new IllegalStateException(
+                    "Không thể cập nhật từ này vì flashcard đã có " + progressCount + " người học. "
+                            + "Chỉ được cập nhật từ trong flashcard chưa có ai học.");
+        }
+
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();
         boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
@@ -125,6 +141,13 @@ public class WordServiceImpl implements WordService {
         // Lấy flashcard để check quyền
         Flashcard flashcard = flashcardRepository.findById(existingWord.getFlashcardId())
                 .orElseThrow(() -> new FlashcardNotFoundException(existingWord.getFlashcardId()));
+
+        long progressCount = progressRepository.findByFlashcardId(flashcard.getId()).size();
+        if (progressCount > 0) {
+            throw new IllegalStateException(
+                    "Không thể xóa từ này vì flashcard đã có " + progressCount + " người học. "
+                            + "Chỉ được xóa từ trong flashcard chưa có ai học.");
+        }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.hcmute.edu.materialsservice.Dto.UserDetailDTO;
 import vn.hcmute.edu.materialsservice.Dto.UserInfoDTO;
 import vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest;
@@ -16,12 +17,14 @@ import vn.hcmute.edu.materialsservice.Dto.response.BadRequestError;
 import vn.hcmute.edu.materialsservice.Dto.response.ConflictError;
 import vn.hcmute.edu.materialsservice.Dto.response.InternalServerError;
 import vn.hcmute.edu.materialsservice.Dto.response.NotFoundError;
+import vn.hcmute.edu.materialsservice.Enum.EUserRole;
 import vn.hcmute.edu.materialsservice.Model.Member;
 import vn.hcmute.edu.materialsservice.Model.User;
 import vn.hcmute.edu.materialsservice.Repository.UserRepository;
 import vn.hcmute.edu.materialsservice.Service.EmailService;
 import vn.hcmute.edu.materialsservice.Service.factories.iUserFactory;
 import vn.hcmute.edu.materialsservice.Service.iUserService;
+import vn.hcmute.edu.materialsservice.Service.strategies.AdminUpdateOtherUserStrategy;
 import vn.hcmute.edu.materialsservice.Service.strategies.iUserUpdateStrategy;
 
 import java.util.List;
@@ -42,6 +45,7 @@ public class UserServiceImpl implements iUserService {
     private final List<iUserFactory> userFactories;
     private final List<iUserUpdateStrategy> updateStrategies;
 
+    private final AdminUpdateOtherUserStrategy adminUpdateOtherUserStrategy;
     private iUserFactory getFactory(String userType) {
         return userFactories.stream()
                 .filter(factory -> factory.supports(userType))
@@ -197,6 +201,23 @@ public class UserServiceImpl implements iUserService {
 
         getUpdateStrategy(user).update(user, request);
         return userRepository.save(user);
+    }
+
+    @Transactional  // ← Thêm annotation này vào method
+    public User adminUpdateUser(UUID targetUserId, UpdateUserRequest request, EUserRole currentUserRole) {
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new NotFoundError("User not found with id: " + targetUserId));
+
+        EUserRole targetRole = EUserRole.fromUser(targetUser);
+        log.info("Admin updating user: {} (current type: {})", targetUser.getEmail(), targetRole);
+
+        // Sử dụng AdminUpdateOtherUserStrategy
+        User updatedUser = adminUpdateOtherUserStrategy.updateByAdmin(targetUser, request, currentUserRole);
+
+        EUserRole newRole = EUserRole.fromUser(updatedUser);
+        log.info("User updated successfully. New type: {}", newRole);
+
+        return updatedUser;
     }
 
     @Override
