@@ -108,32 +108,32 @@ public class AuthController {
         return ResponseEntity.ok(successResponse);
     }
 
-    @PostMapping("/login/oauth2")
-    public ResponseEntity<?> loginOAuth2(@RequestBody Map<String, String> oauthUser,
-                                         HttpServletResponse response) {
-        // Xử lý đăng nhập với OAuth2
-        String email = oauthUser.get("email");
-        String name = oauthUser.get("name");
-
-        // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
-        User user = userServiceImpl.findByEmail(email).orElse(null);
-        if (user == null) {
-            user = userServiceImpl.createOAuthMember(email, name);
-        }
-
-        CustomUserDetails userDetails = new CustomUserDetails(user);
-        String token = jwtTokenUtil.generateToken(userDetails);
-
-        Cookie jwtCookie = new Cookie("JWT", token);
-        jwtCookie.setHttpOnly(true); // Không cho phép truy cập từ JavaScript để giảm rủi ro XSS
-        jwtCookie.setPath("/"); // Áp dụng cho toàn bộ ứng dụng
-
-        response.addCookie(jwtCookie);
-
-        SuccessResponse successResponse = new SuccessResponse("Login successful", HttpStatus.OK.value(), token,
-                LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
-    }
+//    @PostMapping("/login/oauth2")
+//    public ResponseEntity<?> loginOAuth2(@RequestBody Map<String, String> oauthUser,
+//                                         HttpServletResponse response) {
+//        // Xử lý đăng nhập với OAuth2
+//        String email = oauthUser.get("email");
+//        String name = oauthUser.get("name");
+//
+//        // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
+//        User user = userServiceImpl.findByEmail(email).orElse(null);
+//        if (user == null) {
+//            user = userServiceImpl.createOAuthMember(email, name);
+//        }
+//
+//        CustomUserDetails userDetails = new CustomUserDetails(user);
+//        String token = jwtTokenUtil.generateToken(userDetails);
+//
+//        Cookie jwtCookie = new Cookie("JWT", token);
+//        jwtCookie.setHttpOnly(true); // Không cho phép truy cập từ JavaScript để giảm rủi ro XSS
+//        jwtCookie.setPath("/"); // Áp dụng cho toàn bộ ứng dụng
+//
+//        response.addCookie(jwtCookie);
+//
+//        SuccessResponse successResponse = new SuccessResponse("Login successful", HttpStatus.OK.value(), token,
+//                LocalDateTime.now());
+//        return ResponseEntity.ok(successResponse);
+//    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
