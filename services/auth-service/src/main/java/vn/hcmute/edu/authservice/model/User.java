@@ -22,15 +22,13 @@ public class User {
     @Id
     private String id;
 
-    @Indexed(unique = true)
-    private String username;
 
     @Indexed(unique = true)
     private String email;
 
-    private String password;      // BCrypt-hashed
+    private String password;
 
-    private Set<String> roles;    // e.g. ["USER"]
+    private Set<String> roles;
 
     @CreatedDate
     private Instant createdAt;

@@ -20,7 +20,7 @@ public class QuizAttempt {
     @Id
     private String id;
 
-    private String userId; // ID của member làm bài
+    private String userId;
     private String quizId;
     private LocalDateTime startedAt;
     private LocalDateTime submittedAt;

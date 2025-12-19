@@ -3,8 +3,10 @@ package vn.hcmute.edu.materialsservice.Service;
 
 import vn.hcmute.edu.materialsservice.Dto.request.SubmitQuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.QuizAttemptResponse;
+import vn.hcmute.edu.materialsservice.Dto.response.QuizDashboardResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.StartQuizResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface QuizAttemptService {
@@ -26,4 +28,7 @@ public interface QuizAttemptService {
 
     // // Đếm tổng số lượt làm quiz trong hệ thống
     // long countAllAttempts();
+
+
+    QuizDashboardResponse getAdminDashboardStats();
 }

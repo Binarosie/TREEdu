@@ -18,7 +18,6 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // Chú ý: phải khởi tạo map để tránh NullPointerException
     private Map<String, String> emailTokenMap = new ConcurrentHashMap<>();
 
     public void sendVerificationEmail(String to, String verificationCode) throws MessagingException {
@@ -41,7 +40,7 @@ public class EmailService {
     }
 
     public void sendResetPasswordEmail(String to, String code, String password) throws MessagingException {
-        String url = "http://localhost:3001/api/auth/reset-password?code=" + code + "&email=" + to + "&newPassword=" + password;
+        String url = "http://localhost:3001/api/auth/reset-password-link?code=" + code + "&email=" + to + "&newPassword=" + password;
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
         helper.setTo(to);
@@ -64,7 +63,6 @@ public class EmailService {
         return emailTokenMap.get(email);
     }
 
-    // Nếu muốn xóa code khỏi map sau khi xác thực
     public void removeVerificationCode(String email) {
         emailTokenMap.remove(email);
     }

@@ -20,7 +20,7 @@ public class Role {
     @Id
     String id;
     @Indexed(unique=true)
-    String name;        // e.g. "ADMIN"
+    String name;
     String description;
-    Set<String> permissions;                  // holds Permission.name values
+    Set<String> permissions;
 }
