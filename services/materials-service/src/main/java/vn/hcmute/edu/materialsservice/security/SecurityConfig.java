@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import vn.hcmute.edu.materialsservice.utils.OAuth2SuccessHandler;
 
 @Configuration
 @EnableMethodSecurity
@@ -33,6 +34,9 @@ public class SecurityConfig {
         @Autowired
         private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+        @Autowired
+        private OAuth2SuccessHandler oAuth2SuccessHandler;
+
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
@@ -44,7 +48,8 @@ public class SecurityConfig {
                                                 .requestMatchers(
                                                                 "/api/auth/**",
                                                                 "/auth/**",
-                                                                "/oauth2/authorization/google",
+                                                                "/oauth2/**",  // Bao gồm tất cả oauth2 paths
+                                                                "/login/oauth2/**",
                                                                 "/error")
                                                 .permitAll()
                                                 .requestMatchers("/").permitAll()
@@ -86,9 +91,8 @@ public class SecurityConfig {
                                                 .accessDeniedHandler(customAccessDeniedHandler))
                                 .oauth2Login(login -> login
                                                 .loginPage("/auth/login")
-                                                .successHandler((request, response, authentication) -> request
-                                                                .getRequestDispatcher("/auth/login/oauth2Google-submit")
-                                                                .forward(request, response))
+                                                .successHandler(oAuth2SuccessHandler)  // Redirect về FE
+                                                .failureUrl("http://localhost:3000/login?error=oauth_failed")
                                                 .permitAll());
 
                 http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

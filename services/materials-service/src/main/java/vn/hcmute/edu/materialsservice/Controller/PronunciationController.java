@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pronunciation-check")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')") // ✅ Áp dụng cho TẤT CẢ endpoints
+@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')") //  Áp dụng cho TẤT CẢ endpoints
 public class PronunciationController {
 
     private final PronunciationService service;
@@ -49,7 +49,7 @@ public class PronunciationController {
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
 
-        log.info("🎲 User {} getting random sentence from topic: {}",
+        log.info(" User {} getting random sentence from topic: {}",
                 userDetails.getUser().getId(), topic);
 
         String sentence = service.getRandomSentence(topic);
@@ -67,7 +67,7 @@ public class PronunciationController {
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
 
-        log.info("🎤 User {} checking pronunciation for text: {}",
+        log.info(" User {} checking pronunciation for text: {}",
                 userDetails.getUser().getId(), request.getExpectedText());
 
         PronunciationCheckResponse response = service.checkAndSave(request);
