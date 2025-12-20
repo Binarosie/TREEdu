@@ -26,7 +26,7 @@ public class QuizRequest {
     @NotBlank(message = "Topic không được để trống")
     private String topic;
 
-    private String timer;
+    private Integer timer;
 
     @NotNull(message = "Questions list cannot be null")
     @Size(min = 1, message = "Quiz must have at least 1 question")

@@ -9,6 +9,6 @@ import lombok.Data;
 public class StartQuizResponse {
     private String attemptId;
     private QuizResponse quiz; // Đổi từ Model Quiz sang QuizResponse (không có isCorrect)
-    private Long timeRemainingSeconds; // giây còn lại
+    private Long timeRemainingSeconds;
     private String expiresAt;
 }

@@ -104,13 +104,6 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * TÌM FLASHCARD THEO TOPIC (Fuzzy Search)
-     * 
-     * Sử dụng Fuzzy Search với:
-     * - Threshold: 0.4 (40% similarity)
-     * - Min characters: 2
-     */
     @GetMapping("/topic/{topic}")
     public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getFlashcardsByTopic(
             @PathVariable String topic,

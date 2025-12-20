@@ -115,15 +115,6 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * TÌM QUIZ THEO TOPIC (Fuzzy Search)
-         * 
-         * Sử dụng Fuzzy Search với:
-         * - Threshold: 0.4 (40% similarity)
-         * - Min characters: 2
-         * 
-         * PUBLIC API - Guest có thể truy cập
-         */
         @GetMapping("/topic/{topic}")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByTopic(
                         @PathVariable String topic,
@@ -143,11 +134,6 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * TÌM QUIZ THEO LEVEL
-         * 
-         * PUBLIC API - Guest có thể truy cập
-         */
         @GetMapping("/level/{level}")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> getQuizzesByLevel(
                         @PathVariable Integer level,
@@ -167,15 +153,6 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * TÌM KIẾM QUIZ (Fuzzy Search)
-         * 
-         * Sử dụng Fuzzy Search với:
-         * - Threshold: 0.4 (40% similarity)
-         * - Min characters: 2
-         * 
-         * PUBLIC API - Guest có thể truy cập
-         */
         @GetMapping("/search")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
                         @RequestParam String topic,
@@ -195,13 +172,6 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * BẮT ĐẦU LÀM BÀI QUIZ
-         *
-         * QUAN TRỌNG:
-         * - Cần track user nào đang làm bài
-         * - MỌI USER (kể cả ADMIN/SUPPORTER) đều KHÔNG thấy explanation khi làm bài
-         */
         @PostMapping("/{quizId}/start")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<StartQuizResponse>> startQuiz(
@@ -228,11 +198,6 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * NỘP BÀI QUIZ
-         *
-         * QUAN TRỌNG: Cần track user nào đang submit
-         */
         @PostMapping("/{quizId}/submit")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizAttemptResponse>> submitQuiz(
@@ -257,7 +222,7 @@ public class QuizController {
 
         /**
          * XEM LỊCH Sử LÀM BÀI CỦA USER
-         * 
+         *
          * Lấy tất cả các lần làm quiz của user hiện tại
          */
         @GetMapping("/my-attempts")
@@ -282,7 +247,7 @@ public class QuizController {
 
         /**
          * XEM LỊCH Sử LÀM BÀI CHO 1 QUIZ CỤ THỂ
-         * 
+         *
          * Lấy tất cả các lần user làm một quiz cụ thể
          */
         @GetMapping("/{quizId}/my-attempts")
@@ -308,7 +273,7 @@ public class QuizController {
 
         /**
          * XEM CHI TIẾT 1 LẦN LÀM BÀI
-         * 
+         *
          * Xem lại kết quả, đáp án của một lần làm bài cũ
          */
         @GetMapping("/attempts/{attemptId}")
@@ -429,16 +394,12 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * TẠO QUIZ TỪ FILE (Upload)
-         *
-         * Chỉ SUPPORTER và ADMIN
-         */
+
         @PostMapping("/generate-from-file")
-        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
+       // @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
-                        @ModelAttribute GenerateQuizFromFileRequest request,
-                        Authentication authentication) throws IOException {
+                        @ModelAttribute GenerateQuizFromFileRequest request
+        ) throws IOException {
 
                 log.info("REST request to generate quiz from file");
 
@@ -447,13 +408,6 @@ public class QuizController {
                 return ResponseEntity.ok(ApiResponse.success(quiz));
         }
 
-        // ==================== ADMIN ONLY ====================
-
-        /**
-         * THỐNG KÊ QUIZ (nếu cần)
-         *
-         * Chỉ ADMIN
-         */
         @GetMapping("/admin/statistics")
         @PreAuthorize("hasRole('ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<Object>> getQuizStatistics() {
@@ -515,5 +469,10 @@ public class QuizController {
                         quiz.getQuestions().forEach(question -> question.setExplanation(null));
                 }
                 // ROLE_ADMIN và ROLE_SUPPORTER: giữ nguyên (có explanation)
+        }
+        @GetMapping("/admin/stats")
+        @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+        public ResponseEntity<QuizDashboardResponse> getDashboardStats() {
+                return ResponseEntity.ok(quizAttemptService.getAdminDashboardStats());
         }
 }

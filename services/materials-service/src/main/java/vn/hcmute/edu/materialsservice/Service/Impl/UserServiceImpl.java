@@ -84,7 +84,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     public User createOAuthMember(String email, String fullName) {
-        // FIX: Tìm user trước, chỉ tạo mới nếu chưa tồn tại
+
         return userRepository.findByEmail(email)
                 .map(existingUser -> {
                     // Nếu user đã tồn tại, kích hoạt nếu chưa active

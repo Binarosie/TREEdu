@@ -14,7 +14,9 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatusCode;
+import vn.hcmute.edu.materialsservice.Dto.request.AnswerRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.GenerateQuizFromFileRequest;
+import vn.hcmute.edu.materialsservice.Dto.request.QuestionRequest;
 import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
 import vn.hcmute.edu.materialsservice.Dto.response.QuizEditResponse;
 import vn.hcmute.edu.materialsservice.Dto.response.QuizResponse;
@@ -28,6 +30,7 @@ import vn.hcmute.edu.materialsservice.exception.ResourceNotFoundException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -266,18 +269,28 @@ public class QuizServiceImpl implements QuizService {
                 request.getQuestionCount(),
                 file.getOriginalFilename());
 
-        String geminiResponse = callGeminiWithFile(prompt, base64File, mimeType);
-        String cleanJson = extractAndFixJsonFromResponse(geminiResponse);
+        String geminiResponse;
+        try {
+            geminiResponse = callGeminiWithFile(prompt, base64File, mimeType);
+        } catch (RuntimeException e) {
+            log.error("Lỗi khi gọi Gemini API: {}", e.getMessage());
+            throw new RuntimeException("AI đang quá tải hoặc lỗi kết nối. Vui lòng thử lại sau vài phút.");
+        }
+
+        String rawText = extractRawTextFromResponse(geminiResponse);
+        log.info("Raw JSON từ Gemini: {}", rawText);
 
         QuizRequest quizRequest;
         try {
-            quizRequest = objectMapper.readValue(cleanJson, QuizRequest.class);
+            quizRequest = parseQuizRequestFromRawText(rawText, request);
         } catch (Exception e) {
-            log.error("Parse QuizRequest thất bại sau khi fix JSON. Clean JSON: {}", cleanJson, e);
-            throw new InvalidDataException("AI trả về dữ liệu không hợp lệ, không thể tạo quiz.");
+            log.error("Không thể parse JSON từ Gemini. Raw text: {}", rawText, e);
+            throw new InvalidDataException("AI trả về dữ liệu không hợp lệ hoặc không đúng định dạng. Vui lòng thử lại hoặc kiểm tra file.");
         }
 
-        // Tái sử dụng createQuiz để validate + lưu
+        // Validate lại lần cuối trước khi tạo
+        validateQuestions(quizRequest);
+
         return createQuiz(quizRequest);
     }
 
@@ -426,5 +439,133 @@ public class QuizServiceImpl implements QuizService {
         json = json.replaceAll("//.*|(?s)/\\*.*?\\*/", "");
 
         return json.trim();
+    }
+    private String extractRawTextFromResponse(String responseBody) {
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
+            return root.path("candidates")
+                    .get(0)
+                    .path("content")
+                    .path("parts")
+                    .get(0)
+                    .path("text")
+                    .asText("")
+                    .trim();
+        } catch (Exception e) {
+            log.warn("Không parse được response chuẩn, trả về nguyên body: {}", responseBody);
+            return responseBody;
+        }
+    }
+
+    private QuizRequest parseQuizRequestFromRawText(String rawText, GenerateQuizFromFileRequest originalRequest) {
+        // Loại bỏ markdown và text thừa
+        String cleaned = rawText
+                .replaceAll("(?s)^```json\\s*", "")
+                .replaceAll("(?s)\\s*```$", "")
+                .trim();
+
+        // Tìm block JSON lớn nhất nếu không phải JSON thuần
+        if (!cleaned.startsWith("{") || !cleaned.endsWith("}")) {
+            int start = cleaned.indexOf("{");
+            int end = cleaned.lastIndexOf("}") + 1;
+            if (start >= 0 && end > start) {
+                cleaned = cleaned.substring(start, end);
+            }
+        }
+
+        JsonNode root;
+        try {
+            root = objectMapper.readTree(cleaned);
+        } catch (Exception e) {
+            throw new RuntimeException("Không thể parse JSON từ AI response");
+        }
+
+        // Bắt buộc có questions
+        JsonNode questionsNode = root.path("questions");
+        if (questionsNode.isMissingNode() || !questionsNode.isArray() || questionsNode.size() == 0) {
+            throw new InvalidDataException("AI không tạo được câu hỏi nào từ file");
+        }
+
+        QuizRequest.QuizRequestBuilder builder = QuizRequest.builder();
+
+        // Lấy title - nếu thiếu thì tự tạo
+        String title = root.path("title").asText("").trim();
+        if (title.isBlank()) {
+            title = "Quiz từ " + originalRequest.getFile().getOriginalFilename() + " - " + originalRequest.getTopic();
+        }
+        builder.title(title);
+
+        // Level - ưu tiên từ request người dùng
+        int level = originalRequest.getLevel() != null ? originalRequest.getLevel() : root.path("level").asInt(3);
+        if (level < 1 || level > 6) level = 3;
+        builder.level(level);
+
+        // Topic - ưu tiên từ request
+        String topic = originalRequest.getTopic() != null && !originalRequest.getTopic().isBlank()
+                ? originalRequest.getTopic()
+                : root.path("topic").asText("Chủ đề chung");
+        builder.topic(topic);
+
+        // Timer - tự tính
+        int questionCount = questionsNode.size();
+        builder.timer(questionCount * 2);
+
+        // Parse questions
+        List<QuestionRequest> questions = new ArrayList<>();
+        for (JsonNode qNode : questionsNode) {
+            QuestionRequest.QuestionRequestBuilder qBuilder = QuestionRequest.builder();
+
+            qBuilder.content(qNode.path("content").asText("Câu hỏi?").trim());
+
+            // Parse options
+            List<AnswerRequest> options = new ArrayList<>();
+            JsonNode optionsNode = qNode.path("options");
+            if (optionsNode.isArray()) {
+                for (JsonNode oNode : optionsNode) {
+                    String content = oNode.path("content").asText("").trim();
+                    if (content.isBlank()) continue;
+
+                    // Hỗ trợ cả isCorrect, is_correct, correct
+                    boolean isCorrect = oNode.path("isCorrect").asBoolean(false)
+                            || oNode.path("is_correct").asBoolean(false)
+                            || oNode.path("correct").asBoolean(false);
+
+                    options.add(AnswerRequest.builder()
+                            .content(content)
+                            .isCorrect(isCorrect)
+                            .build());
+                }
+            }
+
+            // Đảm bảo có đúng 4 options
+            while (options.size() < 4) {
+                options.add(AnswerRequest.builder().content("Đáp án mặc định").isCorrect(false).build());
+            }
+            if (options.size() > 4) {
+                options = options.subList(0, 4);
+            }
+
+            // Đảm bảo có đúng 1 đáp án đúng
+            long correctCount = options.stream().filter(AnswerRequest::getIsCorrect).count();
+            if (correctCount == 0) {
+                // Tự set cái đầu tiên là đúng nếu AI quên
+                options.get(0).setIsCorrect(true);
+            } else if (correctCount > 1) {
+                // Chỉ giữ cái đầu tiên đúng
+                for (int i = 0; i < options.size(); i++) {
+                    if (i == 0) options.get(i).setIsCorrect(true);
+                    else options.get(i).setIsCorrect(false);
+                }
+            }
+
+            qBuilder.options(options);
+            qBuilder.explanation(qNode.path("explanation").asText("Chưa có giải thích.").trim());
+
+            questions.add(qBuilder.build());
+        }
+
+        builder.questions(questions);
+
+        return builder.build();
     }
 }

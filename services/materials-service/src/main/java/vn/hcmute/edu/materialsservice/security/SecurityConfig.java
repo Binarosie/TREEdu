@@ -63,8 +63,10 @@ public class SecurityConfig {
                                                                 "/api/flashcards/topic/*")
                                                 .permitAll()
                                                 // ========== QUIZ PUBLIC ENDPOINTS (GUEST có thể truy cập) ==========
-                                                .requestMatchers(HttpMethod.GET, "/api/quiz").permitAll() // Danh sách
-                                                                                                          // quiz
+                                                .requestMatchers(HttpMethod.GET, "/api/quiz").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/quiz/*").permitAll()
+
+
                                                 .requestMatchers(HttpMethod.GET, "/api/quiz/*").permitAll() // Chi tiết
                                                                                                             // quiz (id
                                                                                                             // hoặc số)
