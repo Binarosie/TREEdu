@@ -3,10 +3,10 @@ package vn.hcmute.edu.materialsservice.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vn.hcmute.edu.materialsservice.Model.Answer;
-import vn.hcmute.edu.materialsservice.Model.Question;
-import vn.hcmute.edu.materialsservice.Model.Quiz;
-import vn.hcmute.edu.materialsservice.Repository.QuizRepository;
+import vn.hcmute.edu.materialsservice.models.Answer;
+import vn.hcmute.edu.materialsservice.models.Question;
+import vn.hcmute.edu.materialsservice.models.Quiz;
+import vn.hcmute.edu.materialsservice.repository.QuizRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

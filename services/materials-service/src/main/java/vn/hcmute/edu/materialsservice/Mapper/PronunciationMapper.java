@@ -1,8 +1,8 @@
 package vn.hcmute.edu.materialsservice.Mapper;
 
 import org.mapstruct.Mapper;
-import vn.hcmute.edu.materialsservice.Dto.response.PronunciationCheckResponse;
-import vn.hcmute.edu.materialsservice.Model.PronunciationHistory;
+import vn.hcmute.edu.materialsservice.dtos.response.PronunciationCheckResponse;
+import vn.hcmute.edu.materialsservice.models.PronunciationHistory;
 
 import java.util.List;
 

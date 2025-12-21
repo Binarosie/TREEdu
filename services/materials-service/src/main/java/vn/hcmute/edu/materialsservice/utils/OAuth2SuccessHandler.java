@@ -9,8 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import vn.hcmute.edu.materialsservice.Model.User;
-import vn.hcmute.edu.materialsservice.Service.Impl.UserServiceImpl;
+import vn.hcmute.edu.materialsservice.models.User;
+import vn.hcmute.edu.materialsservice.services.impl.UserServiceImpl;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 import vn.hcmute.edu.materialsservice.security.JwtTokenUtil;
 

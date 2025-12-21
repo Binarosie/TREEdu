@@ -2,12 +2,12 @@ package vn.hcmute.edu.materialsservice.Mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vn.hcmute.edu.materialsservice.Dto.request.FlashcardRequest;
-import vn.hcmute.edu.materialsservice.Dto.request.WordRequest;
-import vn.hcmute.edu.materialsservice.Dto.response.FlashcardResponse;
-import vn.hcmute.edu.materialsservice.Dto.response.WordResponse;
-import vn.hcmute.edu.materialsservice.Model.Flashcard;
-import vn.hcmute.edu.materialsservice.Model.Word;
+import vn.hcmute.edu.materialsservice.dtos.request.FlashcardRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.WordRequest;
+import vn.hcmute.edu.materialsservice.dtos.response.FlashcardResponse;
+import vn.hcmute.edu.materialsservice.dtos.response.WordResponse;
+import vn.hcmute.edu.materialsservice.models.Flashcard;
+import vn.hcmute.edu.materialsservice.models.Word;
 
 import java.util.List;
 
