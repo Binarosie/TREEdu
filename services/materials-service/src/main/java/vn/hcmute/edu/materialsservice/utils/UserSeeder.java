@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import vn.hcmute.edu.materialsservice.Model.Admin;
-import vn.hcmute.edu.materialsservice.Model.Member;
-import vn.hcmute.edu.materialsservice.Model.Supporter;
-import vn.hcmute.edu.materialsservice.Model.User;
-import vn.hcmute.edu.materialsservice.Repository.UserRepository;
+import vn.hcmute.edu.materialsservice.models.Admin;
+import vn.hcmute.edu.materialsservice.models.Member;
+import vn.hcmute.edu.materialsservice.models.Supporter;
+import vn.hcmute.edu.materialsservice.models.User;
+import vn.hcmute.edu.materialsservice.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

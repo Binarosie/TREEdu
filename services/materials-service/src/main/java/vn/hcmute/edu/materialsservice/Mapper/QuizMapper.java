@@ -2,13 +2,13 @@ package vn.hcmute.edu.materialsservice.Mapper;
 
 
 import org.mapstruct.*;
-import vn.hcmute.edu.materialsservice.Dto.request.AnswerRequest;
-import vn.hcmute.edu.materialsservice.Dto.request.QuestionRequest;
-import vn.hcmute.edu.materialsservice.Dto.request.QuizRequest;
-import vn.hcmute.edu.materialsservice.Dto.response.*;
-import vn.hcmute.edu.materialsservice.Model.Answer;
-import vn.hcmute.edu.materialsservice.Model.Question;
-import vn.hcmute.edu.materialsservice.Model.Quiz;
+import vn.hcmute.edu.materialsservice.dtos.request.AnswerRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.QuestionRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.QuizRequest;
+import vn.hcmute.edu.materialsservice.dtos.response.*;
+import vn.hcmute.edu.materialsservice.models.Answer;
+import vn.hcmute.edu.materialsservice.models.Question;
+import vn.hcmute.edu.materialsservice.models.Quiz;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package vn.hcmute.edu.materialsservice.Enum;
 
-import vn.hcmute.edu.materialsservice.Model.Admin;
-import vn.hcmute.edu.materialsservice.Model.Member;
-import vn.hcmute.edu.materialsservice.Model.Supporter;
-import vn.hcmute.edu.materialsservice.Model.User;
+import vn.hcmute.edu.materialsservice.models.Admin;
+import vn.hcmute.edu.materialsservice.models.Member;
+import vn.hcmute.edu.materialsservice.models.Supporter;
+import vn.hcmute.edu.materialsservice.models.User;
 
 public enum EUserRole {
     ADMIN,

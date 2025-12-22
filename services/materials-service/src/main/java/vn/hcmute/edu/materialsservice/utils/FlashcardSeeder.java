@@ -3,11 +3,12 @@ package vn.hcmute.edu.materialsservice.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vn.hcmute.edu.materialsservice.Enum.WordForm;
-import vn.hcmute.edu.materialsservice.Model.Flashcard;
-import vn.hcmute.edu.materialsservice.Model.Word;
-import vn.hcmute.edu.materialsservice.Repository.FlashcardRepository;
-import vn.hcmute.edu.materialsservice.Repository.WordRepository;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardType;
+import vn.hcmute.edu.materialsservice.Enum.EWordForm;
+import vn.hcmute.edu.materialsservice.models.Flashcard;
+import vn.hcmute.edu.materialsservice.models.Word;
+import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
+import vn.hcmute.edu.materialsservice.repository.WordRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class FlashcardSeeder {
                                 .description("Các từ và cụm từ chào hỏi thông dụng")
                                 .level(1)
                                 .topic("Chào hỏi")
-                                .type(vn.hcmute.edu.materialsservice.Enum.FlashcardType.SYSTEM)
+                                .type(EFlashcardType.SYSTEM)
                                 .createdBy(null)
                                 .createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
@@ -47,7 +48,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard1.getId())
                                                 .newWord("Xin chào")
                                                 .meaning("Lời chào hỏi lịch sự, thân thiện")
-                                                .wordForm(WordForm.PHRASE)
+                                                .wordForm(EWordForm.PHRASE)
                                                 .phoneme("/sin caːw/")
                                                 .imageURL("https://example.com/images/xinchao.jpg")
                                                 .audioURL("https://example.com/audio/xinchao.mp3")
@@ -58,7 +59,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard1.getId())
                                                 .newWord("Cảm ơn")
                                                 .meaning("Lời cảm ơn, bày tỏ lòng biết ơn")
-                                                .wordForm(WordForm.PHRASE)
+                                                .wordForm(EWordForm.PHRASE)
                                                 .phoneme("/kaːm ɔn/")
                                                 .imageURL("https://example.com/images/camon.jpg")
                                                 .audioURL("https://example.com/audio/camon.mp3")
@@ -69,7 +70,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard1.getId())
                                                 .newWord("Tạm biệt")
                                                 .meaning("Lời chào khi chia tay")
-                                                .wordForm(WordForm.PHRASE)
+                                                .wordForm(EWordForm.PHRASE)
                                                 .phoneme("/taːm biət/")
                                                 .imageURL("https://example.com/images/tambiet.jpg")
                                                 .audioURL("https://example.com/audio/tambiet.mp3")
@@ -84,7 +85,7 @@ public class FlashcardSeeder {
                                 .description("Các động từ hay gặp trong cuộc sống hàng ngày")
                                 .level(1)
                                 .topic("Hoạt động hàng ngày")
-                                .type(vn.hcmute.edu.materialsservice.Enum.FlashcardType.SYSTEM)
+                                .type(EFlashcardType.SYSTEM)
                                 .createdBy(null)
                                 .createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
@@ -96,7 +97,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard2.getId())
                                                 .newWord("Ăn")
                                                 .meaning("Nhai và nuốt thức ăn")
-                                                .wordForm(WordForm.VERB)
+                                                .wordForm(EWordForm.VERB)
                                                 .phoneme("/aːn/")
                                                 .imageURL("https://example.com/images/an.jpg")
                                                 .audioURL("https://example.com/audio/an.mp3")
@@ -107,7 +108,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard2.getId())
                                                 .newWord("Ngủ")
                                                 .meaning("Nghỉ ngơi bằng cách nhắm mắt và để não hoạt động chậm")
-                                                .wordForm(WordForm.VERB)
+                                                .wordForm(EWordForm.VERB)
                                                 .phoneme("/ŋuː/")
                                                 .imageURL("https://example.com/images/ngu.jpg")
                                                 .audioURL("https://example.com/audio/ngu.mp3")
@@ -118,7 +119,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard2.getId())
                                                 .newWord("Học")
                                                 .meaning("Tiếp thu kiến thức hoặc kỹ năng")
-                                                .wordForm(WordForm.VERB)
+                                                .wordForm(EWordForm.VERB)
                                                 .phoneme("/hɔk/")
                                                 .imageURL("https://example.com/images/hoc.jpg")
                                                 .audioURL("https://example.com/audio/hoc.mp3")
@@ -129,7 +130,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard2.getId())
                                                 .newWord("Làm")
                                                 .meaning("Thực hiện một công việc, hành động")
-                                                .wordForm(WordForm.VERB)
+                                                .wordForm(EWordForm.VERB)
                                                 .phoneme("/laːm/")
                                                 .imageURL("https://example.com/images/lam.jpg")
                                                 .audioURL("https://example.com/audio/lam.mp3")
@@ -144,7 +145,7 @@ public class FlashcardSeeder {
                                 .description("Các tính từ thường dùng để miêu tả sự vật")
                                 .level(1)
                                 .topic("Chào hỏi")
-                                .type(vn.hcmute.edu.materialsservice.Enum.FlashcardType.SYSTEM)
+                                .type(EFlashcardType.SYSTEM)
                                 .createdBy(null)
                                 .createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
@@ -156,7 +157,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard3.getId())
                                                 .newWord("Đẹp")
                                                 .meaning("Có hình dáng, màu sắc đẹp mắt, dễ nhìn")
-                                                .wordForm(WordForm.ADJECTIVE)
+                                                .wordForm(EWordForm.ADJECTIVE)
                                                 .phoneme("/ɗɛp/")
                                                 .imageURL("https://example.com/images/dep.jpg")
                                                 .audioURL("https://example.com/audio/dep.mp3")
@@ -167,7 +168,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard3.getId())
                                                 .newWord("Tốt")
                                                 .meaning("Có phẩm chất cao, tốt đẹp")
-                                                .wordForm(WordForm.ADJECTIVE)
+                                                .wordForm(EWordForm.ADJECTIVE)
                                                 .phoneme("/tot/")
                                                 .imageURL("https://example.com/images/tot.jpg")
                                                 .audioURL("https://example.com/audio/tot.mp3")
@@ -178,7 +179,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard3.getId())
                                                 .newWord("Lớn")
                                                 .meaning("Có kích thước, quy mô cao")
-                                                .wordForm(WordForm.ADJECTIVE)
+                                                .wordForm(EWordForm.ADJECTIVE)
                                                 .phoneme("/lɔːn/")
                                                 .imageURL("https://example.com/images/lon.jpg")
                                                 .audioURL("https://example.com/audio/lon.mp3")
@@ -189,7 +190,7 @@ public class FlashcardSeeder {
                                                 .flashcardId(flashcard3.getId())
                                                 .newWord("Nhanh")
                                                 .meaning("Có tốc độ cao, di chuyển mau lẹ")
-                                                .wordForm(WordForm.ADJECTIVE)
+                                                .wordForm(EWordForm.ADJECTIVE)
                                                 .phoneme("/ɲaɪŋ/")
                                                 .imageURL("https://example.com/images/nhanh.jpg")
                                                 .audioURL("https://example.com/audio/nhanh.mp3")

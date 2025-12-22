@@ -1,7 +1,6 @@
 package vn.hcmute.edu.materialsservice.security;
 
-import vn.hcmute.edu.materialsservice.Dto.response.InternalServerError;
-import vn.hcmute.edu.materialsservice.Service.security.CustomUserDetailsService;
+import vn.hcmute.edu.materialsservice.services.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

@@ -1,12 +1,10 @@
 package vn.hcmute.edu.materialsservice.security;
 
 import org.springframework.security.config.Customizer;
-import vn.hcmute.edu.materialsservice.Model.User;
 import org.springframework.http.HttpMethod;
 
-import vn.hcmute.edu.materialsservice.exception.CustomAccessDeniedHandler;
-import vn.hcmute.edu.materialsservice.exception.CustomAuthenticationEntryPoint;
-import vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest;
+import vn.hcmute.edu.materialsservice.exceptions.CustomAccessDeniedHandler;
+import vn.hcmute.edu.materialsservice.exceptions.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

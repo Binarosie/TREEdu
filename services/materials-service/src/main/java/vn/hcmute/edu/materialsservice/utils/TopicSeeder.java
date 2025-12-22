@@ -3,8 +3,8 @@ package vn.hcmute.edu.materialsservice.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vn.hcmute.edu.materialsservice.Model.Topic;
-import vn.hcmute.edu.materialsservice.Repository.TopicRepository;
+import vn.hcmute.edu.materialsservice.models.Topic;
+import vn.hcmute.edu.materialsservice.repository.TopicRepository;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,7 +1,7 @@
 package vn.hcmute.edu.materialsservice.Mapper;
 import org.mapstruct.*;
-import vn.hcmute.edu.materialsservice.Dto.response.TopicResponse;
-import vn.hcmute.edu.materialsservice.Model.Topic;
+import vn.hcmute.edu.materialsservice.dtos.response.TopicResponse;
+import vn.hcmute.edu.materialsservice.models.Topic;
 
 import java.util.List;
 
