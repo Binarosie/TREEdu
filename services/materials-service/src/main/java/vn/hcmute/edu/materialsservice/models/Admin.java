@@ -1,14 +1,14 @@
 package vn.hcmute.edu.materialsservice.models;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@Entity
-@Table(name = "admins")
+@Document(collection = "users")
 public class Admin extends User {
+    // Add Admin-specific fields here if needed
 }

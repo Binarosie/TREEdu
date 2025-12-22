@@ -1,16 +1,14 @@
 package vn.hcmute.edu.materialsservice.models;
 
-
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "members")
 @SuperBuilder
 @NoArgsConstructor
+@Document(collection = "users")
 public class Member extends User {
-
+    // Add Member-specific fields here if needed
 }

@@ -1,8 +1,10 @@
 package vn.hcmute.edu.materialsservice.models;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,37 +15,32 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Document(collection = "users")
 public abstract class User implements Serializable {
     @Id
     private UUID id;
 
+    @Field("_class")  // MongoDB discriminator field
+    private String userType;
+
+    @Field("full_name")
     private String fullName;
 
-    @Column(unique = true, nullable = false)
+    @Field("email")
     private String email;
 
+    @Field("password")
     private String password;
+
+    @Field("is_active")
     private boolean isActive;
+
+    @Field("created_on")
     private LocalDateTime createdOn;
+
+    @Field("modified_on")
     private LocalDateTime modifiedOn;
 
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            id = UUID.randomUUID();
-        }
-        if (this.createdOn == null) {
-            this.createdOn = LocalDateTime.now();
-
-        }
-        this.modifiedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.modifiedOn = LocalDateTime.now();
-    }
+    // MongoDB doesn't use @PrePersist the same way
+    // You'll need to handle this in your service or use MongoTemplate events
 }
