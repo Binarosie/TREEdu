@@ -1,66 +1,225 @@
+# 🌱 TREEdu Backend – Materials Service
 
-## 1. Branch Naming Rules
-Khi phát triển một chức năng mới, bắt buộc tạo branch theo cú pháp: feature(service name)-feature name
+Backend service cho ứng dụng học **Tiếng Việt trực tuyến** TREEdu, cung cấp API để quản lý tài liệu học tập, quiz, flashcard và các tính năng học tập khác.
 
-**Ví dụ:**
-feat(auth)-authen
-## 2. Quy trình tạo Pull Request (PR)
-### 2.1. Tạo branch chức năng
-Luôn tạo branch từ nhánh `dev` đã được cập nhật mới nhất:
+---
 
-git checkout dev
+## ✨ Tính năng chính
 
-git pull origin dev
+- 📚 **Quản lý tài liệu học tập** – API cho bài học, quiz, flashcard
+- 🔐 **Xác thực & Phân quyền** – OAuth2 Google login integration
+- 🎯 **RESTful API** – Chuẩn REST API cho frontend
+- 📊 **Database Management** – Quản lý dữ liệu học tập hiệu quả
 
-git checkout -b feat(service)-featureName
+---
 
-### 2.2. Commit và push code
-git add .
+## 🛠️ Công nghệ sử dụng
 
-git commit -m "feat: mô tả chức năng"
+- ☕ **Java 17+** – Ngôn ngữ lập trình
+- 🍃 **Spring Boot** – Framework chính
+    - 🔒 **Spring Security** – Bảo mật và xác thực
+    - 🔑 **OAuth2 Client** – Google OAuth2 login
+    - 🗄️ **Spring Data JPA** – Tương tác database
+    - 🌐 **Spring Web** – RESTful API
+- 🐘 **MongoDBL** – Cơ sở dữ liệu quan hệ
+- 📦 **Maven** – Dependency management
+- 🐳 **Docker** (optional) – Containerization
 
-git push -u origin feat(service)-featureName
+---
 
-### 2.3. Tạo Pull Request vào nhánh dev
-Base branch: dev
+## 📋 Yêu cầu hệ thống
 
-Compare branch: feat(service)-featureName
+- Java JDK 17 trở lên
+- Maven 3.8+
+- MongoDB
+- IDE: IntelliJ IDEA / Eclipse / VS Code
 
-Nội dung PR yêu cầu:
+---
 
-Mô tả chức năng
+## 🚀 Cài đặt & Chạy dự án
 
-Thay đổi API / Model / DB (nếu có)
+### 1️⃣ Clone repository
 
-Lý do thay đổi
+```bash
+git clone https://github.com/Binarosie/TREEdu.git
+```
 
-Hình minh họa hoặc ví dụ request/response (tùy chọn)
+### 2️⃣ Cấu hình Database
 
-### 2.4. Review và Approve
-PR chỉ được merge khi đã được reviewer approve.
+Tạo database trong MongoDB:
 
-Nếu reviewer yêu cầu chỉnh sửa, tiếp tục commit và push lên cùng branch.
+```sql
+CREATE DATABASE treedu_db;
+```
 
-### 2.5. Merge vào dev
-Sau khi được approve, tiến hành merge theo workflow của team
+### 3️⃣ Cấu hình application.properties
 
-## 3. Cập nhật và làm việc với các chức năng tiếp theo
-### 3.1. Cập nhật nhánh dev sau khi merge
-git checkout dev
+Tạo file `src/main/resources/application.properties`:
 
-git pull origin dev
+```properties
+# Database Configuration
+spring.datasource.url=mongodb://localhost:27017/treedu_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
 
-### 3.2. Tạo branch chức năng mới từ dev
+# Server Port
+server.port=8080
 
-git checkout -b feat(service)-newFeature
+# OAuth2 Google Configuration
+spring.security.oauth2.client.registration.google.client-id=your-client-id
+spring.security.oauth2.client.registration.google.client-secret=your-client-secret
+spring.security.oauth2.client.registration.google.scope=profile,email
+spring.security.oauth2.client.registration.google.redirect-uri={baseUrl}/login/oauth2/code/google
 
-### 3.3. Đồng bộ với nhánh dev khi có thay đổi
-Trong quá trình làm việc, nếu nhánh dev được cập nhật, cần merge vào branch hiện tại:
+# CORS Configuration
+cors.allowed-origins=http://localhost:3000
+```
 
-git checkout dev
+### 4️⃣ Build project
 
-git pull origin dev
+```bash
+mvn clean install
+```
 
-git checkout feat(service)-currentFeature
+### 5️⃣ Chạy ứng dụng
 
-git merge dev
+```bash
+mvn spring-boot:run
+```
+
+Hoặc chạy file JAR:
+
+```bash
+java -jar target/treedu-0.0.1-SNAPSHOT.jar
+```
+
+Server sẽ chạy tại: `http://localhost:8080`
+
+---
+
+## 📂 Cấu trúc thư mục
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── vn/hcmute/edu/materialsservice/
+│   │       ├── TreeduApplication.java    # Main application class
+│   │       ├── config/                            # Cấu hình (Security, CORS, ...)
+│   │       ├── controller/                        # REST API Controllers
+│   │       ├── service/                           # Business Logic
+│   │       ├── repository/                        # Data Access Layer
+│   │       ├── model/                             # Model classes
+│   │       ├── dto/                               # Data Transfer Objects
+│   │       └── exception/                         # Exception handling
+│   └── resources/
+│       ├── application.properties                 # Cấu hình chính
+└── test/                                          # Unit tests
+```
+
+---
+
+## 🔌 API Endpoints (Ví dụ)
+
+### Authentication
+
+```
+POST   /api/auth/login          # Login with credentials
+GET    /oauth2/authorization/google  # Google OAuth2 login
+GET    /api/auth/user           # Get current user info
+```
+
+### Materials Management
+
+```
+GET    /api/materials           # Lấy danh sách tài liệu
+GET    /api/materials/{id}      # Lấy chi tiết tài liệu
+POST   /api/materials           # Tạo tài liệu mới
+PUT    /api/materials/{id}      # Cập nhật tài liệu
+DELETE /api/materials/{id}      # Xóa tài liệu
+```
+
+### Quiz & Flashcard
+
+```
+GET    /api/quiz                # Lấy danh sách quiz
+POST   /api/quiz                # Tạo quiz mới
+GET    /api/flashcard           # Lấy danh sách flashcard
+POST   /api/flashcard           # Tạo flashcard mới
+```
+
+---
+
+## 🐳 Docker (Optional)
+
+### Build Docker image
+
+```bash
+docker build -t treedu-backend .
+```
+
+### Run với Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+---
+
+## 🧪 Testing
+
+Chạy unit tests:
+
+```bash
+mvn test
+```
+
+Chạy integration tests:
+
+```bash
+mvn verify
+```
+
+---
+
+## 🔒 Bảo mật
+
+- ✅ Google OAuth2 authentication
+- ✅ JWT token-based authorization (nếu có)
+- ✅ CORS configuration
+- ✅ SQL injection prevention (JPA/Hibernate)
+- ✅ Password encryption (BCrypt)
+
+---
+
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Tạo Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 👥 Team
+
+- Trần Như Quỳnh - 22110218
+- Bùi Lê Đông Quân - 22110213
+
+---
+
+## 📧 Liên hệ
+
+- Email: 22110218@student.hcmute.edu.vn
+- GitHub: Binarosie(https://github.com/Binarosie)
+
+---
+
