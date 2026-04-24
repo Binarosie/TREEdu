@@ -23,9 +23,11 @@ public class AdminUpdateOtherUserStrategy {
 
     /**
      * Admin update user khác
-     * @param targetUser - User cần update
-     * @param request - Thông tin update
-     * @param currentUserRole - Role của người đang thực hiện update (từ JWT, dựa vào instance type)
+     * 
+     * @param targetUser      - User cần update
+     * @param request         - Thông tin update
+     * @param currentUserRole - Role của người đang thực hiện update (từ JWT, dựa
+     *                        vào instance type)
      */
     public User updateByAdmin(User targetUser, UpdateUserRequest request, EUserRole currentUserRole) {
         // Kiểm tra người thực hiện có phải Admin không
@@ -79,7 +81,7 @@ public class AdminUpdateOtherUserStrategy {
         String email = oldUser.getEmail();
         String password = oldUser.getPassword();
         boolean isActive = oldUser.isActive();
-        UUID oldId = oldUser.getId();
+        String oldId = oldUser.getId(); // ← String thay vì UUID
 
         // Xóa user cũ
         userRepository.delete(oldUser);
@@ -89,7 +91,7 @@ public class AdminUpdateOtherUserStrategy {
         User newUser;
         if (newRole == EUserRole.MEMBER) {
             newUser = Member.builder()
-                    .id(oldId)
+                    .id(oldId) // ← String ID
                     .fullName(fullName)
                     .email(email)
                     .password(password)
@@ -97,7 +99,7 @@ public class AdminUpdateOtherUserStrategy {
                     .build();
         } else if (newRole == EUserRole.SUPPORTER) {
             newUser = Supporter.builder()
-                    .id(oldId)
+                    .id(oldId) // ← String ID
                     .fullName(fullName)
                     .email(email)
                     .password(password)
