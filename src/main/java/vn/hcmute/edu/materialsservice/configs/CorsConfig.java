@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000")  // Frontend React của bạn
+                        .allowedOrigins("http://localhost:3000", "http://192.168.1.67:8081")  // Frontend React của bạn
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         //.exposedHeaders("Authorization")  // THÊM: expose Authorization

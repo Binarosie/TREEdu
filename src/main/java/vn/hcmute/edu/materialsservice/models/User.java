@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,9 +17,9 @@ import java.util.UUID;
 @Document(collection = "users")
 public abstract class User implements Serializable {
     @Id
-    private UUID id;
+    private String id;
 
-    @Field("_class")  // MongoDB discriminator field
+    @Field("_class")
     private String userType;
 
     @Field("full_name")
@@ -41,6 +40,4 @@ public abstract class User implements Serializable {
     @Field("modified_on")
     private LocalDateTime modifiedOn;
 
-    // MongoDB doesn't use @PrePersist the same way
-    // You'll need to handle this in your service or use MongoTemplate events
 }

@@ -46,6 +46,7 @@ public class UserServiceImpl implements iUserService {
     private final List<iUserUpdateStrategy> updateStrategies;
 
     private final AdminUpdateOtherUserStrategy adminUpdateOtherUserStrategy;
+
     private iUserFactory getFactory(String userType) {
         return userFactories.stream()
                 .filter(factory -> factory.supports(userType))
@@ -69,7 +70,12 @@ public class UserServiceImpl implements iUserService {
         iUserFactory factory = getFactory("MEMBER");
         Member user = (Member) factory.createUser(request);
 
-        try {// ≥≤>
+        // ← Sinh ID dạng String
+        user.setId(java.util.UUID.randomUUID().toString());
+        user.setCreatedOn(java.time.LocalDateTime.now());
+        user.setModifiedOn(java.time.LocalDateTime.now());
+
+        try {
             // random 6 chữ số
             int code = (int) ((Math.random() * 900000) + 100000);
             String verificationCode = String.valueOf(code);
@@ -110,17 +116,18 @@ public class UserServiceImpl implements iUserService {
                 });
     }
 
-//    @Override
-//    public User createManager(CreateUserRequest request) {
-//        if (userRepository.existsByEmail(request.getEmail())) {
-//            throw new ConflictError("User already exists with email: " + request.getEmail());
-//        }
-//
-//        iUserFactory factory = getFactory("SUPPORTER");
-////        iUserFactory factory = getFactory(request.getUserType());
-//        User user = factory.createUser(request);
-//        return userRepository.save(user);
-//    }
+    // @Override
+    // public User createManager(CreateUserRequest request) {
+    // if (userRepository.existsByEmail(request.getEmail())) {
+    // throw new ConflictError("User already exists with email: " +
+    // request.getEmail());
+    // }
+    //
+    // iUserFactory factory = getFactory("SUPPORTER");
+    //// iUserFactory factory = getFactory(request.getUserType());
+    // User user = factory.createUser(request);
+    // return userRepository.save(user);
+    // }
 
     @Override
     public User createManager(CreateUserRequest request) {
@@ -145,12 +152,12 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public Optional<User> getUserById(UUID id) {
+    public Optional<User> getUserById(String id) { // ← UUID → String
         return userRepository.findById(id);
     }
 
     @Override
-    public UserInfoDTO getUserInfoById(UUID id) {
+    public UserInfoDTO getUserInfoById(String id) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -160,7 +167,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public UserDetailDTO getUserDetailById(UUID id) {
+    public UserDetailDTO getUserDetailById(String id) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
         return UserDetailDTO.mapTo(user);
@@ -177,13 +184,13 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public boolean existsByUserIdAndIsActive(UUID userId, boolean isActive) {
+    public boolean existsByUserIdAndIsActive(String userId, boolean isActive) { // ← UUID → String
         return userRepository.existsByIdAndIsActive(userId, isActive);
     }
 
     // Dùng lại CreateUserRequest để update
     @Override
-    public User updateMyProfile(UUID id, UpdateProfileRequest request) {
+    public User updateMyProfile(String id, UpdateProfileRequest request) { // ← UUID → String
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
             throw new NotFoundError("User not found with id: " + id);
@@ -195,7 +202,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public User updateUserByID(UUID id, UpdateUserRequest request) {
+    public User updateUserByID(String id, UpdateUserRequest request) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -203,8 +210,9 @@ public class UserServiceImpl implements iUserService {
         return userRepository.save(user);
     }
 
-    @Transactional  // ← Thêm annotation này vào method
-    public User adminUpdateUser(UUID targetUserId, UpdateUserRequest request, EUserRole currentUserRole) {
+    @Transactional // ← Thêm annotation này vào method
+    public User adminUpdateUser(String targetUserId, UpdateUserRequest request, EUserRole currentUserRole) { // ← UUID →
+                                                                                                             // String
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + targetUserId));
 
@@ -221,7 +229,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public boolean changePasswordById(UUID id, String newPassword) {
+    public boolean changePasswordById(String id, String newPassword) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -239,7 +247,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public void deactivateUser(UUID id) {
+    public void deactivateUser(String id) { // ← UUID → String
         // Soft delete user by setting isActive to false
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
@@ -251,7 +259,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public void activateUser(UUID id) {
+    public void activateUser(String id) { // ← UUID → String
         // Soft delete user by setting isActive to false
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
@@ -289,7 +297,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
+    public Optional<User> findById(String id) { // ← UUID → String
         return userRepository.findById(id);
     }
 }

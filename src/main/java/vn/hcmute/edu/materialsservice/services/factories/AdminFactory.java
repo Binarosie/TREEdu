@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -23,11 +24,13 @@ public class AdminFactory implements iUserFactory {
     @Override
     public User createUser(CreateUserRequest request) {
         return Admin.builder()
-                .id(UUID.randomUUID())
+                .id(java.util.UUID.randomUUID().toString())
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .isActive(true)
+                .createdOn(LocalDateTime.now())
+                .modifiedOn(LocalDateTime.now())
                 .build();
     }
 }

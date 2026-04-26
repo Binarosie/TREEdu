@@ -3,6 +3,8 @@ package vn.hcmute.edu.materialsservice.controllers;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +16,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 import vn.hcmute.edu.materialsservice.dtos.UserInfoDTO;
 import vn.hcmute.edu.materialsservice.dtos.request.users.LoginRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.users.ResetPasswordRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.users.VerifyOtpRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.BadRequestError;
 import vn.hcmute.edu.materialsservice.dtos.response.InternalServerError;
 import vn.hcmute.edu.materialsservice.dtos.response.SuccessResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.UnauthorizedError;
-import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.repository.UserRepository;
 import vn.hcmute.edu.materialsservice.services.EmailService;
 import vn.hcmute.edu.materialsservice.services.impl.UserServiceImpl;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 import vn.hcmute.edu.materialsservice.security.JwtTokenUtil;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -43,7 +44,7 @@ public class AuthController {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private EmailService emailVerificationService;
+    private EmailService emailService;
 
     @Autowired
     private UserServiceImpl userServiceImpl;
@@ -54,35 +55,205 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // @PostMapping("/register")
-    // public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-    //
-    // // 1. Check password match
-    // if (!request.getPassword().equals(request.getRePassword())) {
-    // return ResponseEntity.badRequest()
-    // .body(new BadRequestError("Mật khẩu nhập lại không khớp"));
-    // }
-    //
-    // // 🔥 FIX: GỌI SERVICE THAY VÌ TỰ TẠO USER TRONG CONTROLLER
-    // vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest
-    // createUserRequest = new
-    // vn.hcmute.edu.materialsservice.Dto.request.users.CreateUserRequest();
-    // createUserRequest.setEmail(request.getEmail());
-    // createUserRequest.setFullName(request.getFullName());
-    // createUserRequest.setPassword(request.getPassword());
-    // createUserRequest.setUserType("MEMBER");
-    //
-    // // Service sẽ check duplicate, tạo user, gửi email verification
-    // userServiceImpl.createMember(createUserRequest);
-    //
-    // SuccessResponse response = new SuccessResponse(
-    // "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
-    // HttpStatus.CREATED.value(),
-    // null,
-    // LocalDateTime.now());
-    //
-    // return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    // }
+    // ─── Email Verification (OTP) ────────────────────────────────────────────────
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        log.info("🔐 Verifying OTP for email: {}", request.getEmail());
+
+        // Một lời gọi duy nhất — kiểm tra hết hạn + replay + xoá luôn sau khi dùng
+        EmailService.OtpResult result =
+                emailService.verifyAndConsumeOtp(request.getEmail(), request.getOtp());
+
+        switch (result) {
+            case EXPIRED:
+                log.warn("OTP expired for email: {}", request.getEmail());
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới."));
+            case WRONG_CODE:
+                log.warn("OTP wrong code for email: {}", request.getEmail());
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Mã OTP không chính xác."));
+            case NOT_FOUND:
+            case ALREADY_USED:
+                log.warn("OTP invalid or already used for email: {}", request.getEmail());
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Mã OTP không hợp lệ hoặc đã được sử dụng."));
+            default:
+                break; // SUCCESS — tiếp tục
+        }
+
+        // Tìm user
+        var optUser = userServiceImpl.findByEmail(request.getEmail());
+        if (optUser.isEmpty()) {
+            log.error("User not found for email: {}", request.getEmail());
+            return ResponseEntity.badRequest().body(
+                    new BadRequestError("Không tìm thấy tài khoản."));
+        }
+        var user = optUser.get();
+
+        // Đã active rồi
+        if (user.isActive()) {
+            log.info("User already active for email: {}", request.getEmail());
+            return ResponseEntity.ok(new SuccessResponse(
+                    "Tài khoản đã được kích hoạt trước đó.",
+                    HttpStatus.OK.value(), null, LocalDateTime.now()));
+        }
+
+        // Xóa các bản ghi inactive trùng email rồi active user
+        userRepository.deleteByEmailAndIsActive(request.getEmail(), false);
+        user.setActive(true);
+        userRepository.save(user);
+
+        log.info("✅ Email verified successfully for: {}", request.getEmail());
+
+        return ResponseEntity.ok(new SuccessResponse(
+                "Xác thực email thành công! Bạn có thể đăng nhập ngay bây giờ.",
+                HttpStatus.OK.value(), null, LocalDateTime.now()));
+    }
+
+    // ─── Forgot / Reset Password (OTP) ───────────────────────────────────────────
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
+        log.info("📧 Forgot password request for email: {}", email);
+
+        var optUser = userServiceImpl.findByEmail(email);
+        if (optUser.isEmpty()) {
+            // Trả về 200 dù không tìm thấy email để tránh email enumeration attack
+            log.warn("Email not found (returning generic response): {}", email);
+            return ResponseEntity.ok(new SuccessResponse(
+                    "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi.",
+                    HttpStatus.OK.value(), null, LocalDateTime.now()));
+        }
+
+        try {
+            String otp = emailService.generateOtp();
+            emailService.sendResetPasswordEmail(email, otp);
+            log.info("Reset password OTP sent to: {}", email);
+        } catch (MessagingException e) {
+            log.error("Failed to send reset password email: {}", e.getMessage());
+            throw new InternalServerError("Không thể gửi email. Vui lòng thử lại sau.");
+        }
+
+        return ResponseEntity.ok(new SuccessResponse(
+                "Mã OTP đặt lại mật khẩu đã được gửi về email của bạn. Mã có hiệu lực trong 5 phút.",
+                HttpStatus.OK.value(), null, LocalDateTime.now()));
+    }
+
+    // ─── Resend OTP (for signup or reset password) ────────────────────────────────
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(
+            @RequestParam("email") String email,
+            @RequestParam("type") String type) {
+        log.info("🔄 Resend OTP request for email: {} with type: {}", email, type);
+
+        // Validate type
+        if (!type.equals("SIGNUP") && !type.equals("RESET_PASSWORD")) {
+            log.warn("Invalid OTP type: {}", type);
+            return ResponseEntity.badRequest().body(
+                    new BadRequestError("Loại OTP không hợp lệ. Vui lòng sử dụng SIGNUP hoặc RESET_PASSWORD."));
+        }
+
+        try {
+            // 1. Kiểm tra email có tồn tại không (tùy theo type)
+            var optUser = userServiceImpl.findByEmail(email);
+
+            if (type.equals("SIGNUP")) {
+                // Cho phép resend nếu account chưa active
+                if (optUser.isEmpty()) {
+                    log.warn("Email not found for signup resend: {}", email);
+                    return ResponseEntity.badRequest().body(
+                            new BadRequestError("Email này chưa được đăng ký trong hệ thống."));
+                }
+                var user = optUser.get();
+                if (user.isActive()) {
+                    log.info("User already active (no need resend): {}", email);
+                    return ResponseEntity.badRequest().body(
+                            new BadRequestError("Tài khoản này đã được kích hoạt rồi. Hãy đăng nhập."));
+                }
+            } else if (type.equals("RESET_PASSWORD")) {
+                // Cho phép resend nếu account tồn tại
+                if (optUser.isEmpty()) {
+                    log.warn("Email not found for reset password resend: {}", email);
+                    // Trả về generic message để tránh email enumeration attack
+                    return ResponseEntity.ok(new SuccessResponse(
+                            "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi.",
+                            HttpStatus.OK.value(), null, LocalDateTime.now()));
+                }
+            }
+
+            // 2. Tạo OTP mới (dùng EmailService.generateOtp())
+            String otp = emailService.generateOtp();
+
+            // 3. Gửi email theo type
+            if (type.equals("SIGNUP")) {
+                emailService.sendVerificationEmail(email, otp);
+                log.info("Signup verification OTP resent to: {}", email);
+                return ResponseEntity.ok(new SuccessResponse(
+                        "Mã OTP xác thực email đã được gửi lại. Mã có hiệu lực trong 5 phút.",
+                        HttpStatus.OK.value(), null, LocalDateTime.now()));
+            } else {
+                emailService.sendResetPasswordEmail(email, otp);
+                log.info("Reset password OTP resent to: {}", email);
+                return ResponseEntity.ok(new SuccessResponse(
+                        "Mã OTP đặt lại mật khẩu đã được gửi lại. Mã có hiệu lực trong 5 phút.",
+                        HttpStatus.OK.value(), null, LocalDateTime.now()));
+            }
+
+        } catch (MessagingException e) {
+            log.error("Failed to resend OTP to email: {}", email, e);
+            throw new InternalServerError("Không thể gửi email. Vui lòng thử lại sau.");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        String email = request.getEmail();
+        String newPassword = request.getNewPassword();
+
+        log.info("🔑 Reset password request for email: {}", email);
+
+        // Xác thực OTP
+        EmailService.OtpResult result =
+                emailService.verifyAndConsumeOtp(email, request.getOtp());
+
+        switch (result) {
+            case EXPIRED:
+                log.warn("OTP expired for password reset: {}", email);
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới."));
+            case WRONG_CODE:
+                log.warn("OTP wrong code for password reset: {}", email);
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Mã OTP không chính xác."));
+            case NOT_FOUND:
+            case ALREADY_USED:
+                log.warn("OTP invalid or already used for password reset: {}", email);
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Mã OTP không hợp lệ hoặc đã được sử dụng."));
+            default:
+                break; // SUCCESS
+        }
+
+        // Tìm user
+        var optUser = userServiceImpl.findByEmail(email);
+        if (optUser.isEmpty()) {
+            log.error("User not found for password reset: {}", email);
+            return ResponseEntity.badRequest().body(
+                    new BadRequestError("Không tìm thấy tài khoản."));
+        }
+        var user = optUser.get();
+
+        // Cập nhật mật khẩu
+        userRepository.deleteByEmailAndIdNot(email, user.getId());
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        log.info("✅ Password reset successfully for: {}", email);
+
+        return ResponseEntity.ok(new SuccessResponse(
+                "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.",
+                HttpStatus.OK.value(), null, LocalDateTime.now()));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -92,260 +263,65 @@ public class AuthController {
         String token = jwtTokenUtil.generateToken(userDetails);
 
         Cookie jwtCookie = new Cookie("JWT", token);
-        jwtCookie.setHttpOnly(true); // Không cho phép truy cập từ JavaScript để giảm rủi ro XSS
+        jwtCookie.setHttpOnly(true); // Chỉ JavaScript engine có thể truy cập
+        jwtCookie.setSecure(true); // Production: bắt buộc HTTPS
         jwtCookie.setPath("/"); // Áp dụng cho toàn bộ ứng dụng
-
+        jwtCookie.setMaxAge(3600); // 1 hour
         response.addCookie(jwtCookie);
 
-        SuccessResponse successResponse = new SuccessResponse("Login successful", HttpStatus.OK.value(), token,
-                LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
-    }
+        log.info("User logged in: {}", userDetails.getUsername());
 
-//    @PostMapping("/login/oauth2")
-//    public ResponseEntity<?> loginOAuth2(@RequestBody Map<String, String> oauthUser,
-//                                         HttpServletResponse response) {
-//        // Xử lý đăng nhập với OAuth2
-//        String email = oauthUser.get("email");
-//        String name = oauthUser.get("name");
-//
-//        // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
-//        User user = userServiceImpl.findByEmail(email).orElse(null);
-//        if (user == null) {
-//            user = userServiceImpl.createOAuthMember(email, name);
-//        }
-//
-//        CustomUserDetails userDetails = new CustomUserDetails(user);
-//        String token = jwtTokenUtil.generateToken(userDetails);
-//
-//        Cookie jwtCookie = new Cookie("JWT", token);
-//        jwtCookie.setHttpOnly(true); // Không cho phép truy cập từ JavaScript để giảm rủi ro XSS
-//        jwtCookie.setPath("/"); // Áp dụng cho toàn bộ ứng dụng
-//
-//        response.addCookie(jwtCookie);
-//
-//        SuccessResponse successResponse = new SuccessResponse("Login successful", HttpStatus.OK.value(), token,
-//                LocalDateTime.now());
-//        return ResponseEntity.ok(successResponse);
-//    }
+        return ResponseEntity.ok(new SuccessResponse(
+                "Login successful", HttpStatus.OK.value(), token, LocalDateTime.now()));
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        // Tạo cookie mới có tên "JWT" với giá trị rỗng và maxAge = 0 để xóa cookie khỏi
-        // trình duyệt
         Cookie jwtCookie = new Cookie("JWT", null);
         jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(0);
-
         response.addCookie(jwtCookie);
 
-        SuccessResponse successResponse = new SuccessResponse("Logout successful", HttpStatus.OK.value(), null,
-                LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
-    }
-    @GetMapping("/verify-email-link")
-    public RedirectView verifyEmailFromLink(
-            @RequestParam("email") String email,
-            @RequestParam("code") String code) {
+        log.info("User logged out");
 
-        try {
-            // 1. Lấy code đã lưu
-            String storedCode =  emailVerificationService.getVerificationCode(email);
-
-            if (storedCode == null) {
-                // Code không tồn tại hoặc đã hết hạn
-                return new RedirectView(
-                        "http://localhost:3000/verify-result?status=error&message=" +
-                                URLEncoder.encode("Mã xác thực đã hết hạn hoặc không tồn tại",
-                                        StandardCharsets.UTF_8)
-                );
-            }
-
-            // 2. Kiểm tra code có đúng không
-            if (!storedCode.equals(code)) {
-                return new RedirectView(
-                        "http://localhost:3000/verify-result?status=error&message=" +
-                                URLEncoder.encode("Mã xác thực không chính xác",
-                                        StandardCharsets.UTF_8)
-                );
-            }
-
-            // 3. Tìm user
-            var optionalUser = userServiceImpl.findByEmail(email);
-            if (optionalUser.isEmpty()) {
-                return new RedirectView(
-                        "http://localhost:3000/verify-result?status=error&message=" +
-                                URLEncoder.encode("Không tìm thấy tài khoản",
-                                        StandardCharsets.UTF_8)
-                );
-            }
-
-            var user = optionalUser.get();
-
-            // 4. Kiểm tra đã active chưa
-            if (user.isActive()) {
-                return new RedirectView(
-                        "http://localhost:3000/verify-result?status=already&message=" +
-                                URLEncoder.encode("Tài khoản đã được kích hoạt trước đó",
-                                        StandardCharsets.UTF_8)
-                );
-            }
-
-            // 5. Xóa các user inactive cùng email (dọn duplicate)
-            userRepository.deleteByEmailAndIsActive(email, false);
-
-            // 6. Active user
-            user.setActive(true);
-            userRepository.save(user);
-
-            // 7. Xóa verification code
-            emailVerificationService.removeVerificationCode(email);
-
-            // 8. Redirect về FE với trạng thái success
-            return new RedirectView(
-                    "http://localhost:3000/verify-result?status=success&message=" +
-                            URLEncoder.encode("Xác thực email thành công!",
-                                    StandardCharsets.UTF_8)
-            );
-
-        } catch (Exception e) {
-            // Bắt mọi lỗi khác
-            return new RedirectView(
-                    "http://localhost:3000/verify-result?status=error&message=" +
-                            URLEncoder.encode("Đã xảy ra lỗi: " + e.getMessage(),
-                                    StandardCharsets.UTF_8)
-            );
-        }
+        return ResponseEntity.ok(new SuccessResponse(
+                "Logout successful", HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email,
-                                            @RequestParam("newPassword") String newPassword) {
-        var optUser = userServiceImpl.findByEmail(email);
-        if (optUser.isEmpty()) {
-            BadRequestError error = new BadRequestError("Không tìm thấy user với email: " + email);
-            return ResponseEntity.badRequest().body(error);
-        }
-
-        try {
-            int code = (int) ((Math.random() * 900000) + 100000);
-            String verifyCode = String.valueOf(code);
-
-            emailVerificationService.sendResetPasswordEmail(email, verifyCode, newPassword);
-        } catch (MessagingException e) {
-            throw new InternalServerError("Không thể gửi email xác thực.");
-        }
-
-        SuccessResponse successResponse = new SuccessResponse(
-                "Đã gửi mã xác thực đặt lại mật khẩu về email của bạn. Vui lòng kiểm tra hộp thư!",
-                HttpStatus.OK.value(), null, LocalDateTime.now());
-
-        return ResponseEntity.ok(successResponse);
-    }
-
-    @GetMapping("/reset-password-link")
-    public RedirectView resetPasswordFromLink(
-            @RequestParam("email") String email,
-            @RequestParam("code") String code,
-            @RequestParam("newPassword") String newPassword
-    ) {
-        try {
-            // 1. Lấy code đã lưu
-            String storedCode = emailVerificationService.getVerificationCode(email);
-
-            if (storedCode == null) {
-                return new RedirectView(
-                        "http://localhost:3000/login?status=error&message=" +
-                                URLEncoder.encode(
-                                        "Mã đặt lại mật khẩu đã hết hạn hoặc không tồn tại",
-                                        StandardCharsets.UTF_8
-                                )
-                );
-            }
-
-            // 2. So sánh code
-            if (!storedCode.equals(code)) {
-                return new RedirectView(
-                        "http://localhost:3000/login?status=error&message=" +
-                                URLEncoder.encode(
-                                        "Mã xác thực không chính xác",
-                                        StandardCharsets.UTF_8
-                                )
-                );
-            }
-
-            // 3. Tìm user
-            var optUser = userServiceImpl.findByEmail(email);
-            if (optUser.isEmpty()) {
-                return new RedirectView(
-                        "http://localhost:3000/login?status=error&message=" +
-                                URLEncoder.encode(
-                                        "Không tìm thấy tài khoản với email này",
-                                        StandardCharsets.UTF_8
-                                )
-                );
-            }
-
-            var user = optUser.get();
-
-            // 4. Dọn duplicate user (nếu có)
-            userRepository.deleteByEmailAndIdNot(email, user.getId());
-
-            // 5. Update password
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-
-            // 6. Xóa verification code
-            emailVerificationService.removeVerificationCode(email);
-
-            // 7. Redirect về trang login (success)
-            return new RedirectView(
-                    "http://localhost:3000/login?status=success&message=" +
-                            URLEncoder.encode(
-                                    "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.",
-                                    StandardCharsets.UTF_8
-                            )
-            );
-
-        } catch (Exception e) {
-            return new RedirectView(
-                    "http://localhost:3000/login?status=error&message=" +
-                            URLEncoder.encode(
-                                    "Đã xảy ra lỗi: " + e.getMessage(),
-                                    StandardCharsets.UTF_8
-                            )
-            );
-        }
-    }
-
+    // ─── Change Password (authenticated) ─────────────────────────────────────────
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_SUPPORTER')")
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestParam("oldPassword") String oldPassword,
-                                            @RequestParam("newPassword") String newPassword,
-                                            Authentication authentication) {
+            @RequestParam("newPassword") String newPassword,
+            Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new BadCredentialsException("Chưa xác thực người dùng!");
         }
+
         CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
         var user = currentUserDetails.getUser();
 
+        log.info("Password change request for user: {}", user.getEmail());
+
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            UnauthorizedError error = new UnauthorizedError("Mật khẩu cũ không chính xác!");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            log.warn("Old password incorrect for user: {}", user.getEmail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new UnauthorizedError("Mật khẩu cũ không chính xác!"));
         }
 
-        // AUTO-CLEAN: XÓA TẤT CẢ USER TRÙNG EMAIL KHÁC (giữ lại user hiện tại)
         userRepository.deleteByEmailAndIdNot(user.getEmail(), user.getId());
-
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        SuccessResponse successResponse = new SuccessResponse("Đổi mật khẩu thành công!", HttpStatus.OK.value(), null,
-                LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
+        log.info("Password changed successfully for user: {}", user.getEmail());
+
+        return ResponseEntity.ok(new SuccessResponse(
+                "Đổi mật khẩu thành công!", HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
 
+    // ─── Current User
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_SUPPORTER')")
     @PostMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
@@ -356,18 +332,16 @@ public class AuthController {
             throw new UsernameNotFoundException("Không tìm thấy người dùng!");
         }
 
-        // Chỉ trả về thông tin cần thiết
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setId(user.getId().toString());
-        userInfoDTO.setEmail(user.getEmail());
-        userInfoDTO.setName(user.getFullName());
-        userInfoDTO.setRole(currentUserDetails.getAuthorities().iterator().next().getAuthority());
+        UserInfoDTO dto = new UserInfoDTO();
+        dto.setId(user.getId().toString());
+        dto.setEmail(user.getEmail());
+        dto.setName(user.getFullName());
+        dto.setRole(currentUserDetails.getAuthorities().iterator().next().getAuthority());
 
-        if (user instanceof Member) {
-            Member member = (Member) user;
-        }
-        SuccessResponse successResponse = new SuccessResponse("Lấy thông tin người dùng thành công!",
-                HttpStatus.OK.value(), userInfoDTO, LocalDateTime.now());
-        return ResponseEntity.ok(successResponse);
+        log.info("Retrieved current user info: {}", user.getEmail());
+
+        return ResponseEntity.ok(new SuccessResponse(
+                "Lấy thông tin người dùng thành công!",
+                HttpStatus.OK.value(), dto, LocalDateTime.now()));
     }
 }
