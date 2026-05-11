@@ -26,7 +26,7 @@ public class FlashcardController {
 
     private final iFlashcardService flashcardService;
 
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<ApiResponse<FlashcardResponse>> createFlashcard(
             @Valid @RequestBody FlashcardRequest request,

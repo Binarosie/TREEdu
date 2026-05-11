@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import vn.hcmute.edu.materialsservice.dtos.MemberProfileDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserDetailDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserInfoDTO;
 import vn.hcmute.edu.materialsservice.dtos.request.users.CreateUserRequest;
@@ -22,6 +23,7 @@ import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateUserRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.*;
 import vn.hcmute.edu.materialsservice.Enum.EUserRole;
 import vn.hcmute.edu.materialsservice.models.Admin;
+import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.models.Supporter;
 import vn.hcmute.edu.materialsservice.models.User;
 import vn.hcmute.edu.materialsservice.repository.UserRepository;
@@ -288,5 +290,36 @@ public class UserInfoAPIController {
         } else {
             return id; // ← Return String id directly
         }
+    }
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+    public ResponseEntity<MemberProfileDTO> getMyProfile(Authentication authentication) {
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        String userId = userDetails.getUser().getId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundError("User not found"));
+
+        if (!(user instanceof Member member)) {
+            throw new BadRequestError("User is not a member");
+        }
+
+        MemberProfileDTO dto = MemberProfileDTO.builder()
+                .id(member.getId())
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                .streakCount(member.getStreakCount())
+                .longestStreak(member.getLongestStreak())
+                .xp(member.getXp())
+                .level(member.getLevel())
+                .totalQuizCompleted(member.getTotalQuizCompleted())
+                .totalFlashcardLearned(member.getTotalFlashcardLearned())
+                .lastStudyDate(member.getLastStudyDate())
+                .build();
+
+        return ResponseEntity.ok(dto);
     }
 }
