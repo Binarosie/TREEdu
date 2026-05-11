@@ -10,6 +10,8 @@ import vn.hcmute.edu.materialsservice.dtos.response.*;
 import vn.hcmute.edu.materialsservice.models.*;
 import vn.hcmute.edu.materialsservice.repository.QuizAttemptRepository;
 import vn.hcmute.edu.materialsservice.repository.QuizRepository;
+import vn.hcmute.edu.materialsservice.repository.UserRepository;
+import vn.hcmute.edu.materialsservice.services.IStreakService;
 import vn.hcmute.edu.materialsservice.services.iQuizAttemptService;
 import vn.hcmute.edu.materialsservice.exceptions.ResourceNotFoundException;
 
@@ -26,6 +28,8 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
         private final QuizRepository quizRepository;
         private final QuizAttemptRepository attemptRepository;
         private final vn.hcmute.edu.materialsservice.Mapper.QuizMapper quizMapper;
+        private final IStreakService streakService;
+        private final UserRepository userRepository;
 
         @Override
         public StartQuizResponse startQuiz(String quizId, String userId) {
@@ -46,6 +50,7 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .build();
 
                 QuizAttempt saved = attemptRepository.save(attempt);
+
                 log.info("✅ Started quiz attempt: {} for user: {}", saved.getId(), userId);
 
                 QuizResponse quizResponse = quizMapper.toResponse(quiz);
@@ -125,6 +130,34 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                 attempt.setSubmitted(true); // ✅ Đánh dấu đã submit
                 attempt.setSubmittedAt(LocalDateTime.now());
                 attemptRepository.save(attempt);
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+                if (user instanceof Member member) {
+
+                        // 🔥 Update streak
+                        streakService.updateStreak(member);
+
+                        // ⭐ XP
+                        int currentXp = member.getXp() != null
+                                ? member.getXp()
+                                : 0;
+
+                        member.setXp(currentXp + 10);
+
+                        // 📚 Total quiz completed
+                        int totalQuiz = member.getTotalQuizCompleted() != null
+                                ? member.getTotalQuizCompleted()
+                                : 0;
+
+                        member.setTotalQuizCompleted(totalQuiz + 1);
+
+                        // 🎮 Level system
+                        member.setLevel((member.getXp() / 100) + 1);
+
+                        // 💾 Save DB
+                        userRepository.save(member);
+                }
 
                 log.info("✅ Quiz submitted: attemptId={}, score={}/{}", attempt.getId(), correctCount, quiz.getQuestionCount());
 

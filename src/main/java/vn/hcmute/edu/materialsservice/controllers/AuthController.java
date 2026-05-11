@@ -284,7 +284,7 @@ public class AuthController {
         jwtCookie.setMaxAge(0);
         response.addCookie(jwtCookie);
 
-        log.info("User logged out");
+        log.info("User logged out"); 
 
         return ResponseEntity.ok(new SuccessResponse(
                 "Logout successful", HttpStatus.OK.value(), null, LocalDateTime.now()));

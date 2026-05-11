@@ -33,8 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         System.out.println("=== JWT FILTER === " + request.getRequestURI());
 
@@ -46,19 +46,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        // Extract token from cookies
-        if (request.getCookies() != null) {
+        // 1. THỬ LẤY TOKEN TỪ HEADER (Dành cho App Mobile)
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+            System.out.println("JWT token found in Header Authorization");
+        }
+
+        // 2. NẾU HEADER KHÔNG CÓ, THỬ LẤY TỪ COOKIE (Dành cho Web)
+        if (token == null && request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                System.out.println("Found cookie: " + cookie.getName());
                 if ("JWT".equals(cookie.getName())) {
                     token = cookie.getValue();
-                    System.out.println("JWT token found: " + token.substring(0, Math.min(20, token.length())) + "...");
+                    System.out.println("JWT token found in Cookie");
                     break;
                 }
             }
         }
 
-        System.out.println("Token from cookie JWT: " + (token != null ? "FOUND" : "NOT FOUND"));
+        System.out.println("Final Token status: " + (token != null ? "FOUND" : "NOT FOUND"));
 
         // Only process if token exists
         if (token != null) {
