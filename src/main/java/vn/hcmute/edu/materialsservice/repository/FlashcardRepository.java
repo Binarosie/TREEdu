@@ -4,8 +4,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FlashcardRepository extends MongoRepository<Flashcard, String> {
@@ -45,4 +47,31 @@ public interface FlashcardRepository extends MongoRepository<Flashcard, String> 
      */
     @Query("{'title': {$regex: ?0, $options: 'i'}}")
     List<Flashcard> findByTitleContainingIgnoreCase(String title);
+
+    /**
+     * Tìm flashcard PUBLIC
+     */
+    List<Flashcard> findByVisibility(EFlashcardVisibility visibility);
+
+    /**
+     * Tìm flashcard PUBLIC của một topic
+     */
+    @Query("{'visibility': ?0, 'topic': {$regex: ?1, $options: 'i'}}")
+    List<Flashcard> findByVisibilityAndTopic(EFlashcardVisibility visibility, String topic);
+
+    /**
+     * Tìm flashcard PUBLIC của một level
+     */
+    List<Flashcard> findByVisibilityAndLevel(EFlashcardVisibility visibility, Integer level);
+
+    /**
+     * Tìm flashcard của một user
+     */
+    List<Flashcard> findByCreatedBy(String createdBy);
+
+    /**
+     * Tìm flashcard PUBLIC không bị vi phạm
+     */
+    @Query("{'visibility': ?0, 'isViolated': false}")
+    List<Flashcard> findPublicNotViolated(EFlashcardVisibility visibility);
 }

@@ -18,8 +18,7 @@ public class WordResponse {
     private String meaning;
     private EWordForm wordForm;
     private String phoneme;
-    private String imageURL;
-    private String audioURL;
+    private String audioURL; // Audio URL từ FPT AI TTS
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

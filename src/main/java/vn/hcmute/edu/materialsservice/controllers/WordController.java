@@ -42,10 +42,6 @@ public class WordController {
             @PathVariable String flashcardId,
             Authentication authentication) {
 
-        System.out.println("=== CONTROLLER GET WORDS ===");
-        System.out.println("FlashcardId: " + flashcardId);
-        System.out.println("Authentication in controller: " + authentication);
-        System.out.println("============================");
 
         List<WordResponse> responses = wordService.getWordsByFlashcardId(flashcardId, authentication);
 

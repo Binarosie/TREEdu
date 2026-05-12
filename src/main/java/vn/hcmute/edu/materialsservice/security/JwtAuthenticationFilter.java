@@ -33,13 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-
-        System.out.println("=== JWT FILTER === " + request.getRequestURI());
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         if (EXCLUDED_PATHS.contains(request.getRequestURI())) {
-            System.out.println("Path is EXCLUDED, skipping JWT validation");
             filterChain.doFilter(request, response);
             return;
         }
@@ -50,7 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            System.out.println("JWT token found in Header Authorization");
         }
 
         // 2. NẾU HEADER KHÔNG CÓ, THỬ LẤY TỪ COOKIE (Dành cho Web)
@@ -58,24 +54,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             for (Cookie cookie : request.getCookies()) {
                 if ("JWT".equals(cookie.getName())) {
                     token = cookie.getValue();
-                    System.out.println("JWT token found in Cookie");
                     break;
                 }
             }
         }
 
-        System.out.println("Final Token status: " + (token != null ? "FOUND" : "NOT FOUND"));
-
-        // Only process if token exists
         if (token != null) {
             try {
                 final String username = jwtTokenUtil.getUsernameFromToken(token);
-                System.out.println("Username from token: " + username);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     var userDetails = customUserDetailsService.loadUserByUsername(username);
-                    System.out.println("UserDetails loaded: " + userDetails.getUsername());
-                    System.out.println("Authorities: " + userDetails.getAuthorities());
 
                     if (jwtTokenUtil.isTokenValid(token, userDetails)) {
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -94,7 +83,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 // throw new InternalServerError("Internal server error occurred");
                 // Tùy chọn: log lại lỗi nếu muốn debug
-                System.out.println("!!! JWT FILTER EXCEPTION: " + e.getMessage());
                 e.printStackTrace();
 
                 // Redirect về trang lỗi (HTML)
@@ -104,8 +92,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             System.out.println("No JWT token found, proceeding as GUEST");
         }
-
-        System.out.println("=== END JWT FILTER ===");
         // Always continue filter chain
         filterChain.doFilter(request, response);
     }

@@ -60,23 +60,13 @@ public class SecurityConfig {
                                                                 "/api/flashcards/level/*",
                                                                 "/api/flashcards/topic/*")
                                                 .permitAll()
-                                                // ========== QUIZ PUBLIC ENDPOINTS (GUEST có thể truy cập) ==========
                                                 .requestMatchers(HttpMethod.GET, "/api/quiz").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/quiz/*").permitAll()
 
-
-                                                .requestMatchers(HttpMethod.GET, "/api/quiz/*").permitAll() // Chi tiết
-                                                                                                            // quiz (id
-                                                                                                            // hoặc số)
-                                                .requestMatchers(HttpMethod.GET, "/api/quiz/topic/*").permitAll() // Tìm
-                                                                                                                  // theo
-                                                                                                                  // topic
-                                                .requestMatchers(HttpMethod.GET, "/api/quiz/level/*").permitAll() // Tìm
-                                                                                                                  // theo
-                                                                                                                  // level
-                                                .requestMatchers(HttpMethod.GET, "/api/quiz/search").permitAll() // Search
-                                                                                                                 // quiz
-                                                // =====================================================================
+                                                .requestMatchers(HttpMethod.GET, "/api/quiz/*").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/quiz/topic/*").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/quiz/level/*").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/quiz/search").permitAll()
                                                 .requestMatchers(
                                                                 "/assets/**",
                                                                 "/templates/**",

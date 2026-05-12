@@ -1,0 +1,69 @@
+package vn.hcmute.edu.materialsservice.services;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class TTSService {
+
+    private final WebClient webClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${fpt.api-key}")
+    private String fptApiKey;
+
+    private static final String FPT_TTS_URL = "https://api.fpt.ai/hmi/tts/v5";
+    private static final String VOICE = "banmai";
+
+    /**
+     * Gọi FPT AI để generate audio từ text
+     * 
+     * @param word - từ cần đọc
+     * @return URL của file audio
+     */
+    public String generateAudioUrl(String word) {
+        if (word == null || word.trim().isEmpty()) {
+            log.warn("Word is empty, skipping TTS generation");
+            return null;
+        }
+
+        try {
+            String response = webClient.post()
+                    .uri(FPT_TTS_URL)
+                    .header("api-key", fptApiKey)
+                    .header("voice", VOICE)
+                    .bodyValue(word)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            if (response != null) {
+                JsonNode jsonNode = objectMapper.readTree(response);
+
+                // Kiểm tra error code
+                int errorCode = jsonNode.get("error").asInt();
+                if (errorCode == 0) {
+                    String audioUrl = jsonNode.get("async").asText();
+                    log.info("TTS generated successfully for word: {}", word);
+                    return audioUrl;
+                } else {
+                    String message = jsonNode.get("message").asText();
+                    log.error("FPT TTS error: {}", message);
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error calling FPT TTS API for word: {}", word, e);
+        }
+
+        return null;
+    }
+}
