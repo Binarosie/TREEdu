@@ -2,6 +2,7 @@ package vn.hcmute.edu.materialsservice.dtos.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 
 @Getter
 @Setter
@@ -24,4 +25,7 @@ public class FlashcardRequest {
 
     @NotBlank(message = "Topic không được để trống")
     private String topic;
+
+    // VISIBILITY: PRIVATE hoặc PUBLIC (mặc định: PRIVATE)
+    private EFlashcardVisibility visibility = EFlashcardVisibility.PRIVATE;
 }

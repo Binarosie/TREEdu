@@ -149,7 +149,7 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
 
         @Override
         public List<FlashcardProgressResponse> getLearningProgressByStatus(ELearningStatus status,
-                                                                           Authentication authentication) {
+                        Authentication authentication) {
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
@@ -221,7 +221,6 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                                                 .meaning(word.getMeaning())
                                                 .wordForm(word.getWordForm())
                                                 .phoneme(word.getPhoneme())
-                                                .imageURL(word.getImageURL())
                                                 .audioURL(word.getAudioURL())
                                                 .createdAt(word.getCreatedAt())
                                                 .updatedAt(word.getUpdatedAt())

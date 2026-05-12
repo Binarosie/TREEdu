@@ -15,6 +15,7 @@ import vn.hcmute.edu.materialsservice.dtos.response.ApiResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardWithWordsResponse;
 import vn.hcmute.edu.materialsservice.services.iFlashcardService;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 
 import java.util.List;
 
@@ -92,7 +93,8 @@ public class FlashcardController {
         System.out.println("Authentication: " + authentication);
         System.out.println("=====================");
 
-        List<FlashcardResponse> responses = flashcardService.getAllFlashcard(authentication);
+        // Lấy tất cả flashcard của user + PUBLIC flashcard từ hệ thống
+        List<FlashcardResponse> responses = flashcardService.getAllFlashcardWithPublic(authentication);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
@@ -109,6 +111,24 @@ public class FlashcardController {
             @PathVariable String topic,
             Authentication authentication) {
         List<FlashcardResponse> responses = flashcardService.getFlashcardsByTopic(topic, authentication);
+        return ResponseEntity.ok(ApiResponse.success(responses));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/{id}/visibility")
+    public ResponseEntity<ApiResponse<FlashcardResponse>> changeVisibility(
+            @PathVariable String id,
+            @RequestParam EFlashcardVisibility visibility,
+            Authentication authentication) {
+        FlashcardResponse response = flashcardService.changeVisibility(id, visibility, authentication);
+        return ResponseEntity.ok(ApiResponse.success("Đổi quyền riêng tư flashcard thành công", response));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my-flashcards")
+    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getMyFlashcards(
+            Authentication authentication) {
+        List<FlashcardResponse> responses = flashcardService.getMyFlashcards(authentication);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 }

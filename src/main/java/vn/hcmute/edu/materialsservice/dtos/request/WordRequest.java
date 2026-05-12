@@ -1,6 +1,5 @@
 package vn.hcmute.edu.materialsservice.dtos.request;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.hcmute.edu.materialsservice.Enum.EWordForm;
-
 
 @Data
 @NoArgsConstructor
@@ -24,8 +22,6 @@ public class WordRequest {
 
     @NotNull(message = "Loại từ không được để trống")
     private EWordForm wordForm;
-
-    private String imageURL;
 
     private String phoneme;
 

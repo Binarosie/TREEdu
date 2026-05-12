@@ -18,6 +18,7 @@ public interface FlashcardMapper {
 
     @Mapping(target = "type", expression = "java(flashcard.getType() != null ? flashcard.getType().name() : null)")
     @Mapping(target = "isOwner", ignore = true)
+    @Mapping(target = "reportCount", ignore = true)
     FlashcardResponse toResponse(Flashcard flashcard);
 
     List<FlashcardResponse> toResponseList(List<Flashcard> flashcards);
