@@ -71,7 +71,13 @@ public class FlashcardServiceImpl implements iFlashcardService {
         Flashcard saved = flashcardRepository.save(flashcard);
 
         FlashcardResponse response = flashcardMapper.toResponse(saved);
+
         response.setWordCount(0);
+
+        boolean isOwner = saved.getCreatedBy() != null &&
+                saved.getCreatedBy().equals(userDetails.getUser().getId().toString());
+
+        response.setIsOwner(isOwner);
 
         return response;
     }
@@ -218,33 +224,52 @@ public class FlashcardServiceImpl implements iFlashcardService {
         return response;
     }
 
-    // METHOD MỚI: Lấy flashcard kèm tất cả words
     @Override
-    public FlashcardWithWordsResponse getFlashcardWithWords(String id, Authentication authentication) {
+    public FlashcardWithWordsResponse getFlashcardWithWords(
+            String id,
+            Authentication authentication) {
+
         log.info("Getting flashcard with words, ID: {}", id);
 
-        // Lấy flashcard
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
 
+        boolean isOwner = false;
+        boolean isAdminOrSupporter = false;
+
+        // ===== CHECK AUTH =====
         if (authentication != null && authentication.isAuthenticated()) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
-                            a.getAuthority().equals("ROLE_SUPPORTER"));
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
 
+            String userId = userDetails.getUser().getId().toString();
+
+            isAdminOrSupporter = userDetails.getAuthorities().stream()
+                    .anyMatch(a ->
+                            a.getAuthority().equals("ROLE_ADMIN") ||
+                                    a.getAuthority().equals("ROLE_SUPPORTER"));
+
+            isOwner = flashcard.getCreatedBy() != null &&
+                    flashcard.getCreatedBy().equals(userId);
+
+            // Nếu không phải admin/supporter
             if (!isAdminOrSupporter) {
-                String userId = userDetails.getUser().getId().toString();
-                if (flashcard.getType() == EFlashcardType.BY_MEMBER &&
-                        !userId.equals(flashcard.getCreatedBy())) {
+
+                // PRIVATE + không phải owner
+                if (flashcard.getVisibility() == EFlashcardVisibility.PRIVATE
+                        && !isOwner) {
+
                     throw new AccessDeniedException(
                             "Bạn không có quyền xem flashcard này");
                 }
             }
+
         } else {
-            // GUEST chỉ xem SYSTEM flashcard
-            if (flashcard.getType() != EFlashcardType.SYSTEM) {
+
+            // Guest chỉ xem PUBLIC
+            if (flashcard.getVisibility() != EFlashcardVisibility.PUBLIC) {
+
                 throw new AccessDeniedException(
                         "Bạn cần đăng nhập để xem flashcard này");
             }
@@ -261,6 +286,14 @@ public class FlashcardServiceImpl implements iFlashcardService {
                 .description(flashcard.getDescription())
                 .level(flashcard.getLevel())
                 .topic(flashcard.getTopic())
+
+                // THÊM MẤY FIELD NÀY
+                .type(flashcard.getType().name())
+                .createdBy(flashcard.getCreatedBy())
+                .visibility(flashcard.getVisibility())
+                .isViolated(flashcard.getIsViolated())
+                .isOwner(isOwner)
+
                 .wordCount(words.size())
                 .words(wordResponses)
                 .createdAt(flashcard.getCreatedAt())
