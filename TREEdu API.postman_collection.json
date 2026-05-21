@@ -1,0 +1,1539 @@
+{
+  "info": {
+    "_postman_id": "6a8db5f2-1dc2-42f7-b461-6c13ed789c5d",
+    "name": "Materials Service API",
+    "description": "# 📚 TREEdu Backend APIs (Postman Version)\n\nHệ thống backend cho nền tảng học từ vựng tiếng Anh **TREEdu**, xây dựng theo kiến trúc Monolithic.\n\n---\n\n## 🧩 Tổng quan kiến trúc\n\n```\nClient (Web / Mobile)\n        |\n        v\nAuth Service (JWT, User, Role)\n        |\n        | Authorization: Bearer <JWT>\n        v\nMaterials Service (Flashcard, Word, Learning)\n\n ```\n\n---\n\n# 🔐 AUTH SERVICE API\n\n**Base URL**\n\n```\nhttp://localhost:3001/api\n\n ```\n\n## 🎯 Chức năng\n\n- Đăng ký & xác minh email\n    \n- Đăng nhập / đăng xuất\n    \n- Quản lý người dùng & phân quyền\n    \n- Cấp JWT cho service khác\n    \n\n---\n\n## 1\\. Authentication APIs\n\n### Register New Member\n\n**POST** `/users/newMember`\n\n``` json\n{\n  \"userType\": \"MEMBER\",\n  \"email\": \"testuser@gmail.com\",\n  \"fullName\": \"Test User\",\n  \"password\": \"password123\"\n}\n\n ```\n\n**Workflow**\n\n```\nRegister -> Verify Email -> Login\n\n ```\n\n---\n\n### Login\n\n**POST** `/auth/login`\n\n``` json\n{\n  \"email\": \"testuser@gmail.com\",\n  \"password\": \"password123\"\n}\n\n ```\n\n---\n\n# 📦 MATERIALS SERVICE API\n\n**Base URL**\n\n```\nhttp://localhost:3002/api\n\n ```\n\n## 🎯 Chức năng\n\n- Quản lý Flashcard & Word\n    \n- Theo dõi tiến trình học\n    \n- Kiểm tra phát âm\n    \n\n---\n\n## Flashcard APIs\n\n### Create Flashcard\n\n**POST** `/flashcards`\n\nHeader:\n\n```\nAuthorization: Bearer <JWT>\n\n ```\n\n---\n\n### Get All Flashcards\n\n**GET** `/flashcards`\n\n**Phân quyền**\n\n```\nGUEST    -> SYSTEM\nMEMBER   -> SYSTEM + OWN\nADMIN    -> ALL\n\n ```\n\n---\n\n## Learning Workflow\n\n```\nRegister\n   ↓\nVerify Email\n   ↓\nLogin\n   ↓\nGet Flashcards\n   ↓\nStart Learning\n   ↓\nTrack Progress\n\n ```\n\n---\n\n© TREEdu Project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39562894",
+    "_collection_link": "https://go.postman.co/collection/39562894-6a8db5f2-1dc2-42f7-b461-6c13ed789c5d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Flashcards",
+      "item": [
+        {
+          "name": "Create Flashcard",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.environment.set('flashcardId', response.data.id);\r",
+                  "    console.log('Login successful');\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{title}}\",\n  \"description\":\"{{description}}\",\n  \"topic\": \"{{Vocabulary}}\",\n  \"level\": {{number 1 to 6}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flashcards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Flashcard",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{Basic English Updated}}\",\n  \"topic\": \"{{topic}}\",\n  \"level\": {{level}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Flashcard",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Flashcard By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Flashcard With Words",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}/details",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}",
+                "details"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Flashcards",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.environment.set('flashcardId', response.data.id);\r",
+                  "    console.log('Login successful');\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Flashcards By Level",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/level/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "level",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Flashcards By Topic",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/topic/hoa",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "topic",
+                "hoa"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Visibility Of Flashcard",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}/visibility?visibility=PRIVATE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}",
+                "visibility"
+              ],
+              "query": [
+                {
+                  "key": "visibility",
+                  "value": "PRIVATE"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Words",
+      "item": [
+        {
+          "name": "Add Word To Flashcard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newWord\": \"hello5\",\n  \"meaning\": \"xin chào4\",\n  \"wordForm\": \"NOUN\",\n  \"imageURL\": \"https://example.com/images/hello.png\",\n  \"phoneme\": \"/həˈloʊ/\",\n  \"audioURL\": \"https://example.com/audio/hello.mp3\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}/words",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}",
+                "words"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Words By Flashcard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{flashcardId}}/words",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{flashcardId}}",
+                "words"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Word",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newWord\": \"good\",\n  \"meaning\": \"xin chào\",\n  \"wordForm\": \"NOUN\",\n  \"imageURL\": \"https://example.com/images/hello.png\",\n  \"phoneme\": \"/həˈloʊ/\",\n  \"audioURL\": \"https://example.com/audio/hello.mp3\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{id}}/words/{{wordId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{id}}",
+                "words",
+                "{{wordId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Word",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/{{id}}/words/{{wordId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "{{id}}",
+                "words",
+                "{{wordId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pronunciation",
+      "item": [
+        {
+          "name": "Get Topics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pronunciation-check/topics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pronunciation-check",
+                "topics"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Random Sentence",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pronunciation-check/random-sentence?topic=Chào hỏi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pronunciation-check",
+                "random-sentence"
+              ],
+              "query": [
+                {
+                  "key": "topic",
+                  "value": "Chào hỏi"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Pronunciation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"Daily\",\n  \"sentence\": \"How are you\",\n  \"audioUrl\": \"https://example.com/audio.wav\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pronunciation-check",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pronunciation-check"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Learn Flashcard",
+      "item": [
+        {
+          "name": "Start Learning",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/learn/{{flashcardId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "learn",
+                "{{flashcardId}}",
+                "start"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Viewed Word",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"wordId\": \"693faff93bca281fa7f9c981\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/learn/{{flashcardId}}/mark-viewed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "learn",
+                "{{flashcardId}}",
+                "mark-viewed"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View Processing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/learn/{{flashcardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "learn",
+                "{{flashcardId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Flashcard Learning",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/learn",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "learn"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter Flashcards By Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/learn/status/PROCESSING",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "learn",
+                "status",
+                "PROCESSING"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Proccessing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flashcards/learn/{{flashcardId}}/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flashcards",
+                "learn",
+                "{{flashcardId}}",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quiz",
+      "item": [
+        {
+          "name": "Get All Quiz",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz?page=0&size=10&sort=createdAt,desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quiz By Id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.environment.set('quizId', response.data.id);\r",
+                  "    console.log('Login successful');\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "{{quizId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quiz By Topic",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/topic/{{topic}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "topic",
+                "{{topic}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quiz By Level",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/level/{{level}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "level",
+                "{{level}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search QuizES",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newWord\": \"hello5\",\n  \"meaning\": \"xin chào4\",\n  \"wordForm\": \"NOUN\",\n  \"imageURL\": \"https://example.com/images/hello.png\",\n  \"phoneme\": \"/həˈloʊ/\",\n  \"audioURL\": \"https://example.com/audio/hello.mp3\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/search?topic=tu",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "topic",
+                  "value": "tu"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "1. Start Quiz",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.environment.set('attemptId', response.data.attemptId);\r",
+                  "    console.log('Login successful');\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newWord\": \"hello5\",\n  \"meaning\": \"xin chào4\",\n  \"wordForm\": \"NOUN\",\n  \"imageURL\": \"https://example.com/images/hello.png\",\n  \"phoneme\": \"/həˈloʊ/\",\n  \"audioURL\": \"https://example.com/audio/hello.mp3\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/{{quizId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "{{quizId}}",
+                "start"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.Submit Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"attemptId\": \"{{attemptId}}\",\r\n  \"answers\": [\r\n    {\r\n      \"questionId\": \"{{q1}}\",\r\n      \"selectedAnswerId\": \"{{a1}}\"\r\n    },\r\n    {\r\n      \"questionId\": \"{{q2}}\",\r\n      \"selectedAnswerId\": \"{{a3}}\"\r\n    }\r\n    // {\r\n    //     \"questionId\":\"{{q3}}\",\r\n    //     \"selectedAnswerId\": \"{{a2}}\"\r\n    // }\r\n    // Nếu câu không trả lời => không cần gửi hoặc selectedAnswerId = null\r\n    // Câu null sẽ tính SAI\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/{{quizId}}/submit",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "{{quizId}}",
+                "submit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Attempt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/my-attempts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "my-attempts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attempt Detail By QuizId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/{{quizId}}/my-attempts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "{{quizId}}",
+                "my-attempts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attempt Details",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newWord\": \"hello5\",\n  \"meaning\": \"xin chào4\",\n  \"wordForm\": \"NOUN\",\n  \"imageURL\": \"https://example.com/images/hello.png\",\n  \"phoneme\": \"/həˈloʊ/\",\n  \"audioURL\": \"https://example.com/audio/hello.mp3\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/attempts/{{attemptId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "attempts",
+                "{{attemptId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Quiz (ADMIN/SUPPORTER)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"English Grammar Test Level 6\",\n  \"level\": 3,\n  \"topic\": \"Grammar\",\n  \"timer\": \"15\",\n  \"questions\": [\n    {\n      \"content\": \"What is the past tense of 'go'?\",\n      \"options\": [\n        {\"content\": \"went\", \"isCorrect\": true},\n        {\"content\": \"goed\", \"isCorrect\": false},\n        {\"content\": \"gone\", \"isCorrect\": false},\n        {\"content\": \"going\", \"isCorrect\": false}\n      ],\n      \"explanation\": \"The past tense of 'go' is 'went'.\"\n    },\n    {\n      \"content\": \"Choose the correct article: ___ apple\",\n      \"options\": [\n        {\"content\": \"a\", \"isCorrect\": false},\n        {\"content\": \"an\", \"isCorrect\": true},\n        {\"content\": \"the\", \"isCorrect\": false},\n        {\"content\": \"no article\", \"isCorrect\": false}\n      ],\n      \"explanation\": \"Use 'an' before words starting with vowel sounds.\"\n    }\n    // Thêm các câu khác...\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quiz (ADMIN/SUPPORTER)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"English Grammar Test Level UPDATED\",\r\n  \"level\": 3,\r\n  \"topic\": \"Grammar\",\r\n  \"timer\": \"15\",\r\n  \"questions\": [\r\n    {\r\n      \"content\": \"What is the past tense of 'go'?\",\r\n      \"options\": [\r\n        {\"content\": \"went\", \"isCorrect\": true},\r\n        {\"content\": \"goed\", \"isCorrect\": false},\r\n        {\"content\": \"gone\", \"isCorrect\": false},\r\n        {\"content\": \"going\", \"isCorrect\": false}\r\n      ],\r\n      \"explanation\": \"The past tense of 'go' is 'went'.\"\r\n    },\r\n    {\r\n      \"content\": \"Choose the correct article: ___ apple\",\r\n      \"options\": [\r\n        {\"content\": \"a\", \"isCorrect\": false},\r\n        {\"content\": \"an\", \"isCorrect\": true},\r\n        {\"content\": \"the\", \"isCorrect\": false},\r\n        {\"content\": \"no article\", \"isCorrect\": false}\r\n      ],\r\n      \"explanation\": \"Use 'an' before words starting with vowel sounds.\"\r\n    }\r\n    // Thêm các câu khác...\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "{{quizId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Quiz",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"English Grammar Test Level 3\",\r\n  \"level\": 3,\r\n  \"topic\": \"Grammar\",\r\n  \"timer\": \"15\",\r\n  \"questions\": [\r\n    {\r\n      \"content\": \"What is the past tense of 'go'?\",\r\n      \"options\": [\r\n        {\"content\": \"went\", \"isCorrect\": true},\r\n        {\"content\": \"goed\", \"isCorrect\": false},\r\n        {\"content\": \"gone\", \"isCorrect\": false},\r\n        {\"content\": \"going\", \"isCorrect\": false}\r\n      ],\r\n      \"explanation\": \"The past tense of 'go' is 'went'.\"\r\n    },\r\n    {\r\n      \"content\": \"Choose the correct article: ___ apple\",\r\n      \"options\": [\r\n        {\"content\": \"a\", \"isCorrect\": false},\r\n        {\"content\": \"an\", \"isCorrect\": true},\r\n        {\"content\": \"the\", \"isCorrect\": false},\r\n        {\"content\": \"no article\", \"isCorrect\": false}\r\n      ],\r\n      \"explanation\": \"Use 'an' before words starting with vowel sounds.\"\r\n    }\r\n    // Thêm các câu khác...\r\n  ]\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "{{quizId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Quiz",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/edit/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "edit",
+                "{{quizId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Quiz from File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "884e4f33-d8c5-4184-bdc0-d864acbb3a04",
+                  "src": "/C:/Users/PC/Downloads/Tìm lỗ hỏng.pdf"
+                },
+                {
+                  "key": "topic",
+                  "value": "Tiếng Anh",
+                  "type": "text",
+                  "uuid": "36e66aba-dcda-4d46-8b55-be365ec3e97c"
+                },
+                {
+                  "key": "level",
+                  "value": "3",
+                  "type": "text",
+                  "uuid": "f97ff51b-1f33-42e4-9663-52caca21d1fd"
+                },
+                {
+                  "key": "questionCount",
+                  "value": "10",
+                  "type": "text",
+                  "uuid": "ed599b95-bf43-43ba-8a9b-0b6860d2abeb"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/generate-from-file",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "generate-from-file"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Quiz Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/admin/statistics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quiz",
+                "admin",
+                "statistics"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Report Flascard",
+      "item": [
+        {
+          "name": "Flashcard Reports",
+          "item": [
+            {
+              "name": "Report Flashcard - Nội dung không chính xác",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Nội dung flashcard không chính xác\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reports/{{flashcardId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reports",
+                    "{{flashcardId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Report Flashcard - Nội dung không phù hợp",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Flashcard chứa nội dung không phù hợp\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/flashcard-reports/{{flashcardId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "flashcard-reports",
+                    "{{flashcardId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Report Flashcard - Lỗi chính tả",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Lỗi ngữ pháp hoặc chính tả\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reports/{{flashcardId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reports",
+                    "{{flashcardId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pending Reports",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reports/pending",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reports",
+                    "pending"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Flashcard Reports",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reports/flashcard/{{flashcardId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reports",
+                    "flashcard",
+                    "{{flashcardId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Report Status - Resolved",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"REPORT_RESOLVED\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reports/{{reportId}}/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reports",
+                    "{{reportId}}",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Check Report Slots Remaining",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reports/remaining",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reports",
+                    "remaining"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Flashcard Reviews",
+          "item": [
+            {
+              "name": "Get Pending Requests",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reviews/pending",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reviews",
+                    "pending"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Review Decision - Approved",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"REVIEW_APPROVED\",\n  \"adminComment\": \"Nội dung hoàn toàn chính xác, được phê duyệt\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reviews/{{reviewRequestId}}/decision",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reviews",
+                    "{{reviewRequestId}}",
+                    "decision"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Review Decision - Violation",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"REVIEW_VIOLATION\",\n  \"adminComment\": \"Nội dung vi phạm chính sách cộng đồng - yêu cầu chỉnh sửa\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reviews/{{reviewRequestId}}/decision",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reviews",
+                    "{{reviewRequestId}}",
+                    "decision"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Flashcard Review Request",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/flashcard-reviews/flashcard/{{flashcardId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "flashcard-reviews",
+                    "flashcard",
+                    "{{flashcardId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api"
+    }
+  ]
+}

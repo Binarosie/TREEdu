@@ -114,7 +114,7 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     @PutMapping("/{id}/visibility")
     public ResponseEntity<ApiResponse<FlashcardResponse>> changeVisibility(
             @PathVariable String id,
@@ -124,7 +124,7 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success("Đổi quyền riêng tư flashcard thành công", response));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER')")
     @GetMapping("/my-flashcards")
     public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getMyFlashcards(
             Authentication authentication) {

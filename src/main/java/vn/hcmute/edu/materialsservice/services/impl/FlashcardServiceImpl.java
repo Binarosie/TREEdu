@@ -88,13 +88,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
         Flashcard existingFlashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
 
-        long progressCount = progressRepository.findByFlashcardId(id).size();
-        if (progressCount > 0) {
-            throw new IllegalStateException(
-                    "Không thể cập nhật flashcard này vì đã có " + progressCount + " người học. "
-                            + "Chỉ được cập nhật flashcard chưa có ai học.");
-        }
-
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String userId = userDetails.getUser().getId().toString();
@@ -115,6 +108,25 @@ public class FlashcardServiceImpl implements iFlashcardService {
                 throw new AccessDeniedException(
                         "Bạn chỉ có thể cập nhật flashcard do chính bạn tạo");
             }
+
+            // Logic kiểm tra progress khi member sửa flashcard của họ
+            var allProgress = progressRepository.findByFlashcardId(id);
+            var otherUserProgress = allProgress.stream()
+                    .filter(p -> !p.getUserId().equals(existingFlashcard.getCreatedBy()))
+                    .toList();
+
+            // Nếu flashcard PUBLIC
+            if (existingFlashcard.getVisibility() == EFlashcardVisibility.PUBLIC) {
+                if (!otherUserProgress.isEmpty()) {
+                    throw new IllegalStateException(
+                            "Flashcard này đang công khai và có " + otherUserProgress.size()
+                                    + " người khác học. Không thể chỉnh sửa.");
+                }
+                // Chưa có ai khác học => tự động chuyển về PRIVATE để cho phép sửa
+                existingFlashcard.setVisibility(EFlashcardVisibility.PRIVATE);
+                log.info("Flashcard tự động chuyển về PRIVATE khi sửa (chưa có ai khác học)");
+            }
+            // Nếu PRIVATE => cho sửa bình thường, tiến trình cũ vẫn giữ nguyên
         }
 
         List<Flashcard> flashcardsWithSameTitle = flashcardRepository
@@ -240,15 +252,13 @@ public class FlashcardServiceImpl implements iFlashcardService {
         // ===== CHECK AUTH =====
         if (authentication != null && authentication.isAuthenticated()) {
 
-            CustomUserDetails userDetails =
-                    (CustomUserDetails) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
             String userId = userDetails.getUser().getId().toString();
 
             isAdminOrSupporter = userDetails.getAuthorities().stream()
-                    .anyMatch(a ->
-                            a.getAuthority().equals("ROLE_ADMIN") ||
-                                    a.getAuthority().equals("ROLE_SUPPORTER"));
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                            a.getAuthority().equals("ROLE_SUPPORTER"));
 
             isOwner = flashcard.getCreatedBy() != null &&
                     flashcard.getCreatedBy().equals(userId);

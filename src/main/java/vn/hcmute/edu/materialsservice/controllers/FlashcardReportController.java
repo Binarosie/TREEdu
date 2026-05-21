@@ -24,9 +24,7 @@ public class FlashcardReportController {
 
     private final iFlashcardReportService reportService;
 
-    /**
-     * Member báo cáo flashcard
-     */
+    // Member báo cáo flashcard
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{flashcardId}")
     public ResponseEntity<ApiResponse<FlashcardReportResponse>> reportFlashcard(
@@ -39,10 +37,8 @@ public class FlashcardReportController {
                 .body(ApiResponse.success("Báo cáo flashcard thành công", response));
     }
 
-    /**
-     * Supporter xem danh sách báo cáo chưa xử lý
-     */
-    @PreAuthorize("hasRole('SUPPORTER')")
+    // Supporter xem danh sách báo cáo chưa xử lý
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORTER')")
     @GetMapping("/pending")
     public ResponseEntity<ApiResponse<List<FlashcardReportResponse>>> getPendingReports(
             Authentication authentication) {
@@ -50,10 +46,8 @@ public class FlashcardReportController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * Supporter xem danh sách báo cáo của một flashcard
-     */
-    @PreAuthorize("hasRole('SUPPORTER')")
+    // Supporter xem danh sách báo cáo của một flashcard
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORTER')")
     @GetMapping("/flashcard/{flashcardId}")
     public ResponseEntity<ApiResponse<List<FlashcardReportResponse>>> getFlashcardReports(
             @PathVariable String flashcardId,
@@ -62,10 +56,8 @@ public class FlashcardReportController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * Supporter cập nhật trạng thái báo cáo
-     */
-    @PreAuthorize("hasRole('SUPPORTER')")
+    // Supporter cập nhật trạng thái báo cáo
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORTER')")
     @PutMapping("/{reportId}/status")
     public ResponseEntity<ApiResponse<FlashcardReportResponse>> updateReportStatus(
             @PathVariable String reportId,
@@ -76,9 +68,7 @@ public class FlashcardReportController {
         return ResponseEntity.ok(ApiResponse.success("Cập nhật trạng thái báo cáo thành công", response));
     }
 
-    /**
-     * Member kiểm tra lượt báo cáo còn lại
-     */
+    // Member kiểm tra lượt báo cáo còn lại
     @PreAuthorize("hasAnyRole('ROLE_MEMBER')")
     @GetMapping("/remaining")
     public ResponseEntity<ApiResponse<Integer>> checkReportsRemaining(
