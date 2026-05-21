@@ -24,10 +24,8 @@ public class FlashcardReviewController {
 
     private final iFlashcardReviewService reviewService;
 
-    /**
-     * Supporter tạo yêu cầu review cho Flashcard
-     */
-    @PreAuthorize("hasRole('SUPPORTER')")
+    // Supporter tạo yêu cầu review cho Flashcard
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORTER')")
     @PostMapping("/{flashcardId}")
     public ResponseEntity<ApiResponse<FlashcardReviewRequestResponse>> createReviewRequest(
             @PathVariable String flashcardId,
@@ -40,10 +38,8 @@ public class FlashcardReviewController {
                 .body(ApiResponse.success("Tạo yêu cầu review thành công", response));
     }
 
-    /**
-     * Admin xem danh sách yêu cầu review chờ xử lý
-     */
-    @PreAuthorize("hasRole('ADMIN')")
+    // Admin xem danh sách yêu cầu review chờ xử lý
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/pending")
     public ResponseEntity<ApiResponse<List<FlashcardReviewRequestResponse>>> getPendingReviewRequests(
             Authentication authentication) {
@@ -51,10 +47,8 @@ public class FlashcardReviewController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * Admin phê duyệt hoặc từ chối yêu cầu review
-     */
-    @PreAuthorize("hasRole('ADMIN')")
+    // Admin phê duyệt hoặc từ chối yêu cầu review
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/{reviewRequestId}/decision")
     public ResponseEntity<ApiResponse<FlashcardReviewRequestResponse>> reviewFlashcard(
             @PathVariable String reviewRequestId,
@@ -65,10 +59,8 @@ public class FlashcardReviewController {
         return ResponseEntity.ok(ApiResponse.success("Xử lý yêu cầu review thành công", response));
     }
 
-    /**
-     * Supporter/Admin xem chi tiết review request của một flashcard
-     */
-    @PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
+    // Supporter/Admin xem chi tiết review request của một flashcard
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
     @GetMapping("/flashcard/{flashcardId}")
     public ResponseEntity<ApiResponse<FlashcardReviewRequestResponse>> getFlashcardReviewRequest(
             @PathVariable String flashcardId,

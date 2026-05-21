@@ -25,12 +25,9 @@ import java.util.Map;
 
 /**
  * QUIZ CONTROLLER - Với phân quyền rõ ràng
- *
- * PHÂN QUYỀN:
- * - ROLE_MEMBER: Xem quiz (không có đáp án), làm bài, submit, xem lịch sử
- * - ROLE_SUPPORTER: Tất cả quyền của MEMBER + Tạo, Sửa, Xóa quiz + Xem đáp án
- * đúng
- * - ROLE_ADMIN: Full quyền
+ * PHÂN QUYỀN: ROLE_MEMBER: Xem quiz, làm bài, submit, xem lịch sử |
+ * ROLE_SUPPORTER: Tất cả quyền MEMBER + Tạo, SỚ, Xóa quiz + Xem đáp án |
+ * ROLE_ADMIN: Full quyền
  */
 @RestController
 @RequestMapping("/api/quiz")
@@ -41,17 +38,9 @@ public class QuizController {
         private final iQuizService quizService;
         private final iQuizAttemptService quizAttemptService;
 
-        // ==================== ROLE_MEMBER + ROLE_SUPPORTER + ROLE_ADMIN
-        // ====================
-
-        /**
-         * XEM DANH SÁCH QUIZ (Có phân trang)
-         *
-         * Response: QuizResponse
-         * - Guest/ROLE_MEMBER: KHÔNG có explanation
-         * - ROLE_ADMIN/SUPPORTER: CÓ explanation
-         * PUBLIC API - Guest có thể truy cập
-         */
+        // XEM DANH SÁCH QUIZ (Có phân trang) - Response: QuizResponse -
+        // Guest/ROLE_MEMBER: KHÔNG có explanation | ROLE_ADMIN/SUPPORTER: CÓ
+        // explanation | PUBLIC API - Guest có thể truy cập
         @GetMapping
         public ResponseEntity<ApiResponse<Page<QuizResponse>>> getAllQuizzes(
                         @RequestParam(defaultValue = "0") int page,
@@ -88,13 +77,8 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * XEM CHI TIẾT QUIZ
-         *
-         * Response: QuizResponse
-         * - ROLE_MEMBER: KHÔNG có explanation (để tránh gợi ý đáp án)
-         * - ROLE_ADMIN/SUPPORTER: CÓ explanation (để review quiz)
-         */
+        // XEM CHI TIẾT QUIZ - Response: QuizResponse - ROLE_MEMBER: KHÔNG có
+        // explanation (tránh gợi ý đáp án) | ROLE_ADMIN/SUPPORTER: CÓ explanation
         @GetMapping("/{id}")
         // @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
@@ -220,11 +204,8 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * XEM LỊCH Sử LÀM BÀI CỦA USER
-         *
-         * Lấy tất cả các lần làm quiz của user hiện tại
-         */
+        // XEM LỊ DANH SÁCH LÀM BÀI CỦA USER - Lấy tất cả các lần làm quiz của user hiện
+        // tại
         @GetMapping("/my-attempts")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<List<QuizAttemptResponse>>> getMyAttempts(
@@ -245,11 +226,8 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * XEM LỊCH Sử LÀM BÀI CHO 1 QUIZ CỤ THỂ
-         *
-         * Lấy tất cả các lần user làm một quiz cụ thể
-         */
+        // XEM LỊ SỞ LÀM BÀI CHO 1 QUIZ CỤ THỂ - Lấy tất cả các lần user làm một quiz cụ
+        // thể
         @GetMapping("/{quizId}/my-attempts")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<List<QuizAttemptResponse>>> getMyAttemptsByQuiz(
@@ -271,11 +249,7 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * XEM CHI TIẾT 1 LẦN LÀM BÀI
-         *
-         * Xem lại kết quả, đáp án của một lần làm bài cũ
-         */
+        // XEM CHI TIẾT 1 LẦN LÀM BÀI - Xem lại kết quả, đáp án của một lần làm bài cũ
         @GetMapping("/attempts/{attemptId}")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizAttemptResponse>> getAttemptDetail(
@@ -297,13 +271,7 @@ public class QuizController {
                                 .build());
         }
 
-        // ==================== ROLE_SUPPORTER + ROLE_ADMIN ONLY ====================
-
-        /**
-         * TẠO QUIZ MỚI
-         *
-         * Chỉ SUPPORTER và ADMIN
-         */
+        // TạO QUIZ MỚI - Chỉ SUPPORTER và ADMIN
         @PostMapping
         @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
@@ -323,11 +291,7 @@ public class QuizController {
                                                 .build());
         }
 
-        /**
-         * CẬP NHẬT QUIZ
-         *
-         * Chỉ SUPPORTER và ADMIN
-         */
+        // CẬP NHẬT QUIZ - Chỉ SUPPORTER và ADMIN
         @PutMapping("/{id}")
         @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> updateQuiz(
@@ -346,11 +310,7 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * XÓA QUIZ
-         *
-         * Chỉ SUPPORTER và ADMIN
-         */
+        // XÓA QUIZ - Chỉ SUPPORTER và ADMIN
         @DeleteMapping("/{id}")
         @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<Void>> deleteQuiz(
@@ -367,16 +327,9 @@ public class QuizController {
                                 .build());
         }
 
-        /**
-         * LẤY QUIZ ĐỂ EDIT
-         *
-         * Response: QuizEditResponse (CÓ isCorrect)
-         * Chỉ SUPPORTER và ADMIN
-         *
-         * ĐÂY LÀ ENDPOINT QUAN TRỌNG:
-         * - USER không được truy cập (sẽ thấy đáp án đúng)
-         * - Chỉ SUPPORTER review quiz mới dùng
-         */
+        // LấY QUIZ ĐỂ EDIT - Response: QuizEditResponse (CÓ isCorrect) | Chỉ SUPPORTER
+        // và ADMIN | ĐÂY LÀ ENDPOINT QUAN TRỌNG: USER không được truy cập (sẽ thấy đáp
+        // án đúng) | Chỉ SUPPORTER review quiz mới dùng
         @GetMapping("/edit/{id}")
         @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizEditResponse>> getQuizForEdit(
@@ -394,12 +347,10 @@ public class QuizController {
                                 .build());
         }
 
-
         @PostMapping("/generate-from-file")
-       // @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        // @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
-                        @ModelAttribute GenerateQuizFromFileRequest request
-        ) throws IOException {
+                        @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
 
                 log.info("REST request to generate quiz from file");
 
@@ -409,7 +360,7 @@ public class QuizController {
         }
 
         @GetMapping("/admin/statistics")
-        @PreAuthorize("hasRole('ROLE_ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<Object>> getQuizStatistics() {
                 log.info("=== START getQuizStatistics ===");
                 try {
@@ -437,14 +388,9 @@ public class QuizController {
                 }
         }
 
-        // ==================== HELPER METHODS ====================
-
-        /**
-         * Filter quiz response dựa trên role:
-         * - Guest (chưa login): Ẩn explanation
-         * - ROLE_MEMBER: Ẩn explanation (tránh gợi ý đáp án)
-         * - ROLE_ADMIN/SUPPORTER: Hiển thị đầy đủ (để review quiz)
-         */
+        // Filter quiz response dựa trên role: Guest (chưa login): Ẩn explanation |
+        // ROLE_MEMBER: Ẩn explanation (tránh gợi ý đáp án) | ROLE_ADMIN/SUPPORTER: Hiển
+        // thị đầy đủ (quân lý quiz)
         private void filterQuizResponseByRole(QuizResponse quiz, Authentication authentication) {
                 if (quiz == null || quiz.getQuestions() == null) {
                         return;
@@ -470,6 +416,7 @@ public class QuizController {
                 }
                 // ROLE_ADMIN và ROLE_SUPPORTER: giữ nguyên (có explanation)
         }
+
         @GetMapping("/admin/stats")
         @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
         public ResponseEntity<QuizDashboardResponse> getDashboardStats() {

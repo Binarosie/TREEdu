@@ -58,11 +58,10 @@ public class AuthController {
     // ─── Email Verification (OTP) ────────────────────────────────────────────────
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        log.info("🔐 Verifying OTP for email: {}", request.getEmail());
+        log.info("Verifying OTP for email: {}", request.getEmail());
 
         // Một lời gọi duy nhất — kiểm tra hết hạn + replay + xoá luôn sau khi dùng
-        EmailService.OtpResult result =
-                emailService.verifyAndConsumeOtp(request.getEmail(), request.getOtp());
+        EmailService.OtpResult result = emailService.verifyAndConsumeOtp(request.getEmail(), request.getOtp());
 
         switch (result) {
             case EXPIRED:
@@ -104,7 +103,7 @@ public class AuthController {
         user.setActive(true);
         userRepository.save(user);
 
-        log.info("✅ Email verified successfully for: {}", request.getEmail());
+        log.info("Email verified successfully for: {}", request.getEmail());
 
         return ResponseEntity.ok(new SuccessResponse(
                 "Xác thực email thành công! Bạn có thể đăng nhập ngay bây giờ.",
@@ -114,7 +113,7 @@ public class AuthController {
     // ─── Forgot / Reset Password (OTP) ───────────────────────────────────────────
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
-        log.info("📧 Forgot password request for email: {}", email);
+        log.info("Forgot password request for email: {}", email);
 
         var optUser = userServiceImpl.findByEmail(email);
         if (optUser.isEmpty()) {
@@ -139,12 +138,13 @@ public class AuthController {
                 HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
 
-    // ─── Resend OTP (for signup or reset password) ────────────────────────────────
+    // ─── Resend OTP (for signup or reset password)
+    // ────────────────────────────────
     @PostMapping("/resend-otp")
     public ResponseEntity<?> resendOtp(
             @RequestParam("email") String email,
             @RequestParam("type") String type) {
-        log.info("🔄 Resend OTP request for email: {} with type: {}", email, type);
+        log.info("Resend OTP request for email: {} with type: {}", email, type);
 
         // Validate type
         if (!type.equals("SIGNUP") && !type.equals("RESET_PASSWORD")) {
@@ -210,11 +210,10 @@ public class AuthController {
         String email = request.getEmail();
         String newPassword = request.getNewPassword();
 
-        log.info("🔑 Reset password request for email: {}", email);
+        log.info("Reset password request for email: {}", email);
 
         // Xác thực OTP
-        EmailService.OtpResult result =
-                emailService.verifyAndConsumeOtp(email, request.getOtp());
+        EmailService.OtpResult result = emailService.verifyAndConsumeOtp(email, request.getOtp());
 
         switch (result) {
             case EXPIRED:
@@ -248,7 +247,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        log.info("✅ Password reset successfully for: {}", email);
+        log.info("Password reset successfully for: {}", email);
 
         return ResponseEntity.ok(new SuccessResponse(
                 "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.",
@@ -320,7 +319,6 @@ public class AuthController {
         return ResponseEntity.ok(new SuccessResponse(
                 "Đổi mật khẩu thành công!", HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
-
 
     @PostMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
