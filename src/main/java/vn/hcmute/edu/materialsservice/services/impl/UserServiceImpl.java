@@ -70,25 +70,26 @@ public class UserServiceImpl implements iUserService {
         iUserFactory factory = getFactory("MEMBER");
         Member user = (Member) factory.createUser(request);
 
-        // ← Sinh ID dạng String
-        user.setId(java.util.UUID.randomUUID().toString());
+        user.setId(UUID.randomUUID().toString());
         user.setCreatedOn(java.time.LocalDateTime.now());
         user.setModifiedOn(java.time.LocalDateTime.now());
 
-        try {
-            // random 6 chữ số
-            int code = (int) ((Math.random() * 900000) + 100000);
-            String verificationCode = String.valueOf(code);
+        // ===== Map field mới =====
+        if (request.getPhoneNumber() != null) user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getAvatarUrl()   != null) user.setAvatarUrl(request.getAvatarUrl());
+        if (request.getBirthYear()   != null) user.setBirthYear(request.getBirthYear());
+        if (request.getAddress()     != null) user.setAddress(request.getAddress());
+        if (request.getGender()      != null) user.setGender(request.getGender());
 
-            // Gửi email
-            emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+        try {
+            int code = (int) ((Math.random() * 900000) + 100000);
+            emailService.sendVerificationEmail(user.getEmail(), String.valueOf(code));
         } catch (MessagingException e) {
             throw new InternalServerError("Could not send verification email");
         }
 
         return userRepository.save(user);
     }
-
     public User createOAuthMember(String email, String fullName) {
 
         return userRepository.findByEmail(email)
@@ -188,7 +189,6 @@ public class UserServiceImpl implements iUserService {
         return userRepository.existsByIdAndIsActive(userId, isActive);
     }
 
-    // Dùng lại CreateUserRequest để update
     @Override
     public User updateMyProfile(String id, UpdateProfileRequest request) { // ← UUID → String
         Optional<User> optUser = userRepository.findById(id);

@@ -31,6 +31,24 @@ public abstract class User implements Serializable {
     @Field("password")
     private String password;
 
+    @Field("phone_number") // Đồng bộ trường số điện thoại
+    private String phoneNumber;
+
+    @Field("avatar_url") // Đường dẫn ảnh đại diện
+    private String avatarUrl;
+
+    @Field("birth_year") // Năm sinh
+    private Integer birthYear;
+
+    @Field("address") // Nơi ở
+    private String address;
+
+    @Field("gender") // Giới tính (MALE, FEMALE, OTHER)
+    private String gender;
+
+    @Field("bio") // Đoạn giới thiệu ngắn
+    private String bio;
+
     @Field("is_active")
     private boolean isActive;
 
@@ -39,5 +57,4 @@ public abstract class User implements Serializable {
 
     @Field("modified_on")
     private LocalDateTime modifiedOn;
-
 }
