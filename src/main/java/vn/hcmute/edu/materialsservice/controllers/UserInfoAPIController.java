@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.hcmute.edu.materialsservice.dtos.MemberProfileDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserDetailDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserInfoDTO;
+import vn.hcmute.edu.materialsservice.dtos.request.RegisterRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.CreateUserRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateProfileRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateUserRequest;
@@ -53,12 +54,22 @@ public class UserInfoAPIController {
     private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/newMember")
-    public ResponseEntity<SuccessResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        User user = userService.createMember(request);
-        CreatedResponse response = new CreatedResponse("User created successfully", user);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+    public ResponseEntity<SuccessResponse> createUser(@Valid @RequestBody RegisterRequest request) {
+        // Chuyển RegisterRequest → CreateUserRequest để truyền vào service
+        CreateUserRequest createRequest = new CreateUserRequest();
+        createRequest.setUserType("MEMBER");
+        createRequest.setFullName(request.getFullName());
+        createRequest.setEmail(request.getEmail());
+        createRequest.setPassword(request.getPassword());
+        createRequest.setPhoneNumber(request.getPhone());
+        createRequest.setAvatarUrl(request.getAvatarUrl());
+        createRequest.setBirthYear(request.getBirthYear());
+        createRequest.setAddress(request.getAddress());
+        createRequest.setGender(request.getGender());
 
+        User user = userService.createMember(createRequest);
+        return new ResponseEntity<>(new CreatedResponse("User created successfully", user), HttpStatus.CREATED);
+    }
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/newSupporter")
     public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
@@ -222,11 +233,47 @@ public class UserInfoAPIController {
 
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PutMapping("/update-my-profile/{id}")
-    public ResponseEntity<SuccessResponse> updateMyProfile(@PathVariable String id,
-            @RequestBody UpdateProfileRequest request) { // ← UUID → String
-        User user = userService.updateMyProfile(id, request);
-        SuccessResponse response = new SuccessResponse("User updated successfully", HttpStatus.OK.value(), user,
-                LocalDateTime.now());
+    public ResponseEntity<SuccessResponse> updateMyProfile(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateProfileRequest request,
+            Authentication authentication) {
+
+        CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User currentUser = currentUserDetails.getUser();
+
+        if (!currentUser.getId().equals(id)) {
+            throw new BadRequestError("Bạn không có quyền chỉnh sửa hồ sơ của người khác!");
+        }
+
+        // 1. Thực hiện update dưới DB và nhận về object Member sau khi cập nhật
+        Member member = (Member) userService.updateMyProfile(id, request);
+
+        // 2. Chuyển đổi Entity sang DTO để giấu Password và Package Name đi
+        MemberProfileDTO profileDTO = MemberProfileDTO.builder()
+                .id(member.getId())
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .avatarUrl(member.getAvatarUrl())
+                .birthYear(member.getBirthYear())
+                .address(member.getAddress())
+                .gender(member.getGender())
+                .streakCount(member.getStreakCount())
+                .longestStreak(member.getLongestStreak())
+                .xp(member.getXp())
+                .level(member.getLevel())
+                .totalQuizCompleted(member.getTotalQuizCompleted())
+                .totalFlashcardLearned(member.getTotalFlashcardLearned())
+                .lastStudyDate(member.getLastStudyDate())
+                .build();
+
+        // 3. Trả DTO về cho Postman/Frontend thay vì trả bừa Entity
+        SuccessResponse response = new SuccessResponse(
+                "User updated successfully",
+                HttpStatus.OK.value(),
+                profileDTO, // 🔥 Đã thay bằng DTO sạch đẹp
+                LocalDateTime.now()
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -291,13 +338,11 @@ public class UserInfoAPIController {
             return id; // ← Return String id directly
         }
     }
+
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<MemberProfileDTO> getMyProfile(Authentication authentication) {
-
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId();
 
         User user = userRepository.findById(userId)
@@ -311,6 +356,13 @@ public class UserInfoAPIController {
                 .id(member.getId())
                 .fullName(member.getFullName())
                 .email(member.getEmail())
+                // === Field mới ===
+                .phoneNumber(member.getPhoneNumber())
+                .avatarUrl(member.getAvatarUrl())
+                .birthYear(member.getBirthYear())
+                .address(member.getAddress())
+                .gender(member.getGender())
+                // === Field Member ===
                 .streakCount(member.getStreakCount())
                 .longestStreak(member.getLongestStreak())
                 .xp(member.getXp())
