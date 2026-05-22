@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardProgressResponse;
 import vn.hcmute.edu.materialsservice.Enum.EFlashcardType;
 import vn.hcmute.edu.materialsservice.Enum.ELearningStatus;
+import vn.hcmute.edu.materialsservice.dtos.response.WordResponse;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
 import vn.hcmute.edu.materialsservice.models.FlashcardProgress;
+import vn.hcmute.edu.materialsservice.models.Word;
 import vn.hcmute.edu.materialsservice.repository.FlashcardProgressRepository;
 import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
 import vn.hcmute.edu.materialsservice.repository.WordRepository;
@@ -40,35 +42,32 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
-                // Kiểm tra flashcard có tồn tại không
                 Flashcard flashcard = flashcardRepository.findById(flashcardId)
-                                .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+                        .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
 
-                // Kiểm tra quyền truy cập flashcard
                 validateFlashcardAccess(flashcard, userId, userDetails);
 
-                // Kiểm tra xem đã có progress chưa
+                // Lấy totalWords thực tế từ DB (luôn đồng bộ)
+                int actualTotalWords = (int) wordRepository.countByFlashcardId(flashcardId);
+
                 FlashcardProgress progress = progressRepository
-                                .findByUserIdAndFlashcardId(userId, flashcardId)
-                                .orElse(null);
+                        .findFirstByUserIdAndFlashcardId(userId, flashcardId)
+                        .orElse(null);
 
                 if (progress == null) {
-                        // Tạo mới progress
-                        int totalWords = (int) wordRepository.countByFlashcardId(flashcardId);
-
                         progress = FlashcardProgress.builder()
-                                        .userId(userId)
-                                        .flashcardId(flashcardId)
-                                        .viewedWordIds(new HashSet<>())
-                                        .totalWords(totalWords)
-                                        .status(ELearningStatus.PROCESSING)
-                                        .startedAt(LocalDateTime.now())
-                                        .lastAccessedAt(LocalDateTime.now())
-                                        .build();
-
+                                .userId(userId)
+                                .flashcardId(flashcardId)
+                                .viewedWordIds(new HashSet<>())
+                                .totalWords(actualTotalWords)
+                                .status(ELearningStatus.PROCESSING)
+                                .startedAt(LocalDateTime.now())
+                                .lastAccessedAt(LocalDateTime.now())
+                                .build();
                         log.info("User {} started learning flashcard {}", userId, flashcardId);
                 } else {
-                        // Cập nhật lastAccessedAt
+                        // ✅ Fix: luôn đồng bộ lại totalWords khi tiếp tục học
+                        progress.setTotalWords(actualTotalWords);
                         progress.setLastAccessedAt(LocalDateTime.now());
                         log.info("User {} continued learning flashcard {}", userId, flashcardId);
                 }
@@ -80,7 +79,7 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
         @Override
         @Transactional
         public FlashcardProgressResponse markWordAsViewed(String flashcardId, String wordId,
-                        Authentication authentication) {
+                                                          Authentication authentication) {
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
@@ -91,9 +90,9 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
 
                 // Lấy progress
                 FlashcardProgress progress = progressRepository
-                                .findByUserIdAndFlashcardId(userId, flashcardId)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Chưa bắt đầu học flashcard này. Vui lòng gọi API start learning trước."));
+                        .findFirstByUserIdAndFlashcardId(userId, flashcardId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Chưa bắt đầu học flashcard này. Vui lòng gọi API start learning trước."));
 
                 // Thêm word vào danh sách đã xem
                 progress.getViewedWordIds().add(wordId);
@@ -109,7 +108,7 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                 FlashcardProgress saved = progressRepository.save(progress);
 
                 Flashcard flashcard = flashcardRepository.findById(flashcardId)
-                                .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+                        .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
 
                 return toResponse(saved, flashcard);
         }
@@ -120,12 +119,12 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                 String userId = userDetails.getUser().getId().toString();
 
                 FlashcardProgress progress = progressRepository
-                                .findByUserIdAndFlashcardId(userId, flashcardId)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Chưa có tiến trình học cho flashcard này"));
+                        .findFirstByUserIdAndFlashcardId(userId, flashcardId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Chưa có tiến trình học cho flashcard này"));
 
                 Flashcard flashcard = flashcardRepository.findById(flashcardId)
-                                .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+                        .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
 
                 return toResponse(progress, flashcard);
         }
@@ -138,31 +137,31 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                 List<FlashcardProgress> progressList = progressRepository.findByUserId(userId);
 
                 return progressList.stream()
-                                .map(progress -> {
-                                        Flashcard flashcard = flashcardRepository.findById(progress.getFlashcardId())
-                                                        .orElse(null);
-                                        return flashcard != null ? toResponse(progress, flashcard) : null;
-                                })
-                                .filter(response -> response != null)
-                                .collect(Collectors.toList());
+                        .map(progress -> {
+                                Flashcard flashcard = flashcardRepository.findById(progress.getFlashcardId())
+                                        .orElse(null);
+                                return flashcard != null ? toResponse(progress, flashcard) : null;
+                        })
+                        .filter(response -> response != null)
+                        .collect(Collectors.toList());
         }
 
         @Override
         public List<FlashcardProgressResponse> getLearningProgressByStatus(ELearningStatus status,
-                        Authentication authentication) {
+                                                                           Authentication authentication) {
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 String userId = userDetails.getUser().getId().toString();
 
                 List<FlashcardProgress> progressList = progressRepository.findByUserIdAndStatus(userId, status);
 
                 return progressList.stream()
-                                .map(progress -> {
-                                        Flashcard flashcard = flashcardRepository.findById(progress.getFlashcardId())
-                                                        .orElse(null);
-                                        return flashcard != null ? toResponse(progress, flashcard) : null;
-                                })
-                                .filter(response -> response != null)
-                                .collect(Collectors.toList());
+                        .map(progress -> {
+                                Flashcard flashcard = flashcardRepository.findById(progress.getFlashcardId())
+                                        .orElse(null);
+                                return flashcard != null ? toResponse(progress, flashcard) : null;
+                        })
+                        .filter(response -> response != null)
+                        .collect(Collectors.toList());
         }
 
         @Override
@@ -172,9 +171,9 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                 String userId = userDetails.getUser().getId().toString();
 
                 FlashcardProgress progress = progressRepository
-                                .findByUserIdAndFlashcardId(userId, flashcardId)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Chưa có tiến trình học cho flashcard này"));
+                        .findFirstByUserIdAndFlashcardId(userId, flashcardId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Chưa có tiến trình học cho flashcard này"));
 
                 // Reset progress
                 progress.getViewedWordIds().clear();
@@ -186,61 +185,75 @@ public class FlashcardLearningServiceImpl implements iFlashcardLearningService {
                 FlashcardProgress saved = progressRepository.save(progress);
 
                 Flashcard flashcard = flashcardRepository.findById(flashcardId)
-                                .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
+                        .orElseThrow(() -> new FlashcardNotFoundException(flashcardId));
 
                 log.info("User {} reset learning progress for flashcard {}", userId, flashcardId);
 
                 return toResponse(saved, flashcard);
         }
 
-        // ============= HELPER METHODS =============
-
         private void validateFlashcardAccess(Flashcard flashcard, String userId, CustomUserDetails userDetails) {
+                // 1. Nếu là Admin hoặc Supporter thì luôn có quyền truy cập
                 boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
-                                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
-                                                a.getAuthority().equals("ROLE_SUPPORTER"));
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
+                                a.getAuthority().equals("ROLE_SUPPORTER"));
+                if (isAdminOrSupporter) {
+                        return;
+                }
 
-                if (!isAdminOrSupporter) {
-                        if (flashcard.getType() == EFlashcardType.BY_MEMBER &&
-                                        !userId.equals(flashcard.getCreatedBy())) {
-                                throw new AccessDeniedException(
-                                                "Bạn không có quyền học flashcard này");
+                // 2. Đối với người dùng thông thường (ROLE_MEMBER)
+                if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
+                        // Nếu bộ thẻ là RIÊNG TƯ (PRIVATE) VÀ người đang đăng nhập KHÔNG PHẢI tác giả
+                        if (flashcard.getVisibility() == vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility.PRIVATE
+                                && !userId.equals(flashcard.getCreatedBy())) {
+                                throw new AccessDeniedException("Bạn không có quyền truy cập bộ thẻ riêng tư của thành viên khác.");
                         }
                 }
+
         }
 
         private FlashcardProgressResponse toResponse(FlashcardProgress progress, Flashcard flashcard) {
-                // Lấy danh sách từ vựng trong flashcard
-                List<vn.hcmute.edu.materialsservice.models.Word> words = wordRepository
-                                .findByFlashcardId(flashcard.getId());
-                List<vn.hcmute.edu.materialsservice.dtos.response.WordResponse> wordResponses = words.stream()
-                                .map(word -> vn.hcmute.edu.materialsservice.dtos.response.WordResponse.builder()
-                                                .id(word.getId())
-                                                .flashcardId(word.getFlashcardId())
-                                                .newWord(word.getNewWord())
-                                                .meaning(word.getMeaning())
-                                                .wordForm(word.getWordForm())
-                                                .phoneme(word.getPhoneme())
-                                                .audioURL(word.getAudioURL())
-                                                .createdAt(word.getCreatedAt())
-                                                .updatedAt(word.getUpdatedAt())
-                                                .build())
-                                .collect(java.util.stream.Collectors.toList());
+                List<Word> words = wordRepository.findByFlashcardId(flashcard.getId());
+
+                // ✅ Fix: lấy totalWords thực tế thay vì từ entity (phòng lệch dữ liệu)
+                int actualTotalWords = words.size();
+
+                List<WordResponse> wordResponses = words.stream()
+                        .map(word -> WordResponse.builder()
+                                .id(word.getId())
+                                .flashcardId(word.getFlashcardId())
+                                .newWord(word.getNewWord())
+                                .meaning(word.getMeaning())
+                                .wordForm(word.getWordForm())
+                                .phoneme(word.getPhoneme())
+                                .audioURL(word.getAudioURL())
+                                .createdAt(word.getCreatedAt())
+                                .updatedAt(word.getUpdatedAt())
+                                .build())
+                        .collect(Collectors.toList());
+
+                // ✅ Fix: tránh chia cho 0
+                double progressPercentage = 0.0;
+                if (actualTotalWords > 0) {
+                        progressPercentage = Math.round(
+                                (progress.getViewedWordCount() * 100.0 / actualTotalWords) * 100.0
+                        ) / 100.0;
+                }
 
                 return FlashcardProgressResponse.builder()
-                                .id(progress.getId())
-                                .userId(progress.getUserId())
-                                .flashcardId(progress.getFlashcardId())
-                                .flashcardTitle(flashcard.getTitle())
-                                .viewedWordIds(progress.getViewedWordIds())
-                                .viewedWordCount(progress.getViewedWordCount())
-                                .totalWords(progress.getTotalWords())
-                                .progressPercentage(Math.round(progress.getProgress() * 100.0) / 100.0)
-                                .status(progress.getStatus())
-                                .startedAt(progress.getStartedAt())
-                                .completedAt(progress.getCompletedAt())
-                                .lastAccessedAt(progress.getLastAccessedAt())
-                                .words(wordResponses)
-                                .build();
+                        .id(progress.getId())
+                        .userId(progress.getUserId())
+                        .flashcardId(progress.getFlashcardId())
+                        .flashcardTitle(flashcard.getTitle())
+                        .viewedWordIds(progress.getViewedWordIds())
+                        .viewedWordCount(progress.getViewedWordCount())
+                        .totalWords(actualTotalWords)
+                        .progressPercentage(progressPercentage)
+                        .status(progress.getStatus())
+                        .startedAt(progress.getStartedAt())
+                        .completedAt(progress.getCompletedAt())
+                        .lastAccessedAt(progress.getLastAccessedAt())
+                        .words(wordResponses)
+                        .build();
         }
 }
