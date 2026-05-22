@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface FlashcardProgressRepository extends MongoRepository<FlashcardProgress, String> {
 
-    Optional<FlashcardProgress> findByUserIdAndFlashcardId(String userId, String flashcardId);
+    Optional<FlashcardProgress> findFirstByUserIdAndFlashcardId(String userId, String flashcardId);
 
     List<FlashcardProgress> findByUserId(String userId);
 
