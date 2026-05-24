@@ -17,6 +17,9 @@
         private Double percentage;
         private List<QuestionResult> results;
         private LocalDateTime submittedAt;
+        private Integer xpGained;
+        private Boolean leveledUp;
+        private Integer currentLevel;
 
     @Data
     @Builder

@@ -338,7 +338,6 @@ public class UserInfoAPIController {
             return id; // ← Return String id directly
         }
     }
-
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<MemberProfileDTO> getMyProfile(Authentication authentication) {
@@ -350,6 +349,26 @@ public class UserInfoAPIController {
 
         if (!(user instanceof Member member)) {
             throw new BadRequestError("User is not a member");
+        }
+
+        // 📐 BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
+        int totalXp = member.getXp() != null ? member.getXp() : 0;
+
+        // 🎯 Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
+        int currentLevel = userService.calculateLevel(totalXp);
+
+        // Thuật toán tính tiến trình: TotalXP = 50 * L * (L - 1)
+        int xpFloorForCurrentLevel = 50 * currentLevel * (currentLevel - 1);
+        int xpCeilForNextLevel = 50 * (currentLevel + 1) * currentLevel;
+        int totalXpInThisLevelRange = xpCeilForNextLevel - xpFloorForCurrentLevel;
+
+        int currentLevelProgressXp = totalXp - xpFloorForCurrentLevel;
+        int xpNeededForNextLevel = xpCeilForNextLevel - totalXp;
+
+        double progressPercentage = 0.0;
+        if (totalXpInThisLevelRange > 0) {
+            progressPercentage = ((double) currentLevelProgressXp / totalXpInThisLevelRange) * 100;
+            progressPercentage = Math.round(progressPercentage * 10.0) / 10.0; // Làm tròn 1 chữ số thập phân (VD: 45.5%)
         }
 
         MemberProfileDTO dto = MemberProfileDTO.builder()
@@ -365,11 +384,15 @@ public class UserInfoAPIController {
                 // === Field Member ===
                 .streakCount(member.getStreakCount())
                 .longestStreak(member.getLongestStreak())
-                .xp(member.getXp())
-                .level(member.getLevel())
+                .xp(totalXp)
+                .level(currentLevel)
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
+                // === 🚀 3 Field bổ trợ vẽ ProgressBar trên UI Frontend ===
+                .xpNeededForNextLevel(xpNeededForNextLevel)
+                .currentLevelProgressXp(currentLevelProgressXp)
+                .progressPercentage(progressPercentage)
                 .build();
 
         return ResponseEntity.ok(dto);

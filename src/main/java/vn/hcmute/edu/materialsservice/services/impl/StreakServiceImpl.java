@@ -7,6 +7,7 @@ import vn.hcmute.edu.materialsservice.repository.UserRepository;
 import vn.hcmute.edu.materialsservice.services.IStreakService;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -18,7 +19,7 @@ public class StreakServiceImpl implements IStreakService {
     @Override
     public void updateStreak(Member member) {
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
 
         LocalDate lastStudyDate = member.getLastStudyDate();
 

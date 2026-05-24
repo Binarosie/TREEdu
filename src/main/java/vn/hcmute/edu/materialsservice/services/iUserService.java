@@ -49,4 +49,8 @@ public interface iUserService {
     Optional<User> findByEmail(String email);
 
     Optional<User> findById(String id); // ← UUID → String
+
+    boolean addXpToMember(String userId, int xpToAdd);
+
+    int calculateLevel(int totalXp);
 }
