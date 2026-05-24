@@ -300,4 +300,34 @@ public class UserServiceImpl implements iUserService {
     public Optional<User> findById(String id) { // ← UUID → String
         return userRepository.findById(id);
     }
+
+    @Override
+    @Transactional
+    public boolean addXpToMember(String userId, int xpToAdd) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundError("User not found with id: " + userId));
+
+        if (user instanceof Member member) {
+            int currentXp = member.getXp() != null ? member.getXp() : 0;
+            int oldLevel = member.getLevel() != null ? member.getLevel() : 1;
+
+            int newXp = currentXp + xpToAdd;
+            member.setXp(newXp);
+
+            // 🔥 ĐỒNG BỘ: Sử dụng chung một thuật toán RPG cho toàn hệ thống
+            int newLevel = calculateLevel(newXp);
+            member.setLevel(newLevel);
+
+            userRepository.save(member);
+            return newLevel > oldLevel;
+        }
+        return false;
+    }
+    // Trong file UserServiceImpl.java triển khai:
+    @Override
+    public int calculateLevel(int totalXp) {
+        if (totalXp <= 0) return 1;
+        // Sử dụng chính xác thuật toán RPG cũ của ông để đồng bộ dữ liệu
+        return (int) Math.floor((1.0 + Math.sqrt(1.0 + (double) totalXp / 12.5)) / 2.0);
+    }
 }

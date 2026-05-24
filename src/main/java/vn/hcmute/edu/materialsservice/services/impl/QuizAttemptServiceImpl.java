@@ -1,4 +1,3 @@
-
 package vn.hcmute.edu.materialsservice.services.impl;
 
 import lombok.RequiredArgsConstructor;
@@ -14,9 +13,11 @@ import vn.hcmute.edu.materialsservice.repository.UserRepository;
 import vn.hcmute.edu.materialsservice.services.IStreakService;
 import vn.hcmute.edu.materialsservice.services.iQuizAttemptService;
 import vn.hcmute.edu.materialsservice.exceptions.ResourceNotFoundException;
+import vn.hcmute.edu.materialsservice.services.iUserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
         private final vn.hcmute.edu.materialsservice.Mapper.QuizMapper quizMapper;
         private final IStreakService streakService;
         private final UserRepository userRepository;
+        private final iUserService userService;
+        private final MissionServiceImpl missionService;
 
         @Override
         public StartQuizResponse startQuiz(String quizId, String userId) {
@@ -127,36 +130,66 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                 attempt.setAnswers(userAnswers);
                 attempt.setScore(correctCount);
                 attempt.setCorrectAnswers(correctCount);
-                attempt.setSubmitted(true); // ✅ Đánh dấu đã submit
+                attempt.setSubmitted(true);
                 attempt.setSubmittedAt(LocalDateTime.now());
                 attemptRepository.save(attempt);
+
                 User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+                // Khai báo các biến Gamification ra ngoài khối block if để map vào Object trả về cuối hàm
+                int xpGained = 0;
+                boolean isLevelUp = false;
+                int finalLevel = 1;
+
                 if (user instanceof Member member) {
 
-                        // 🔥 Update streak
+                        // 🔥 Cập nhật thông tin Chuỗi ngày học (Nhớ xóa bỏ dòng userRepository.save(member) bên trong hàm updateStreak nhé ông)
                         streakService.updateStreak(member);
 
-                        // ⭐ XP
-                        int currentXp = member.getXp() != null
-                                ? member.getXp()
-                                : 0;
+                        // ⭐ Tính toán XP nhận được theo thuật toán tỷ lệ chính xác và cấp độ Quiz
+                        xpGained = calculateXpGained(correctCount, quiz.getQuestionCount(), quiz.getLevel());
 
-                        member.setXp(currentXp + 10);
+                        int currentXp = member.getXp() != null ? member.getXp() : 0;
+                        int oldLevel = member.getLevel() != null ? member.getLevel() : 1;
 
-                        // 📚 Total quiz completed
-                        int totalQuiz = member.getTotalQuizCompleted() != null
-                                ? member.getTotalQuizCompleted()
-                                : 0;
+                        // Cộng dồn XP mới nhận được vào tổng điểm tích lũy của Member
+                        int newXp = currentXp + xpGained;
+                        member.setXp(newXp);
 
+                        int totalQuiz = member.getTotalQuizCompleted() != null ? member.getTotalQuizCompleted() : 0;
                         member.setTotalQuizCompleted(totalQuiz + 1);
 
-                        // 🎮 Level system
-                        member.setLevel((member.getXp() / 100) + 1);
+                        int newLevel = userService.calculateLevel(newXp);
+                        member.setLevel(newLevel);
 
-                        // 💾 Save DB
+
+                        isLevelUp = newLevel > oldLevel;
+                        finalLevel = newLevel;
+
+                        // 💾 LƯU DUY NHẤT MỘT LẦN XUỐNG CƠ SỞ DỮ LIỆU
                         userRepository.save(member);
+
+                        log.info("🎯 User {} nhận được {} XP từ bài Quiz Level {}. Cấp cũ: {}, Cấp mới: {}",
+                                userId, xpGained, quiz.getLevel(), oldLevel, newLevel);
+
+                        // 🚀 ============ KÍCH HOẠT NHIỆM VỤ HÀNG NGÀY ============
+
+                        // 1. Tăng tiến trình nhiệm vụ "Làm Quiz bất kỳ" lên 1
+                        missionService.fireMissionEvent(userId, vn.hcmute.edu.materialsservice.Enum.EMissionType.DO_QUIZ_ANY, 1);
+
+                        // 2. Tăng tiến trình nhiệm vụ "Tích lũy XP trong ngày" (nếu có kiếm được XP)
+                        if (xpGained > 0) {
+                                missionService.fireMissionEvent(userId, vn.hcmute.edu.materialsservice.Enum.EMissionType.EARN_DAILY_XP, xpGained);
+                        }
+
+                        // 3. Tăng tiến trình nhiệm vụ "Đạt điểm tuyệt đối" (nếu đúng 100% số câu)
+                        if (correctCount == quiz.getQuestionCount() && quiz.getQuestionCount() > 0) {
+                                // Lưu ý: Cần đảm bảo ông đã thêm GET_PERFECT_SCORE vào file Enum của ông
+                                missionService.fireMissionEvent(userId, vn.hcmute.edu.materialsservice.Enum.EMissionType.GET_PERFECT_SCORE, 1);
+                        }
+
+                        // ========================================================
                 }
 
                 log.info("✅ Quiz submitted: attemptId={}, score={}/{}", attempt.getId(), correctCount, quiz.getQuestionCount());
@@ -169,6 +202,9 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .percentage(Math.round((double) correctCount / quiz.getQuestionCount() * 1000) / 10.0)
                         .results(results)
                         .submittedAt(attempt.getSubmittedAt())
+                        .xpGained(xpGained)
+                        .leveledUp(isLevelUp)
+                        .currentLevel(finalLevel)
                         .build();
         }
 
@@ -180,12 +216,10 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .orElse("Chưa chọn");
         }
 
-        // ✅ FIX: Chỉ lấy bài ĐÃ SUBMIT
         @Override
         public List<QuizAttemptResponse> getUserAttemptHistory(String userId) {
                 log.info("📋 Getting submitted attempt history for user: {}", userId);
 
-                // Dùng method mới - chỉ lấy submitted=true
                 List<QuizAttempt> attempts = attemptRepository.findByUserIdAndSubmittedTrueOrderBySubmittedAtDesc(userId);
 
                 log.info("✅ Found {} submitted attempts", attempts.size());
@@ -195,12 +229,10 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .collect(java.util.stream.Collectors.toList());
         }
 
-        // ✅ FIX: Chỉ lấy bài ĐÃ SUBMIT theo quiz
         @Override
         public List<QuizAttemptResponse> getUserAttemptsByQuiz(String quizId, String userId) {
                 log.info("📋 Getting submitted attempts for quiz: {} and user: {}", quizId, userId);
 
-                // Dùng method mới - chỉ lấy submitted=true
                 List<QuizAttempt> attempts = attemptRepository.findByQuizIdAndUserIdAndSubmittedTrueOrderBySubmittedAtDesc(
                         quizId, userId);
 
@@ -220,7 +252,6 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         throw new IllegalStateException("Bạn không có quyền xem lịch sử này!");
                 }
 
-                // ✅ Kiểm tra xem bài đã submit chưa
                 if (!attempt.isSubmitted()) {
                         throw new IllegalStateException("Bài này chưa được nộp!");
                 }
@@ -262,29 +293,34 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .percentage(Math.round((double) attempt.getScore() / attempt.getTotalQuestions() * 1000) / 10.0)
                         .results(results)
                         .submittedAt(attempt.getSubmittedAt())
+                        // Điền các giá trị mặc định để tránh lỗi vỡ cấu trúc DTO khi xem chi tiết bài cũ
+                        .xpGained(0)
+                        .leveledUp(false)
+                        .currentLevel(1)
                         .build();
         }
 
         @Override
         public QuizDashboardResponse getAdminDashboardStats() {
                 log.info("📊 Fetching admin dashboard statistics...");
-                LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-                LocalDateTime now = LocalDateTime.now();
+
+                // Cố định múi giờ Việt Nam, tránh lỗi lệch múi giờ UTC gây sai số liệu khi deploy Cloud
+                ZoneId vnZone = ZoneId.of("Asia/Ho_Chi_Minh");
+                LocalDateTime startOfDay = LocalDate.now(vnZone).atStartOfDay();
+                LocalDateTime now = LocalDateTime.now(vnZone);
 
                 long totalAttempts = attemptRepository.countBySubmittedTrue();
                 long attemptsToday = attemptRepository.countBySubmittedAtBetweenAndSubmittedTrue(startOfDay, now);
 
-                // Lấy danh sách raw từ Repository (đã sửa thành Class QuizAttemptStats)
                 List<QuizAttemptRepository.QuizAttemptStats> topRaw = attemptRepository.findTopPopularQuizzes();
 
                 List<QuizDashboardResponse.TopQuizStat> topQuizzes = topRaw.stream().map(item -> {
-                        // Lấy ID từ object item (Lúc này chắc chắn không null nếu DB có dữ liệu)
                         String currentQuizId = item.getQuizId();
                         String quizTitle = "Unknown Quiz";
 
                         if (currentQuizId != null) {
                                 quizTitle = quizRepository.findById(currentQuizId)
-                                        .map(quiz -> quiz.getTitle())
+                                        .map(Quiz::getTitle)
                                         .orElse("Unknown Quiz (Deleted)");
                         } else {
                                 log.warn("⚠️ Found aggregation result with null quizId");
@@ -304,7 +340,6 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .build();
         }
 
-
         private QuizAttemptResponse mapToResponseSummary(QuizAttempt attempt) {
                 Quiz quiz = quizRepository.findById(attempt.getQuizId()).orElse(null);
                 String quizTitle = quiz != null ? quiz.getTitle() : "Quiz đã bị xóa";
@@ -320,4 +355,34 @@ public class QuizAttemptServiceImpl implements iQuizAttemptService {
                         .submittedAt(attempt.getSubmittedAt())
                         .build();
         }
+
+        /**
+         * Thuật toán phân cấp tính toán điểm XP dựa vào tỷ lệ chính xác kết hợp độ khó của đề bài.
+         */
+        private int calculateXpGained(int correctCount, int totalQuestions, int quizLevel) {
+                if (totalQuestions <= 0) return 0;
+
+                double accuracy = (double) correctCount / totalQuestions;
+                int baseXp;
+
+                if (accuracy == 1.0) {
+                        baseXp = 30; // 100% câu đúng
+                } else if (accuracy >= 0.7) {
+                        baseXp = 20; // 70% -> dưới 100% câu đúng
+                } else if (accuracy >= 0.5) {
+                        baseXp = 10; // 50% -> dưới 70% câu đúng
+                } else {
+                        baseXp = 2;  // Điểm khuyến khích nỗ lực học tập
+                }
+
+                double multiplier = 1.0;
+                if (quizLevel >= 5) {
+                        multiplier = 2.0; // Đề khó (Level 5, 6)
+                } else if (quizLevel >= 3) {
+                        multiplier = 1.5; // Đề trung bình (Level 3, 4)
+                }
+
+                return (int) Math.round(baseXp * multiplier);
+        }
+
 }
