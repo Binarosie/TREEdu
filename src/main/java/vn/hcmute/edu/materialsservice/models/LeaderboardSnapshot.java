@@ -22,11 +22,9 @@ public class LeaderboardSnapshot {
     @Id
     private String id;
 
-    // "WEEKLY_XP" | "STREAK" | "TOTAL_XP"
     @Field("type")
     private String type;
 
-    // "2026-W19" hoặc "ALL_TIME"
     @Field("period")
     private String period;
 
@@ -45,6 +43,7 @@ public class LeaderboardSnapshot {
         private Integer rank;
         private String userId;
         private String displayName;
+        private String avatarUrl; // 🌟 THÊM TRƯỜNG NÀY
         private Long value;
         private Integer level;
         private TreeStage treeStage;

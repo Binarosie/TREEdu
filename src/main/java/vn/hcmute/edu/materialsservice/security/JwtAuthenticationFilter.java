@@ -20,11 +20,6 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return "OPTIONS".equalsIgnoreCase(request.getMethod());
-    }
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
@@ -32,24 +27,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenUtil jwtTokenUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // 🌟 Bỏ qua filter với OPTIONS (CORS preflight) và các path public
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
 
-        if (EXCLUDED_PATHS.contains(request.getRequestURI())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if ("OPTIONS".equalsIgnoreCase(method)) return true;
+
+        // Bỏ qua toàn bộ /uploads/ — không cần token để nghe audio
+        if (uri.startsWith("/uploads/")) return true;
+
+        // Bỏ qua các path cố định trong danh sách
+        if (EXCLUDED_PATHS.contains(uri)) return true;
+
+        // Bỏ qua GET /api/dictation và /api/dictation/{id}
+        if ("GET".equalsIgnoreCase(method) && uri.startsWith("/api/dictation")) return true;
+
+        return false;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         String token = null;
 
-        // 1. THỬ LẤY TOKEN TỪ HEADER (Dành cho App Mobile)
+        // 1. Lấy token từ Header (Mobile)
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
 
-        // 2. NẾU HEADER KHÔNG CÓ, THỬ LẤY TỪ COOKIE (Dành cho Web)
+        // 2. Nếu không có Header thì lấy từ Cookie (Web)
         if (token == null && request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("JWT".equals(cookie.getName())) {
@@ -67,32 +77,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     var userDetails = customUserDetailsService.loadUserByUsername(username);
 
                     if (jwtTokenUtil.isTokenValid(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails, null, userDetails.getAuthorities());
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                        System.out.println("Authentication SET successfully");
-                    } else {
-                        System.out.println("Token is INVALID");
                     }
-                } else if (username == null) {
-                    System.out.println("Username is NULL from token");
-                } else {
-                    System.out.println("Authentication already exists in SecurityContext");
                 }
             } catch (Exception e) {
-                // throw new InternalServerError("Internal server error occurred");
-                // Tùy chọn: log lại lỗi nếu muốn debug
                 e.printStackTrace();
-
-                // Redirect về trang lỗi (HTML)
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
-        } else {
-            System.out.println("No JWT token found, proceeding as GUEST");
         }
-        // Always continue filter chain
+
         filterChain.doFilter(request, response);
     }
 
@@ -103,6 +101,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/users/newMember",
             "/api/auth/verify-email-link",
             "/api/auth/request-reset-password",
-            "/api/auth/reset-password");
-    // Không include /api/quiz - để SecurityConfig permitAll xử lý
+            "/api/auth/reset-password"
+    );
 }
