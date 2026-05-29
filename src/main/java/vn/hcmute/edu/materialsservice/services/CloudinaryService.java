@@ -12,6 +12,7 @@ import vn.hcmute.edu.materialsservice.dtos.response.BadRequestError;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,24 @@ public class CloudinaryService {
     private static final Set<String> ALLOWED_TYPES = Set.of(
             "image/png", "image/jpeg", "image/jpg");
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+    public String uploadAudio(MultipartFile file) throws IOException {
+        // Cloudinary nhận raw bytes, không cần lưu file tạm xuống disk
+        Map<?, ?> result = cloudinary.uploader().upload(
+                file.getBytes(),
+                Map.of(
+                        "resource_type", "video",   // Cloudinary dùng "video" cho cả audio lẫn video
+                        "folder",        "treedu/audio",
+                        "public_id",     UUID.randomUUID().toString(),
+                        "overwrite",     false
+                )
+        );
+
+        String url = (String) result.get("secure_url");
+        log.info("Upload Cloudinary thành công: {}", url);
+        return url;
+    }
+
 
     /**
      * Upload ảnh lên Cloudinary, trả về secure URL.

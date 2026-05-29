@@ -137,6 +137,7 @@ public class DictationServiceImpl implements iDictationService {
             DictationCreateRequest aiResult = response.getBody();
             if (aiResult == null || aiResult.getSegments() == null || aiResult.getSegments().isEmpty()) {
                 throw new RuntimeException("AI Service không trả về dữ liệu hợp lệ!");
+
             }
 
             // Ghi đè URL từ Python bằng URL thực từ BE Java
