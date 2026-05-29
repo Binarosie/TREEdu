@@ -91,25 +91,19 @@ public class LeaderboardService {
             default          -> "xp";
         };
 
-        // 1. Lọc User là Member
         MatchOperation matchMember = Aggregation.match(Criteria.where("_class").regex(".*Member$"));
-
-        // 2. Lọc điểm > 0
         MatchOperation matchScore = Aggregation.match(Criteria.where(sortField).gt(0));
-
-        // 3. Sắp xếp & Giới hạn
         SortOperation sort = Aggregation.sort(Sort.by(Sort.Direction.DESC, sortField));
         LimitOperation limit = Aggregation.limit(100);
 
-        // 4. Join với user_trees (Sử dụng ID làm String để đảm bảo khớp)
         LookupOperation lookup = LookupOperation.newLookup()
                 .from("user_trees")
-                .localField("_id")      // Trong DB của bạn _id là String
-                .foreignField("userId") // Trong DB của bạn userId cũng là String
+                .localField("_id")
+                .foreignField("userId")
                 .as("tree_data_list");
 
-        // 5. Projection (Lấy đúng tên field snake_case từ ảnh DB bạn gửi)
-        ProjectionOperation project = Aggregation.project("_id", "full_name", "email", "xp", "level", "streakCount")
+        // 🌟 THÊM "avatar_url" VÀO PROJECTION
+        ProjectionOperation project = Aggregation.project("_id", "full_name", "email", "xp", "level", "streakCount", "avatar_url")
                 .and("tree_data_list").arrayElementAt(0).as("tree_info");
 
         Aggregation agg = Aggregation.newAggregation(matchMember, matchScore, sort, limit, lookup, project);
@@ -121,7 +115,6 @@ public class LeaderboardService {
             Map row = raw.get(i);
             String userId = row.get("_id").toString();
 
-            // Lấy tên hiển thị (Sửa theo ảnh 1: full_name)
             String displayName = "Người dùng ẩn danh";
             if (row.get("full_name") != null) {
                 displayName = row.get("full_name").toString();
@@ -129,16 +122,17 @@ public class LeaderboardService {
                 displayName = row.get("email").toString().split("@")[0];
             }
 
+            // 🌟 LẤY AVATAR URL TỪ KẾT QUẢ AGGREGATION
+            String avatarUrl = row.get("avatar_url") != null ? row.get("avatar_url").toString() : null;
+
             long value = ((Number) Objects.requireNonNullElse(row.get(sortField), 0)).longValue();
             int level = ((Number) Objects.requireNonNullElse(row.get("level"), 1)).intValue();
 
             TreeStage treeStage = null;
             if (row.get("tree_info") instanceof Map treeMap) {
-                // Lưu ý: Field trong DB là "stage" (theo @Field("stage") trong UserTree.java)
                 Object stageObj = treeMap.get("stage");
                 if (stageObj != null) {
                     try {
-                        // Chuyển từ String trong DB sang Enum TreeStage
                         treeStage = TreeStage.valueOf(stageObj.toString().toUpperCase().trim());
                     } catch (IllegalArgumentException e) {
                         log.warn("Không thể parse Stage: {}", stageObj);
@@ -152,6 +146,7 @@ public class LeaderboardService {
                     .rank(currentRank)
                     .userId(userId)
                     .displayName(displayName)
+                    .avatarUrl(avatarUrl) // 🌟 GÁN VÀO SNAPSHOT
                     .value(value)
                     .level(level)
                     .treeStage(treeStage)
@@ -172,7 +167,7 @@ public class LeaderboardService {
         return snapshotRepository.save(snapshot);
     }
 
-    // ─── HELPERS (Giữ nguyên) ───────────────────────────────────────────────────
+    // ─── HELPERS ───────────────────────────────────────────────────
 
     private LeaderboardResponse toResponse(LeaderboardSnapshot snapshot, String currentUserId) {
         Integer myRank = snapshot.getEntries().stream()
@@ -186,6 +181,7 @@ public class LeaderboardService {
                         .rank(e.getRank())
                         .userId(e.getUserId())
                         .displayName(e.getDisplayName())
+                        .avatarUrl(e.getAvatarUrl()) // 🌟 GÁN VÀO DTO TRẢ VỀ CHO FRONTEND
                         .value(e.getValue())
                         .level(e.getLevel())
                         .treeStage(e.getTreeStage())
