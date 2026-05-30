@@ -1,30 +1,29 @@
 package vn.hcmute.edu.materialsservice.configs;
 
 import com.cloudinary.Cloudinary;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import java.util.Map;
 
 @Configuration
+@Slf4j
 public class CloudinaryConfig {
 
-    @Value("${cloudinary.cloud-name}")
-    private String cloudName;
-
-    @Value("${cloudinary.api-key}")
-    private String apiKey;
-
-    @Value("${cloudinary.api-secret}")
-    private String apiSecret;
+    @Value("${cloudinary.url}")
+    private String cloudinaryUrl;
 
     @Bean
     public Cloudinary cloudinary() {
-        return new Cloudinary(Map.of(
-                "cloud_name", cloudName,
-                "api_key",    apiKey,
-                "api_secret", apiSecret,
-                "secure",     true
-        ));
+        // Log để kiểm tra credentials đang load
+        log.info("☁️ Cloudinary initialized with URL: {}",
+                cloudinaryUrl != null ? cloudinaryUrl.replaceAll(":.*@", ":***@") : "NULL");
+
+        if (cloudinaryUrl == null || cloudinaryUrl.isEmpty()) {
+            log.error("❌ cloudinary.url is missing in application.properties!");
+            throw new IllegalArgumentException("Missing cloudinary.url configuration");
+        }
+
+        return new Cloudinary(cloudinaryUrl);
     }
 }

@@ -4,12 +4,15 @@ import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.models.User;
 import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateProfileRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateUserRequest;
+import vn.hcmute.edu.materialsservice.services.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class MemberUpdateStrategy implements iUserUpdateStrategy {
+
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public boolean supports(User user) {
@@ -36,15 +39,21 @@ public class MemberUpdateStrategy implements iUserUpdateStrategy {
         // phoneNumber: null = không đổi, "" = xóa số (set null vào DB)
         if (request.getPhoneNumber() != null) {
             member.setPhoneNumber(
-                    request.getPhoneNumber().isBlank() ? null : request.getPhoneNumber()
-            );
+                    request.getPhoneNumber().isBlank() ? null : request.getPhoneNumber());
         }
 
-        // avatarUrl: null = không đổi, "" = xóa ảnh (set null vào DB)
-        if (request.getAvatarUrl() != null) {
-            member.setAvatarUrl(
-                    request.getAvatarUrl().isBlank() ? null : request.getAvatarUrl()
-            );
+        // ← Xử lý upload file qua Cloudinary
+        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+            // overwrite=true nên không cần xóa ảnh cũ
+            String newAvatarUrl = cloudinaryService.uploadAvatar(
+                    request.getAvatarFile(),
+                    member.getId());
+            member.setAvatarUrl(newAvatarUrl);
+
+        } else if (request.getAvatarFile() != null && request.getAvatarFile().isEmpty()) {
+            // Client gửi file rỗng có chủ ý = muốn xóa avatar
+            cloudinaryService.deleteAvatar(member.getId());
+            member.setAvatarUrl(null);
         }
 
         // birthYear: null = không đổi
@@ -55,8 +64,7 @@ public class MemberUpdateStrategy implements iUserUpdateStrategy {
         // address: null = không đổi, blank = xóa địa chỉ
         if (request.getAddress() != null) {
             member.setAddress(
-                    request.getAddress().isBlank() ? null : request.getAddress()
-            );
+                    request.getAddress().isBlank() ? null : request.getAddress());
         }
 
         // gender: null = không đổi, phải đúng enum (đã validate ở DTO)

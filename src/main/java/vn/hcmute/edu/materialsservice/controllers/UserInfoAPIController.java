@@ -9,11 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.edu.materialsservice.dtos.MemberProfileDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserDetailDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserInfoDTO;
@@ -70,6 +72,7 @@ public class UserInfoAPIController {
         User user = userService.createMember(createRequest);
         return new ResponseEntity<>(new CreatedResponse("User created successfully", user), HttpStatus.CREATED);
     }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/newSupporter")
     public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
@@ -232,10 +235,15 @@ public class UserInfoAPIController {
     }
 
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    @PutMapping("/update-my-profile/{id}")
+    @PutMapping(value = "/update-my-profile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> updateMyProfile(
             @PathVariable String id,
-            @Valid @RequestBody UpdateProfileRequest request,
+            @RequestPart(value = "fullname", required = false) String fullname,
+            @RequestPart(value = "phoneNumber", required = false) String phoneNumber,
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
+            @RequestPart(value = "birthYear", required = false) String birthYear,
+            @RequestPart(value = "address", required = false) String address,
+            @RequestPart(value = "gender", required = false) String gender,
             Authentication authentication) {
 
         CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -244,6 +252,15 @@ public class UserInfoAPIController {
         if (!currentUser.getId().equals(id)) {
             throw new BadRequestError("Bạn không có quyền chỉnh sửa hồ sơ của người khác!");
         }
+
+        // Gom các part thành DTO
+        UpdateProfileRequest request = new UpdateProfileRequest();
+        request.setFullname(fullname);
+        request.setPhoneNumber(phoneNumber);
+        request.setAvatarFile(avatarFile);
+        request.setBirthYear(birthYear != null ? Integer.valueOf(birthYear) : null);
+        request.setAddress(address);
+        request.setGender(gender);
 
         // 1. Thực hiện update dưới DB và nhận về object Member sau khi cập nhật
         Member member = (Member) userService.updateMyProfile(id, request);
@@ -272,8 +289,7 @@ public class UserInfoAPIController {
                 "User updated successfully",
                 HttpStatus.OK.value(),
                 profileDTO, // 🔥 Đã thay bằng DTO sạch đẹp
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
@@ -338,6 +354,7 @@ public class UserInfoAPIController {
             return id; // ← Return String id directly
         }
     }
+
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<MemberProfileDTO> getMyProfile(Authentication authentication) {
@@ -368,7 +385,8 @@ public class UserInfoAPIController {
         double progressPercentage = 0.0;
         if (totalXpInThisLevelRange > 0) {
             progressPercentage = ((double) currentLevelProgressXp / totalXpInThisLevelRange) * 100;
-            progressPercentage = Math.round(progressPercentage * 10.0) / 10.0; // Làm tròn 1 chữ số thập phân (VD: 45.5%)
+            progressPercentage = Math.round(progressPercentage * 10.0) / 10.0; // Làm tròn 1 chữ số thập phân (VD:
+                                                                               // 45.5%)
         }
 
         MemberProfileDTO dto = MemberProfileDTO.builder()
