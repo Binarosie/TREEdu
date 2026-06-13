@@ -55,29 +55,98 @@ public class UserInfoAPIController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping("/newMember")
-    public ResponseEntity<SuccessResponse> createUser(@Valid @RequestBody RegisterRequest request) {
-        // Chuyển RegisterRequest → CreateUserRequest để truyền vào service
-        CreateUserRequest createRequest = new CreateUserRequest();
-        createRequest.setUserType("MEMBER");
-        createRequest.setFullName(request.getFullName());
-        createRequest.setEmail(request.getEmail());
-        createRequest.setPassword(request.getPassword());
-        createRequest.setPhoneNumber(request.getPhone());
-        createRequest.setAvatarUrl(request.getAvatarUrl());
-        createRequest.setBirthYear(request.getBirthYear());
-        createRequest.setAddress(request.getAddress());
-        createRequest.setGender(request.getGender());
+    @PostMapping(value = "/newMember", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SuccessResponse> createUser(
+            @RequestPart(value = "fullName") String fullName,
+            @RequestPart(value = "email") String email,
+            @RequestPart(value = "password") String password,
+            @RequestPart(value = "phone", required = false) String phone,
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
+            @RequestPart(value = "birthYear", required = false) String birthYear,
+            @RequestPart(value = "address", required = false) String address,
+            @RequestPart(value = "gender", required = false) String gender) {
 
-        User user = userService.createMember(createRequest);
-        return new ResponseEntity<>(new CreatedResponse("User created successfully", user), HttpStatus.CREATED);
+        log.info("CREATE MEMBER ENDPOINT CALLED");
+        log.info("Request Body:");
+        log.info("  - fullName: {}", fullName);
+        log.info("  - email: {}", email);
+        log.info("  - password: {}", password != null ? "***" : "null");
+        log.info("  - phone: {}", phone);
+
+        // Debug logging for avatar file
+        if (avatarFile == null || avatarFile.isEmpty()) {
+            log.warn("No avatar file provided for new member: {}", email);
+        } else {
+            log.info("Avatar file received: {} (size: {} bytes)", avatarFile.getOriginalFilename(),
+                    avatarFile.getSize());
+        }
+
+        CreateUserRequest createRequest = new CreateUserRequest();
+
+        // Handle null string values for optional fields
+        phone = (phone == null || phone.equals("null") || phone.isBlank()) ? null : phone;
+        address = (address == null || address.equals("null") || address.isBlank()) ? null : address;
+        gender = (gender == null || gender.equals("null") || gender.isBlank()) ? null : gender;
+
+        createRequest.setUserType("MEMBER");
+        createRequest.setFullName(fullName);
+        createRequest.setEmail(email);
+        createRequest.setPassword(password);
+        createRequest.setPhoneNumber(phone);
+        createRequest.setAvatarFile(avatarFile);
+
+        // Parse optional integer fields safely
+        if (birthYear != null && !birthYear.equals("null") && !birthYear.isBlank()) {
+            try {
+                createRequest.setBirthYear(Integer.valueOf(birthYear));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid birthYear format: {}", birthYear);
+            }
+        }
+
+        createRequest.setAddress(address);
+        createRequest.setGender(gender);
+
+        Member member = (Member) userService.createMember(createRequest);
+
+        log.info("Member created successfully:");
+        log.info("  - ID: {}", member.getId());
+        log.info("  - Email: {}", member.getEmail());
+        log.info("  - Avatar URL: {}", member.getAvatarUrl());
+
+        // Chuyển đổi Entity sang DTO để giấu Password và Package Name đi
+        MemberProfileDTO profileDTO = MemberProfileDTO.builder()
+                .id(member.getId())
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .avatarUrl(member.getAvatarUrl())
+                .birthYear(member.getBirthYear())
+                .address(member.getAddress())
+                .gender(member.getGender())
+                .streakCount(member.getStreakCount())
+                .longestStreak(member.getLongestStreak())
+                .xp(member.getXp())
+                .level(member.getLevel())
+                .totalQuizCompleted(member.getTotalQuizCompleted())
+                .totalFlashcardLearned(member.getTotalFlashcardLearned())
+                .lastStudyDate(member.getLastStudyDate())
+                .build();
+
+        // Trả DTO về cho Frontend
+        SuccessResponse response = new SuccessResponse(
+                "User created successfully",
+                HttpStatus.CREATED.value(),
+                profileDTO,
+                LocalDateTime.now());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/newSupporter")
     public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
-        log.info("🎯 === CREATE SUPPORTER ENDPOINT CALLED ===");
-        log.info("📋 Request Body:");
+        log.info("CREATE SUPPORTER ENDPOINT CALLED");
+        log.info("Request Body:");
         log.info("  - userType: {}", request.getUserType());
         log.info("  - fullName: {}", request.getFullName());
         log.info("  - email: {}", request.getEmail());
@@ -85,7 +154,7 @@ public class UserInfoAPIController {
 
         User user = userService.createManager(request);
 
-        log.info("✅ User created successfully:");
+        log.info("User created successfully:");
         log.info("  - ID: {}", user.getId());
         log.info("  - Class: {}", user.getClass().getSimpleName());
         log.info("  - Email: {}", user.getEmail());
@@ -253,12 +322,27 @@ public class UserInfoAPIController {
             throw new BadRequestError("Bạn không có quyền chỉnh sửa hồ sơ của người khác!");
         }
 
+        // Handle null string values for optional fields
+        fullname = (fullname == null || fullname.equals("null") || fullname.isBlank()) ? null : fullname;
+        phoneNumber = (phoneNumber == null || phoneNumber.equals("null") || phoneNumber.isBlank()) ? null : phoneNumber;
+        address = (address == null || address.equals("null") || address.isBlank()) ? null : address;
+        gender = (gender == null || gender.equals("null") || gender.isBlank()) ? null : gender;
+
         // Gom các part thành DTO
         UpdateProfileRequest request = new UpdateProfileRequest();
         request.setFullname(fullname);
         request.setPhoneNumber(phoneNumber);
         request.setAvatarFile(avatarFile);
-        request.setBirthYear(birthYear != null ? Integer.valueOf(birthYear) : null);
+
+        // Parse optional integer fields safely
+        if (birthYear != null && !birthYear.equals("null") && !birthYear.isBlank()) {
+            try {
+                request.setBirthYear(Integer.valueOf(birthYear));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid birthYear format: {}", birthYear);
+            }
+        }
+
         request.setAddress(address);
         request.setGender(gender);
 

@@ -16,6 +16,7 @@ public class TTSService {
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+    private final CloudinaryService cloudinaryService;
 
     @Value("${fpt.api-key}")
     private String fptApiKey;
@@ -25,7 +26,7 @@ public class TTSService {
 
     /**
      * Gọi FPT AI để generate audio từ text
-     * 
+     *
      * @param word - từ cần đọc
      * @return URL của file audio
      */
@@ -65,5 +66,48 @@ public class TTSService {
         }
 
         return null;
+    }
+
+    /**
+     * Generate audio và lưu trữ vĩnh viễn trên Cloudinary
+     * Thay vì lưu URL tạm từ FPT (dễ hết hạn)
+     *
+     * @param word   - từ cần đọc
+     * @param wordId - ID của word (để public_id dễ quản lý)
+     * @return URL vĩnh viễn từ Cloudinary (hoặc null nếu lỗi)
+     */
+    public String generateAudioAndStore(String word, String wordId) {
+        if (word == null || word.trim().isEmpty()) {
+            log.warn("Word is empty, skipping TTS generation");
+            return null;
+        }
+
+        try {
+            // 1. Generate audio từ FPT TTS API (nhận temporary URL)
+            String tempAudioUrl = generateAudioUrl(word);
+
+            if (tempAudioUrl == null) {
+                log.warn("Failed to generate audio from FPT TTS for word: {}", word);
+                return null;
+            }
+
+            log.debug("🎵 Generated temporary audio URL for word {}: {}", word, tempAudioUrl);
+
+            // 2. Download từ temporary URL và upload lên Cloudinary
+            String permanentUrl = cloudinaryService.downloadAndStoreAudio(tempAudioUrl, wordId);
+
+            if (permanentUrl != null) {
+                log.info("✅ Audio stored permanently for word {}: {}", word, permanentUrl);
+            } else {
+                log.warn("⚠️ Failed to store audio to Cloudinary, using temporary URL as fallback");
+                return tempAudioUrl; // Fallback: trả về URL tạm nếu lưu permanent thất bại
+            }
+
+            return permanentUrl;
+
+        } catch (Exception e) {
+            log.error("Error in generateAudioAndStore for word {}: {}", word, e.getMessage(), e);
+            return null;
+        }
     }
 }

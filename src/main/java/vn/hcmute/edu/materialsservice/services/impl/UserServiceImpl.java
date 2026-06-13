@@ -21,6 +21,7 @@ import vn.hcmute.edu.materialsservice.Enum.EUserRole;
 import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.models.User;
 import vn.hcmute.edu.materialsservice.repository.UserRepository;
+import vn.hcmute.edu.materialsservice.services.CloudinaryService;
 import vn.hcmute.edu.materialsservice.services.EmailService;
 import vn.hcmute.edu.materialsservice.services.factories.iUserFactory;
 import vn.hcmute.edu.materialsservice.services.iUserService;
@@ -41,6 +42,8 @@ public class UserServiceImpl implements iUserService {
     private final PasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
+
+    private final CloudinaryService cloudinaryService;
 
     private final List<iUserFactory> userFactories;
     private final List<iUserUpdateStrategy> updateStrategies;
@@ -75,11 +78,19 @@ public class UserServiceImpl implements iUserService {
         user.setModifiedOn(java.time.LocalDateTime.now());
 
         // ===== Map field mới =====
-        if (request.getPhoneNumber() != null) user.setPhoneNumber(request.getPhoneNumber());
-        if (request.getAvatarUrl()   != null) user.setAvatarUrl(request.getAvatarUrl());
-        if (request.getBirthYear()   != null) user.setBirthYear(request.getBirthYear());
-        if (request.getAddress()     != null) user.setAddress(request.getAddress());
-        if (request.getGender()      != null) user.setGender(request.getGender());
+        if (request.getPhoneNumber() != null)
+            user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getAvatarFile() != null) {
+            // Upload avatar file to Cloudinary
+            String avatarUrl = uploadAvatarToCloudinary(request.getAvatarFile(), user.getId());
+            user.setAvatarUrl(avatarUrl);
+        }
+        if (request.getBirthYear() != null)
+            user.setBirthYear(request.getBirthYear());
+        if (request.getAddress() != null)
+            user.setAddress(request.getAddress());
+        if (request.getGender() != null)
+            user.setGender(request.getGender());
 
         try {
             int code = (int) ((Math.random() * 900000) + 100000);
@@ -90,6 +101,7 @@ public class UserServiceImpl implements iUserService {
 
         return userRepository.save(user);
     }
+
     public User createOAuthMember(String email, String fullName) {
 
         return userRepository.findByEmail(email)
@@ -323,11 +335,28 @@ public class UserServiceImpl implements iUserService {
         }
         return false;
     }
+
     // Trong file UserServiceImpl.java triển khai:
     @Override
     public int calculateLevel(int totalXp) {
-        if (totalXp <= 0) return 1;
+        if (totalXp <= 0)
+            return 1;
         // Sử dụng chính xác thuật toán RPG cũ của ông để đồng bộ dữ liệu
         return (int) Math.floor((1.0 + Math.sqrt(1.0 + (double) totalXp / 12.5)) / 2.0);
+    }
+
+    /**
+     * Upload avatar file to Cloudinary and return the URL
+     */
+    private String uploadAvatarToCloudinary(org.springframework.web.multipart.MultipartFile avatarFile, String userId) {
+        try {
+            log.info("📤 Uploading avatar for user: {}", userId);
+            String avatarUrl = cloudinaryService.uploadAvatar(avatarFile, userId);
+            log.info("✅ Avatar uploaded successfully: {}", avatarUrl);
+            return avatarUrl;
+        } catch (Exception e) {
+            log.error("❌ Error uploading avatar to Cloudinary for user {}: {}", userId, e.getMessage());
+            throw new InternalServerError("Could not upload avatar file: " + e.getMessage());
+        }
     }
 }
