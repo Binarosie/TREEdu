@@ -8,8 +8,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import vn.hcmute.edu.materialsservice.dtos.request.MarkWordViewedRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.SubmitWordAnswerRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.ApiResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardProgressResponse;
+import vn.hcmute.edu.materialsservice.dtos.response.WordCheckResponse;
 import vn.hcmute.edu.materialsservice.Enum.ELearningStatus;
 import vn.hcmute.edu.materialsservice.services.iFlashcardLearningService;
 
@@ -46,6 +48,21 @@ public class FlashcardLearningController {
         FlashcardProgressResponse response = learningService.markWordAsViewed(
                 flashcardId, request.getWordId(), authentication);
         return ResponseEntity.ok(ApiResponse.success("Đánh dấu word đã xem thành công", response));
+    }
+
+    // Gõ và submit từ vựng, hệ thống check đúng/sai
+    // POST /api/flashcards/learn/{flashcardId}/submit-answer
+    @PostMapping("/{flashcardId}/submit-answer")
+    public ResponseEntity<ApiResponse<WordCheckResponse>> submitWordAnswer(
+            @PathVariable String flashcardId,
+            @Valid @RequestBody SubmitWordAnswerRequest request,
+            Authentication authentication) {
+
+        WordCheckResponse response = learningService.submitWordAnswer(
+                flashcardId, request.getWordId(), request.getUserAnswer(), authentication);
+
+        String message = response.isCorrect() ? "✅ Chính xác!" : "❌ Sai, vui lòng thử lại";
+        return ResponseEntity.ok(ApiResponse.success(message, response));
     }
 
     // Lấy tiến trình học của một flashcard

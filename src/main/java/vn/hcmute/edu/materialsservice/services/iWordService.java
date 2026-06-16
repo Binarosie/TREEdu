@@ -17,4 +17,10 @@ public interface iWordService {
     WordResponse getWordById(String id);
 
     List<WordResponse> getWordsByFlashcardId(String flashcardId, Authentication authentication);
+
+    /**
+     * Regenerate broken/expired audio URLs for all words in a flashcard
+     * Admin only endpoint
+     */
+    int regenerateBrokenAudio(String flashcardId);
 }

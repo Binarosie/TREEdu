@@ -2,7 +2,7 @@ package vn.hcmute.edu.materialsservice.dtos.request.users;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.hibernate.validator.constraints.URL;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class CreateUserRequest {
@@ -26,8 +26,8 @@ public class CreateUserRequest {
     @Pattern(regexp = "^(0[3|5|7|8|9])+([0-9]{8})$", message = "Số điện thoại không hợp lệ")
     private String phoneNumber;
 
-    @URL(message = "Avatar phải là URL hợp lệ")
-    private String avatarUrl;
+    // avatarFile: file upload, tự động overwrite trên Cloudinary
+    private MultipartFile avatarFile;
 
     @Min(value = 1900, message = "Năm sinh không hợp lệ")
     @Max(value = 2026, message = "Năm sinh không được vượt quá năm hiện tại")

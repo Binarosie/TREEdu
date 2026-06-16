@@ -42,7 +42,6 @@ public class WordController {
             @PathVariable String flashcardId,
             Authentication authentication) {
 
-
         List<WordResponse> responses = wordService.getWordsByFlashcardId(flashcardId, authentication);
 
         return ResponseEntity.ok(ApiResponse.success(responses));
@@ -71,5 +70,23 @@ public class WordController {
         wordService.deleteWord(id, authentication);
 
         return ResponseEntity.ok(ApiResponse.success("Xóa từ thành công", null));
+    }
+
+    /**
+     * ADMIN ONLY: Regenerate broken audio URLs
+     * Dùng khi audio từ FPT TTS hết hạn và không còn phát được
+     * Endpoint sẽ re-generate audio cho tất cả words và lưu trữ lâu dài
+     * 
+     * POST /api/flashcards/{flashcardId}/words/admin/regenerate-audio
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/admin/regenerate-audio")
+    public ResponseEntity<ApiResponse<String>> regenerateBrokenAudio(
+            @PathVariable String flashcardId) {
+
+        int regeneratedCount = wordService.regenerateBrokenAudio(flashcardId);
+
+        String message = String.format("✅ Regenerated audio for %d words", regeneratedCount);
+        return ResponseEntity.ok(ApiResponse.success(message, message));
     }
 }

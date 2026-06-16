@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.edu.materialsservice.dtos.response.BadRequestError;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -33,18 +35,52 @@ public class CloudinaryService {
         Map<?, ?> result = cloudinary.uploader().upload(
                 file.getBytes(),
                 Map.of(
-                        "resource_type", "video",   // Cloudinary dùng "video" cho cả audio lẫn video
-                        "folder",        "treedu/audio",
-                        "public_id",     UUID.randomUUID().toString(),
-                        "overwrite",     false
-                )
-        );
+                        "resource_type", "video", // Cloudinary dùng "video" cho cả audio lẫn video
+                        "folder", "treedu/audio",
+                        "public_id", UUID.randomUUID().toString(),
+                        "overwrite", false));
 
         String url = (String) result.get("secure_url");
         log.info("Upload Cloudinary thành công: {}", url);
         return url;
     }
 
+    /**
+     * Download audio từ temporary URL (FPT TTS) và upload lên Cloudinary
+     * Để lưu trữ vĩnh viễn thay vì dùng temporary link
+     */
+    public String downloadAndStoreAudio(String tempAudioUrl, String wordId) {
+        if (tempAudioUrl == null || tempAudioUrl.isBlank()) {
+            log.warn("Temporary audio URL is empty, skipping storage");
+            return null;
+        }
+
+        try {
+            log.debug("📥 Downloading audio from temporary URL for word: {}", wordId);
+
+            // 1. Download file từ URL tạm của FPT
+            URL url = new URL(tempAudioUrl);
+            InputStream inputStream = url.openStream();
+
+            // 2. Upload lên Cloudinary
+            Map<?, ?> result = cloudinary.uploader().upload(
+                    inputStream,
+                    ObjectUtils.asMap(
+                            "resource_type", "video",
+                            "folder", "treedu/audio",
+                            "public_id", "word_" + wordId, // Public ID để dễ xóa sau
+                            "overwrite", true));
+
+            String permanentUrl = (String) result.get("secure_url");
+            log.info("✅ Audio stored permanently for word {}: {}", wordId, permanentUrl);
+
+            return permanentUrl;
+
+        } catch (IOException e) {
+            log.error("❌ Failed to download/store audio for word {}: {}", wordId, e.getMessage(), e);
+            return null; // Trả về null nếu lỗi, không throw để không block flow chính
+        }
+    }
 
     /**
      * Upload ảnh lên Cloudinary, trả về secure URL.

@@ -72,11 +72,15 @@ public class WordServiceImpl implements iWordService {
                 word.setCreatedAt(LocalDateTime.now());
                 word.setUpdatedAt(LocalDateTime.now());
 
-                String audioUrl = ttsService.generateAudioUrl(word.getNewWord());
-                word.setAudioURL(audioUrl);
-                // ====================================================================
-
+                // 1. Lưu word trước để có ID
                 Word savedWord = wordRepository.save(word);
+
+                // 2. Generate audio và lưu trữ vĩnh viễn (không phải URL tạm)
+                String audioUrl = ttsService.generateAudioAndStore(savedWord.getNewWord(), savedWord.getId());
+                if (audioUrl != null) {
+                        savedWord.setAudioURL(audioUrl);
+                        savedWord = wordRepository.save(savedWord);
+                }
 
                 log.info("Word added to flashcard {}: {} (audio: {})", flashcardId, savedWord.getNewWord(), audioUrl);
 
@@ -123,8 +127,11 @@ public class WordServiceImpl implements iWordService {
                 existingWord.setWordForm(request.getWordForm());
                 existingWord.setPhoneme(request.getPhoneme());
 
-                String audioUrl = ttsService.generateAudioUrl(request.getNewWord());
-                existingWord.setAudioURL(audioUrl);
+                // Generate audio và lưu trữ vĩnh viễn (không phải URL tạm)
+                String audioUrl = ttsService.generateAudioAndStore(request.getNewWord(), existingWord.getId());
+                if (audioUrl != null) {
+                        existingWord.setAudioURL(audioUrl);
+                }
 
                 existingWord.setUpdatedAt(LocalDateTime.now());
 
@@ -239,5 +246,41 @@ public class WordServiceImpl implements iWordService {
 
                 List<Word> words = wordRepository.findByFlashcardId(flashcardId);
                 return wordMapper.toResponseList(words);
+        }
+
+        @Override
+        @Transactional
+        public int regenerateBrokenAudio(String flashcardId) {
+                // Lấy tất cả words trong flashcard
+                List<Word> words = wordRepository.findByFlashcardId(flashcardId);
+
+                int regeneratedCount = 0;
+
+                log.info("🔄 Starting to regenerate audio for {} words in flashcard {}", words.size(), flashcardId);
+
+                for (Word word : words) {
+                        try {
+                                // Re-generate audio từ TTS API và lưu lên Cloudinary
+                                String newAudioUrl = ttsService.generateAudioAndStore(word.getNewWord(), word.getId());
+
+                                if (newAudioUrl != null) {
+                                        word.setAudioURL(newAudioUrl);
+                                        word.setUpdatedAt(LocalDateTime.now());
+                                        wordRepository.save(word);
+                                        regeneratedCount++;
+                                        log.info("✅ Regenerated audio for word: {} -> {}", word.getNewWord(),
+                                                        newAudioUrl);
+                                } else {
+                                        log.warn("⚠️ Failed to regenerate audio for word: {}", word.getNewWord());
+                                }
+                        } catch (Exception e) {
+                                log.error("❌ Error regenerating audio for word {}: {}", word.getNewWord(),
+                                                e.getMessage(), e);
+                        }
+                }
+
+                log.info("✅ Audio regeneration complete: {} / {} words updated", regeneratedCount, words.size());
+
+                return regeneratedCount;
         }
 }
