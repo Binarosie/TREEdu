@@ -9,10 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ReactorClientHttpRequestFactory; // Thêm import này
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.netty.http.client.HttpClient; // Thêm import này
 import vn.hcmute.edu.materialsservice.dtos.request.PronunciationCheckRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.PronunciationCheckResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.TopicResponse;
@@ -26,6 +28,7 @@ import vn.hcmute.edu.materialsservice.services.iPronunciationService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration; // Thêm import này
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -48,6 +51,9 @@ public class PronunciationServiceImpl implements iPronunciationService {
 
     private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=";
 
+    // Khai báo RestClient dùng chung (Không để final để tránh Lombok đưa vào Constructor)
+    private RestClient restClient;
+
     @PostConstruct
     public void init() {
         if (apiKey == null || apiKey.isBlank() || apiKey.contains("${")) {
@@ -55,6 +61,17 @@ public class PronunciationServiceImpl implements iPronunciationService {
             throw new IllegalStateException("Gemini API key is missing!");
         }
         log.info("Gemini API key đã được load thành công (độ dài: {})", apiKey.length());
+
+        // 1. Cấu hình tầng Netty HttpClient chịu trách nhiệm gửi request kết nối mạng
+        HttpClient httpClient = HttpClient.create()
+                .responseTimeout(Duration.ofSeconds(60)); // Ép hệ thống kiên nhẫn đợi Gemini tối đa 60 giây
+
+        // 2. Build RestClient với HttpClient đã cấu hình ở trên
+        this.restClient = RestClient.builder()
+                .requestFactory(new ReactorClientHttpRequestFactory(httpClient))
+                .build();
+
+        log.info("Khởi tạo RestClient cấu hình Timeout 60s thành công.");
     }
 
     @Override
@@ -80,13 +97,14 @@ public class PronunciationServiceImpl implements iPronunciationService {
     }
 
     @Override
-    public List<TopicResponse> getTopics() {  // ← Đổi kiểu trả về
+    public List<TopicResponse> getTopics() {
         return topicRepository.findAll()
                 .stream()
                 .map(topicMapper::toResponse)
                 .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName())) // Sort A-Z
                 .toList();
     }
+
     @Override
     public String getRandomSentence(String topicName) {
         Topic topic = topicRepository.findByName(topicName);
@@ -117,13 +135,13 @@ public class PronunciationServiceImpl implements iPronunciationService {
                     ),
                     "generation_config", Map.of(
                             "temperature", 0.0,
-                            "max_output_tokens", 4096
+                            "max_output_tokens", 8192// 1. Tăng giới hạn đầu ra lên tối đa của dòng Flash
+
                     )
             );
 
-            RestClient restClient = RestClient.create();
-
-            String responseBody = restClient.post()
+            // Sử dụng biến instance this.restClient đã được cấu hình timeout ở init()
+            String responseBody = this.restClient.post()
                     .uri(GEMINI_URL + apiKey)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(requestBody)
@@ -189,6 +207,7 @@ public class PronunciationServiceImpl implements iPronunciationService {
             Bây giờ NGHE CHÍNH XÁC audio đã cho, KHÔNG đoán.
             """.formatted(expectedText);
     }
+
     private PronunciationHistory parsePronunciationResponse(String responseBody, String expectedText) {
         try {
             JsonNode root = objectMapper.readTree(responseBody);
@@ -204,7 +223,6 @@ public class PronunciationServiceImpl implements iPronunciationService {
 
             log.info("Raw JSON from Gemini Pronunciation: {}", jsonText);
 
-            // Fallback nếu JSON bị cắt
             if (!jsonText.startsWith("{") || !jsonText.endsWith("}")) {
                 log.warn("JSON pronunciation bị cắt, thử extract...");
                 int start = jsonText.indexOf("{");
