@@ -26,7 +26,7 @@ public interface iQuizService {
 
     void deleteQuiz(String id);
 
-    List<QuizResponse> searchQuizzesByTopic(String topic);
+    List<QuizResponse> searchQuizzesByTitle(String title);
 
     QuizEditResponse getQuizForEdit(String id);
 

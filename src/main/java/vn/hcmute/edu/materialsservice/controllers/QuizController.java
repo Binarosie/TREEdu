@@ -139,21 +139,21 @@ public class QuizController {
 
         @GetMapping("/search")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
-                        @RequestParam String topic,
-                        Authentication authentication) {
+                @RequestParam String title, // Sửa param name thành title
+                Authentication authentication) {
 
-                log.info("REST request to search quizzes by topic: {}", topic);
+                log.info("REST request to search quizzes by title: {}", title);
 
-                List<QuizResponse> response = quizService.searchQuizzesByTopic(topic);
+                List<QuizResponse> response = quizService.searchQuizzesByTitle(title);
 
                 // Filter response dựa trên role
                 response.forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
 
                 return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
-                                .success(true)
-                                .message("Search completed successfully")
-                                .data(response)
-                                .build());
+                        .success(true)
+                        .message("Search completed successfully")
+                        .data(response)
+                        .build());
         }
 
         @PostMapping("/{quizId}/start")
