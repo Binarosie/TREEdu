@@ -14,7 +14,12 @@ public interface FlashcardReviewRequestRepository extends MongoRepository<Flashc
     /**
      * Tìm review request theo flashcard ID
      */
-    Optional<FlashcardReviewRequest> findByFlashcardId(String flashcardId);
+    Optional<FlashcardReviewRequest> findByFlashcardIdAndStatus(
+            String flashcardId,
+            EFlashcardReportReviewStatus status
+    );
+
+    List<FlashcardReviewRequest> findAllByFlashcardId(String flashcardId);
 
     /**
      * Tìm tất cả review request theo trạng thái

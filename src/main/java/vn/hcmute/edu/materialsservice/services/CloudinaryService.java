@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.edu.materialsservice.dtos.response.BadRequestError;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
@@ -45,41 +47,76 @@ public class CloudinaryService {
         return url;
     }
 
-    /**
-     * Download audio từ temporary URL (FPT TTS) và upload lên Cloudinary
-     * Để lưu trữ vĩnh viễn thay vì dùng temporary link
-     */
     public String downloadAndStoreAudio(String tempAudioUrl, String wordId) {
         if (tempAudioUrl == null || tempAudioUrl.isBlank()) {
             log.warn("Temporary audio URL is empty, skipping storage");
             return null;
         }
 
-        try {
-            log.debug("📥 Downloading audio from temporary URL for word: {}", wordId);
+        int maxRetries = 3;
+        long[] delays = {1000, 2000, 3000};
 
-            // 1. Download file từ URL tạm của FPT
-            URL url = new URL(tempAudioUrl);
-            InputStream inputStream = url.openStream();
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                if (attempt > 0) {
+                    log.debug("⏳ Retry attempt {} for word {}, waiting {}ms...",
+                            attempt + 1, wordId, delays[attempt - 1]);
+                    Thread.sleep(delays[attempt - 1]);
+                }
 
-            // 2. Upload lên Cloudinary
-            Map<?, ?> result = cloudinary.uploader().upload(
-                    inputStream,
-                    ObjectUtils.asMap(
-                            "resource_type", "video",
-                            "folder", "treedu/audio",
-                            "public_id", "word_" + wordId, // Public ID để dễ xóa sau
-                            "overwrite", true));
+                log.debug("📥 Downloading audio from FPT for word: {} (attempt {})", wordId, attempt + 1);
 
-            String permanentUrl = (String) result.get("secure_url");
-            log.info("✅ Audio stored permanently for word {}: {}", wordId, permanentUrl);
+                URL url = new URL(tempAudioUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(10000);
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
-            return permanentUrl;
+                int responseCode = connection.getResponseCode();
+                if (responseCode != 200) {
+                    log.warn("⚠️ HTTP {} for word {} (attempt {})", responseCode, wordId, attempt + 1);
+                    connection.disconnect();
+                    continue;
+                }
 
-        } catch (IOException e) {
-            log.error("❌ Failed to download/store audio for word {}: {}", wordId, e.getMessage(), e);
-            return null; // Trả về null nếu lỗi, không throw để không block flow chính
+                // ✅ Đọc toàn bộ bytes vào memory trước
+                byte[] audioBytes;
+                try (InputStream inputStream = connection.getInputStream()) {
+                    audioBytes = inputStream.readAllBytes();
+                }
+                connection.disconnect();
+
+                if (audioBytes.length == 0) {
+                    log.warn("⚠️ Empty audio bytes for word {} (attempt {})", wordId, attempt + 1);
+                    continue;
+                }
+
+                // ✅ Upload byte[] lên Cloudinary (không phải InputStream)
+                Map<?, ?> result = cloudinary.uploader().upload(
+                        audioBytes,
+                        ObjectUtils.asMap(
+                                "resource_type", "video",
+                                "folder", "treedu/audio",
+                                "public_id", "word_" + wordId,
+                                "overwrite", true));
+
+                String permanentUrl = (String) result.get("secure_url");
+                log.info("✅ Audio stored permanently for word {}: {}", wordId, permanentUrl);
+                return permanentUrl;
+
+            } catch (FileNotFoundException e) {
+                log.warn("⚠️ File not ready yet for word {} (attempt {}): {}", wordId, attempt + 1, tempAudioUrl);
+            } catch (IOException e) {
+                log.error("❌ IO error downloading audio for word {}: {}", wordId, e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("❌ Thread interrupted for word {}", wordId);
+                return null;
+            }
         }
+
+        log.error("❌ All {} attempts failed to download audio for word {}", maxRetries, wordId);
+        return null;
     }
 
     /**

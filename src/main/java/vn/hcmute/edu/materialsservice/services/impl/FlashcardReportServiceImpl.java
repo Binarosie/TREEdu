@@ -12,15 +12,15 @@ import vn.hcmute.edu.materialsservice.dtos.response.FlashcardReportResponse;
 import vn.hcmute.edu.materialsservice.Enum.EFlashcardReportReviewStatus;
 import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 import vn.hcmute.edu.materialsservice.Mapper.FlashcardMapper;
-import vn.hcmute.edu.materialsservice.models.Flashcard;
-import vn.hcmute.edu.materialsservice.models.FlashcardReport;
-import vn.hcmute.edu.materialsservice.models.ReportLimit;
+import vn.hcmute.edu.materialsservice.models.*;
 import vn.hcmute.edu.materialsservice.repository.FlashcardReportRepository;
 import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
 import vn.hcmute.edu.materialsservice.repository.ReportLimitRepository;
+import vn.hcmute.edu.materialsservice.repository.UserRepository;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 import vn.hcmute.edu.materialsservice.services.iFlashcardReportService;
 import vn.hcmute.edu.materialsservice.services.iFlashcardReviewService;
+import vn.hcmute.edu.materialsservice.services.observer.NotificationCenter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,7 +36,9 @@ public class FlashcardReportServiceImpl implements iFlashcardReportService {
     private final FlashcardRepository flashcardRepository;
     private final ReportLimitRepository reportLimitRepository;
     private final iFlashcardReviewService reviewService;
+    private final UserRepository userRepository;
 
+    private static final String ADMIN_CLASS = "vn.hcmute.edu.materialsservice.models.Admin";
     private static final Integer DAILY_REPORT_LIMIT = 1;
 
     @Override
@@ -89,6 +91,27 @@ public class FlashcardReportServiceImpl implements iFlashcardReportService {
                 .build();
 
         FlashcardReport savedReport = reportRepository.save(report);
+
+        // Notify owner flashcard bị report
+        NotificationCenter.notifyObservers(NotificationEvent.builder()
+                .receiverId(flashcard.getCreatedBy())
+                .type("SYSTEM")
+                .title("Flashcard của bạn bị báo cáo")
+                .content("Flashcard \"" + flashcard.getTitle() + "\" vừa bị báo cáo với lý do: " + request.getReason())
+                .build());
+
+        // Broadcast tới tất cả Supporter
+        List<String> supporterIds = userRepository.findByUserType("vn.hcmute.edu.materialsservice.models.Supporter")
+                .stream().map(u -> u.getId().toString()).toList();
+
+        if (!supporterIds.isEmpty()) {
+            NotificationCenter.notifyObservers(NotificationEvent.builder()
+                    .receiverIds(supporterIds)
+                    .type("SYSTEM")
+                    .title("Có flashcard cần xem xét")
+                    .content("Flashcard \"" + flashcard.getTitle() + "\" vừa bị báo cáo và cần được xem xét.")
+                    .build());
+        }
 
         // Giảm lượt report
         decreaseReportsRemaining(memberId);
@@ -157,34 +180,96 @@ public class FlashcardReportServiceImpl implements iFlashcardReportService {
         FlashcardReport report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new IllegalArgumentException("Báo cáo không tồn tại"));
 
+        Flashcard flashcard = flashcardRepository.findById(report.getFlashcardId())
+                .orElseThrow(() -> new IllegalArgumentException("Flashcard không tồn tại"));
+
+        EFlashcardReportReviewStatus newStatus;
         try {
-            EFlashcardReportReviewStatus newStatus = EFlashcardReportReviewStatus.valueOf(status);
-            report.setStatus(newStatus);
-            report.setResolvedAt(LocalDateTime.now());
+            newStatus = EFlashcardReportReviewStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Trạng thái báo cáo không hợp lệ");
+        }
 
-            FlashcardReport updated = reportRepository.save(report);
+        report.setStatus(newStatus);
+        report.setResolvedAt(LocalDateTime.now());
+        FlashcardReport updated = reportRepository.save(report);
 
-            if (newStatus == EFlashcardReportReviewStatus.REPORT_RESOLVED) {
+        switch (newStatus) {
+
+            case REPORT_REJECTED -> {
+                // Supporter: từ chối báo cáo → notify owner không vi phạm
+                NotificationCenter.notifyObservers(NotificationEvent.builder()
+                        .receiverId(flashcard.getCreatedBy())
+                        .type("SYSTEM")
+                        .title("Flashcard của bạn không bị vi phạm")
+                        .content("Flashcard \"" + flashcard.getTitle() + "\" đã được xem xét và không vi phạm quy định.")
+                        .build());
+            }
+
+            case REPORT_RESOLVED -> {
+                // Tạo review request chuyển lên Admin
                 try {
-                    String flashcardId = report.getFlashcardId();
                     String reason = "Báo cáo flashcard được supporter xác nhận: " + report.getReason();
                     CreateReviewRequest reviewRequest = CreateReviewRequest.builder()
                             .reason(reason)
                             .build();
-
-                    reviewService.createReviewRequest(flashcardId, reviewRequest, authentication);
-                    log.info("Tự động tạo review request cho flashcard: {} sau khi report resolved", flashcardId);
+                    reviewService.createReviewRequest(report.getFlashcardId(), reviewRequest, authentication);
+                    log.info("Tự động tạo review request cho flashcard: {}", report.getFlashcardId());
                 } catch (Exception e) {
                     log.error("Lỗi khi tạo review request tự động: {}", e.getMessage());
                 }
+
+                // Broadcast tới tất cả Admin
+                List<String> adminIds = userRepository.findByUserType(ADMIN_CLASS)
+                        .stream().map(User::getId).toList();
+
+                if (!adminIds.isEmpty()) {
+                    NotificationCenter.notifyObservers(NotificationEvent.builder()
+                            .receiverIds(adminIds)
+                            .type("SYSTEM")
+                            .title("Có flashcard cần admin xử lý")
+                            .content("Supporter xác nhận flashcard \"" + flashcard.getTitle() + "\" có vi phạm, cần admin xem xét.")
+                            .build());
+                }
             }
 
-            return mapToResponse(updated);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Trạng thái báo cáo không hợp lệ");
-        }
-    }
+            case REVIEW_APPROVED -> {
+                // Admin: không vi phạm → notify owner
+                NotificationCenter.notifyObservers(NotificationEvent.builder()
+                        .receiverId(flashcard.getCreatedBy())
+                        .type("SYSTEM")
+                        .title("Flashcard của bạn không bị vi phạm")
+                        .content("Admin đã xem xét và xác nhận flashcard \"" + flashcard.getTitle() + "\" không vi phạm quy định.")
+                        .build());
+            }
 
+            case REVIEW_VIOLATION -> {
+                // Admin: vi phạm → khóa flashcard
+                flashcard.setVisibility(EFlashcardVisibility.PRIVATE);
+                flashcardRepository.save(flashcard);
+
+                // Notify owner: bị khóa
+                NotificationCenter.notifyObservers(NotificationEvent.builder()
+                        .receiverId(flashcard.getCreatedBy())
+                        .type("SYSTEM")
+                        .title("Flashcard của bạn đã bị khóa")
+                        .content("Flashcard \"" + flashcard.getTitle() + "\" đã bị khóa do vi phạm quy định cộng đồng.")
+                        .build());
+
+                // Notify reporter: đã xử lý xong
+                NotificationCenter.notifyObservers(NotificationEvent.builder()
+                        .receiverId(report.getReportedBy())
+                        .type("SYSTEM")
+                        .title("Báo cáo của bạn đã được xử lý")
+                        .content("Báo cáo của bạn về flashcard \"" + flashcard.getTitle() + "\" đã được xử lý. Cảm ơn bạn đã đóng góp.")
+                        .build());
+            }
+
+            default -> log.warn("Unhandled status: {}", newStatus);
+        }
+
+        return mapToResponse(updated);
+    }
     @Override
     public Integer checkReportsRemaining(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
