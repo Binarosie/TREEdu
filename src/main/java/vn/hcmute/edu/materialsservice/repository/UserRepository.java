@@ -5,12 +5,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import vn.hcmute.edu.materialsservice.services.IStreakService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends MongoRepository<User, String> { // ← String
     Optional<User> findByEmail(String email);
-
 
     boolean existsByEmail(String email);
 
@@ -21,6 +21,8 @@ public interface UserRepository extends MongoRepository<User, String> { // ← S
     void deleteByEmailAndIsActive(String email, boolean isActive);
 
     void deleteByEmailAndIdNot(String email, String id);
+
+    List<User> findByUserType(String userType);
 
 
 }

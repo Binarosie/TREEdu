@@ -2,6 +2,7 @@ package vn.hcmute.edu.materialsservice.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class FlashcardServiceImpl implements iFlashcardService {
     private final FlashcardMapper flashcardMapper;
     private final WordMapper wordMapper;
     private final FlashcardProgressRepository progressRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     @Transactional

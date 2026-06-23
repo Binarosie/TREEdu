@@ -321,6 +321,7 @@ public class AuthController {
     }
 
     @PostMapping("/current-user")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
         var user = currentUserDetails.getUser();
@@ -336,6 +337,8 @@ public class AuthController {
         dto.setRole(currentUserDetails.getAuthorities().iterator().next().getAuthority());
 
         log.info("Retrieved current user info: {}", user.getEmail());
+        // Log để debug
+        log.info("Authorities: {}", authentication.getAuthorities());
 
         return ResponseEntity.ok(new SuccessResponse(
                 "Lấy thông tin người dùng thành công!",

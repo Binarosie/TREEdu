@@ -14,11 +14,14 @@ import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
 import vn.hcmute.edu.materialsservice.models.FlashcardReport;
 import vn.hcmute.edu.materialsservice.models.FlashcardReviewRequest;
+import vn.hcmute.edu.materialsservice.models.NotificationEvent;
 import vn.hcmute.edu.materialsservice.repository.FlashcardReportRepository;
 import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
 import vn.hcmute.edu.materialsservice.repository.FlashcardReviewRequestRepository;
+import vn.hcmute.edu.materialsservice.repository.NotificationRepository;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
 import vn.hcmute.edu.materialsservice.services.iFlashcardReviewService;
+import vn.hcmute.edu.materialsservice.services.observer.NotificationCenter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +35,7 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
     private final FlashcardReviewRequestRepository reviewRepository;
     private final FlashcardReportRepository reportRepository;
     private final FlashcardRepository flashcardRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
     @Transactional
@@ -59,7 +63,8 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("Flashcard không tồn tại"));
 
         // Kiểm tra xem đã tồn tại review request PENDING chưa
-        Optional<FlashcardReviewRequest> existingReview = reviewRepository.findByFlashcardId(flashcardId);
+        Optional<FlashcardReviewRequest> existingReview = reviewRepository
+                .findByFlashcardIdAndStatus(flashcardId, EFlashcardReportReviewStatus.REVIEW_PENDING);
         if (existingReview.isPresent()
                 && existingReview.get().getStatus() == EFlashcardReportReviewStatus.REVIEW_PENDING) {
             throw new IllegalArgumentException("Đã có review request PENDING cho flashcard này");
@@ -140,6 +145,20 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
         FlashcardReviewRequest reviewRequest = reviewRepository.findById(reviewRequestId)
                 .orElseThrow(() -> new IllegalArgumentException("Review request không tồn tại"));
 
+        // Lấy flashcard TRƯỚC — khai báo ở đầu method, không nằm trong if block
+        Flashcard flashcard = flashcardRepository.findById(reviewRequest.getFlashcardId())
+                .orElseThrow(() -> new IllegalArgumentException("Flashcard không tồn tại"));
+
+        // Lấy reporterId TRƯỚC
+        String reporterId = null;
+        if (reviewRequest.getReportIds() != null && !reviewRequest.getReportIds().isEmpty()) {
+            FlashcardReport firstReport = reportRepository.findById(reviewRequest.getReportIds().get(0))
+                    .orElse(null);
+            if (firstReport != null) {
+                reporterId = firstReport.getReportedBy();
+            }
+        }
+
         // Cập nhật trạng thái review request
         reviewRequest.setStatus(request.getStatus());
         reviewRequest.setAdminComment(request.getAdminComment());
@@ -147,7 +166,7 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
 
         // Nếu là VIOLATION, đánh dấu flashcard vi phạm
         if (request.getStatus() == EFlashcardReportReviewStatus.REVIEW_VIOLATION) {
-            Flashcard flashcard = flashcardRepository.findById(reviewRequest.getFlashcardId())
+            flashcard = flashcardRepository.findById(reviewRequest.getFlashcardId())
                     .orElseThrow(() -> new IllegalArgumentException("Flashcard không tồn tại"));
 
             flashcard.setIsViolated(true);
@@ -171,6 +190,45 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
 
         FlashcardReviewRequest updated = reviewRepository.save(reviewRequest);
 
+        switch (request.getStatus()) {
+
+            case REVIEW_APPROVED -> {
+                // Admin: không vi phạm → notify owner
+                NotificationCenter.notifyObservers(NotificationEvent.builder()
+                        .receiverId(flashcard.getCreatedBy())
+                        .type("SYSTEM")
+                        .title("Flashcard của bạn không bị vi phạm")
+                        .content("Admin đã xem xét và xác nhận flashcard \""
+                                + flashcard.getTitle() + "\" không vi phạm quy định.")
+                        .build());
+            }
+
+            case REVIEW_VIOLATION -> {
+                // Notify owner: bị khóa
+                NotificationCenter.notifyObservers(NotificationEvent.builder()
+                        .receiverId(flashcard.getCreatedBy())
+                        .type("SYSTEM")
+                        .title("Flashcard của bạn đã bị khóa")
+                        .content("Flashcard \"" + flashcard.getTitle()
+                                + "\" đã bị khóa do vi phạm quy định cộng đồng.")
+                        .build());
+
+                // Notify reporter: đã xử lý xong
+                if (reporterId != null) {
+                    NotificationCenter.notifyObservers(NotificationEvent.builder()
+                            .receiverId(reporterId)
+                            .type("SYSTEM")
+                            .title("Báo cáo của bạn đã được xử lý")
+                            .content("Báo cáo của bạn về flashcard \""
+                                    + flashcard.getTitle()
+                                    + "\" đã được xử lý. Cảm ơn bạn đã đóng góp.")
+                            .build());
+                }
+            }
+
+            default -> log.warn("Unhandled review status: {}", request.getStatus());
+        }
+
         log.info("Review request {} processed by admin with status {}", reviewRequestId, request.getStatus());
 
         return mapToResponse(updated);
@@ -190,7 +248,8 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
             throw new AccessDeniedException("Chỉ supporter và admin mới có quyền xem review request");
         }
 
-        FlashcardReviewRequest reviewRequest = reviewRepository.findByFlashcardId(flashcardId)
+        FlashcardReviewRequest reviewRequest = reviewRepository
+                .findByFlashcardIdAndStatus(flashcardId, EFlashcardReportReviewStatus.REVIEW_PENDING)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy review request cho flashcard này"));
 
         return mapToResponse(reviewRequest);
