@@ -19,6 +19,8 @@ public interface FlashcardProgressRepository extends MongoRepository<FlashcardPr
 
     List<FlashcardProgress> findByFlashcardId(String flashcardId);
 
+    int countByFlashcardId(String flashcardId);
+
     boolean existsByUserIdAndFlashcardId(String userId, String flashcardId);
 
     void deleteByFlashcardId(String flashcardId);
