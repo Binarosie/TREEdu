@@ -106,11 +106,11 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    @GetMapping("/topic/{topic}")
-    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getFlashcardsByTopic(
-            @PathVariable String topic,
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> searchFlashcards(
+            @PathVariable String title,
             Authentication authentication) {
-        List<FlashcardResponse> responses = flashcardService.getFlashcardsByTopic(topic, authentication);
+        List<FlashcardResponse> responses = flashcardService.getFlashcardsByTitle(title, authentication);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 

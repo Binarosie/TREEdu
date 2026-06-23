@@ -23,7 +23,7 @@ public interface iFlashcardService {
 
     List<FlashcardResponse> getAllFlashcard(Authentication authentication);
 
-    List<FlashcardResponse> getFlashcardsByTopic(String topic, Authentication authentication);
+    List<FlashcardResponse> getFlashcardsByTitle(String title, Authentication authentication);
 
     List<FlashcardResponse> getFlashcardsByLevel(Integer level, Authentication authentication);
 

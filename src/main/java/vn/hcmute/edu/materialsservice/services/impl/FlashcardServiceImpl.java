@@ -2,6 +2,11 @@ package vn.hcmute.edu.materialsservice.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -16,6 +21,7 @@ import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 import vn.hcmute.edu.materialsservice.Mapper.FlashcardMapper;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
+import vn.hcmute.edu.materialsservice.models.NotificationEvent;
 import vn.hcmute.edu.materialsservice.models.Word;
 import vn.hcmute.edu.materialsservice.repository.FlashcardProgressRepository;
 import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
@@ -25,6 +31,8 @@ import vn.hcmute.edu.materialsservice.exceptions.FlashcardAlreadyExistsException
 import vn.hcmute.edu.materialsservice.exceptions.FlashcardNotFoundException;
 import vn.hcmute.edu.materialsservice.exceptions.InvalidFlashcardDataException;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
+import vn.hcmute.edu.materialsservice.services.observer.NotificationCenter;
+import vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -370,26 +378,23 @@ public class FlashcardServiceImpl implements iFlashcardService {
     }
 
     @Override
-    public List<FlashcardResponse> getFlashcardsByTopic(String topic, Authentication authentication) {
-        log.info("Fuzzy searching flashcards by topic: {}", topic);
+    public List<FlashcardResponse> getFlashcardsByTitle(String title, Authentication authentication) {
+        log.info("Fuzzy searching flashcards by title: {}", title);
 
-        // Validate min characters
-        if (topic == null || topic.trim().length() < 2) {
-            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+        if (title == null || title.trim().length() < 2) {
+            log.warn("Title keyword too short for fuzzy search: {}", title);
             return List.of();
         }
 
-        // Lấy tất cả flashcards trước
         List<Flashcard> allFlashcards = flashcardRepository.findAll();
 
-        // Apply fuzzy filter với threshold 0.4
-        List<Flashcard> flashcards = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
+        List<Flashcard> flashcards = FuzzySearchUtil.fuzzyFilter(
                 allFlashcards,
-                topic,
-                Flashcard::getTopic,
+                title,
+                Flashcard::getTitle,
                 0.4);
 
-        log.info("Found {} flashcards matching '{}' with fuzzy search", flashcards.size(), topic);
+        log.info("Found {} flashcards matching '{}' with fuzzy search", flashcards.size(), title);
 
         if (authentication != null && authentication.isAuthenticated()) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -459,17 +464,58 @@ public class FlashcardServiceImpl implements iFlashcardService {
         }
     }
 
+//    @Override
+//    @Transactional
+//    public FlashcardResponse changeVisibility(String id, EFlashcardVisibility visibility,
+//            Authentication authentication) {
+//        Flashcard flashcard = flashcardRepository.findById(id)
+//                .orElseThrow(() -> new FlashcardNotFoundException(id));
+//
+//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//        String userId = userDetails.getUser().getId().toString();
+//
+//        // Chỉ tác giả (BY_MEMBER) hoặc Admin có thể thay đổi visibility
+//        if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
+//            if (!userId.equals(flashcard.getCreatedBy())) {
+//                throw new AccessDeniedException("Bạn chỉ có thể thay đổi visibility của flashcard do chính bạn tạo");
+//            }
+//        } else if (flashcard.getType() == EFlashcardType.SYSTEM) {
+//            boolean isAdmin = userDetails.getAuthorities().stream()
+//                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+//            if (!isAdmin) {
+//                throw new AccessDeniedException("Chỉ admin mới có thể thay đổi visibility flashcard hệ thống");
+//            }
+//        }
+//
+//        // Nếu flashcard bị vi phạm, không được chuyển sang PUBLIC
+//        if (flashcard.getIsViolated() != null && flashcard.getIsViolated()
+//                && visibility == EFlashcardVisibility.PUBLIC) {
+//            throw new IllegalStateException("Flashcard này đã bị đánh dấu vi phạm, không thể chuyển sang PUBLIC");
+//        }
+//
+//        flashcard.setVisibility(visibility);
+//        flashcard.setUpdatedAt(LocalDateTime.now());
+//
+//        Flashcard updated = flashcardRepository.save(flashcard);
+//
+//        FlashcardResponse response = flashcardMapper.toResponse(updated);
+//        response.setWordCount((int) wordRepository.countByFlashcardId(id));
+//
+//        return response;
+//    }
+
     @Override
     @Transactional
     public FlashcardResponse changeVisibility(String id, EFlashcardVisibility visibility,
-            Authentication authentication) {
-        Flashcard flashcard = flashcardRepository.findById(id)
-                .orElseThrow(() -> new FlashcardNotFoundException(id));
+                                              Authentication authentication) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId().toString();
 
-        // Chỉ tác giả (BY_MEMBER) hoặc Admin có thể thay đổi visibility
+        Flashcard flashcard = flashcardRepository.findById(id)
+                .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        // Check owner / admin (giữ nguyên)
         if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
             if (!userId.equals(flashcard.getCreatedBy())) {
                 throw new AccessDeniedException("Bạn chỉ có thể thay đổi visibility của flashcard do chính bạn tạo");
@@ -482,21 +528,71 @@ public class FlashcardServiceImpl implements iFlashcardService {
             }
         }
 
-        // Nếu flashcard bị vi phạm, không được chuyển sang PUBLIC
+        // Check violated (giữ nguyên)
         if (flashcard.getIsViolated() != null && flashcard.getIsViolated()
                 && visibility == EFlashcardVisibility.PUBLIC) {
             throw new IllegalStateException("Flashcard này đã bị đánh dấu vi phạm, không thể chuyển sang PUBLIC");
         }
 
-        flashcard.setVisibility(visibility);
-        flashcard.setUpdatedAt(LocalDateTime.now());
+        Flashcard updated;
 
-        Flashcard updated = flashcardRepository.save(flashcard);
+        //Thêm: PUBLIC → PRIVATE cần atomic check learnerCount
+        if (flashcard.getVisibility() == EFlashcardVisibility.PUBLIC
+                && visibility == EFlashcardVisibility.PRIVATE) {
+
+            updated = setPrivateAtomically(id);
+
+            if (updated == null) {
+                long learnerCount = progressRepository.countByFlashcardId(id);
+                if (learnerCount > 0) {
+                    throw new IllegalStateException(
+                            "Không thể chuyển về PRIVATE vì đã có " + learnerCount + " người đang học");
+                }
+                throw new IllegalStateException("Không thể thay đổi trạng thái flashcard lúc này");
+            }
+
+        } else {
+            // Các trường hợp còn lại: PRIVATE → PUBLIC, PUBLIC → PUBLIC, v.v.
+            flashcard.setVisibility(visibility);
+            flashcard.setUpdatedAt(LocalDateTime.now());
+            updated = flashcardRepository.save(flashcard);
+        }
+
+        // Thêm: Notify owner
+        NotificationCenter.notifyObservers(NotificationEvent.builder()
+                .receiverId(userId)
+                .type("SYSTEM")
+                .title("Cập nhật trạng thái flashcard")
+                .content("Flashcard \"" + updated.getTitle() + "\" đã chuyển sang "
+                        + updated.getVisibility().name())
+                .build());
+
+        log.info("Flashcard {} visibility changed to {} by {}", id, updated.getVisibility(), userId);
 
         FlashcardResponse response = flashcardMapper.toResponse(updated);
         response.setWordCount((int) wordRepository.countByFlashcardId(id));
-
         return response;
+    }
+
+    private Flashcard setPrivateAtomically(String flashcardId) {
+        long learnerCount = progressRepository.countByFlashcardId(flashcardId);
+
+        if (learnerCount > 0) {
+            return null;
+        }
+
+        Query query = new Query(Criteria.where("_id").is(flashcardId)
+                .and("visibility").is(EFlashcardVisibility.PUBLIC.name()));
+
+        Update update = new Update()
+                .set("visibility", EFlashcardVisibility.PRIVATE.name())
+                .set("updatedAt", LocalDateTime.now());
+
+        FindAndModifyOptions options = FindAndModifyOptions.options()
+                .returnNew(true)
+                .upsert(false);
+
+        return mongoTemplate.findAndModify(query, update, options, Flashcard.class);
     }
 
     @Override
