@@ -194,26 +194,21 @@ public class QuizServiceImpl implements iQuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> searchQuizzesByTopic(String topic) {
-        log.info("Fuzzy searching quizzes by topic keyword: {}", topic);
+    public List<QuizResponse> searchQuizzesByTitle(String title) {
+        log.info("Fuzzy searching quizzes by title keyword: {}", title);
 
-        // Validate min characters
-        if (topic == null || topic.trim().length() < 2) {
-            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+        if (title == null || title.trim().length() < 2) {
             return List.of();
         }
 
-        // Lấy tất cả quiz
         List<Quiz> allQuizzes = quizRepository.findAll();
 
-        // Apply fuzzy filter với threshold 0.4
+        // SỬA Ở ĐÂY: Đổi Quiz::getTopic thành Quiz::getTitle
         List<Quiz> filteredQuizzes = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
                 allQuizzes,
-                topic,
-                Quiz::getTopic,
+                title,
+                Quiz::getTitle,
                 0.4);
-
-        log.info("Found {} quizzes matching '{}' with fuzzy search", filteredQuizzes.size(), topic);
 
         return filteredQuizzes.stream()
                 .map(quizMapper::toResponse)
