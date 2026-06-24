@@ -101,6 +101,11 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
         log.info("Review request created for flashcard {} by supporter {}. Total reports: {}",
                 flashcardId, supporterId, allReports.size());
 
+        log.debug("[REVIEW] ACTION=CREATE_REVIEW_REQUEST | supporterId={} | flashcardId={} | flashcardTitle='{}' | reportIds={} | reason='{}'",
+                supporterId, flashcardId, flashcard.getTitle(),
+                allReports.stream().map(FlashcardReport::getId).toList(),
+                request.getReason());
+
         return mapToResponse(saved);
     }
 
@@ -159,6 +164,12 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
             }
         }
 
+        // Ngay sau khi lấy được flashcard và reporterId, trước switch
+        String adminId = userDetails.getUser().getId().toString();
+        log.debug("[REVIEW] ACTION=PROCESS_REVIEW | adminId={} | reviewRequestId={} | flashcardId={} | flashcardTitle='{}' | decision={} | reporterId={} | adminComment='{}'",
+                adminId, reviewRequestId, flashcard.getId(), flashcard.getTitle(),
+                request.getStatus(), reporterId, request.getAdminComment());
+
         // Cập nhật trạng thái review request
         reviewRequest.setStatus(request.getStatus());
         reviewRequest.setAdminComment(request.getAdminComment());
@@ -193,6 +204,9 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
         switch (request.getStatus()) {
 
             case REVIEW_APPROVED -> {
+                log.debug("[NOTI] ACTION=REVIEW_APPROVED | TO=OWNER | receiverId={} | flashcardId={} | flashcardTitle='{}' | reviewRequestId={} | adminComment='{}'",
+                        flashcard.getCreatedBy(), flashcard.getId(), flashcard.getTitle(), reviewRequestId, request.getAdminComment());
+
                 // Admin: không vi phạm → notify owner
                 NotificationCenter.notifyObservers(NotificationEvent.builder()
                         .receiverId(flashcard.getCreatedBy())
@@ -204,6 +218,9 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
             }
 
             case REVIEW_VIOLATION -> {
+                log.debug("[NOTI] ACTION=REVIEW_VIOLATION | TO=OWNER | receiverId={} | flashcardId={} | flashcardTitle='{}' | reviewRequestId={} | adminComment='{}'",
+                        flashcard.getCreatedBy(), flashcard.getId(), flashcard.getTitle(), reviewRequestId, request.getAdminComment());
+
                 // Notify owner: bị khóa
                 NotificationCenter.notifyObservers(NotificationEvent.builder()
                         .receiverId(flashcard.getCreatedBy())
@@ -215,6 +232,8 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
 
                 // Notify reporter: đã xử lý xong
                 if (reporterId != null) {
+                    log.debug("[NOTI] ACTION=REVIEW_VIOLATION | TO=REPORTER | receiverId={} | flashcardId={} | flashcardTitle='{}' | reviewRequestId={}",
+                            reporterId, flashcard.getId(), flashcard.getTitle(), reviewRequestId);
                     NotificationCenter.notifyObservers(NotificationEvent.builder()
                             .receiverId(reporterId)
                             .type("SYSTEM")
@@ -223,6 +242,9 @@ public class FlashcardReviewServiceImpl implements iFlashcardReviewService {
                                     + flashcard.getTitle()
                                     + "\" đã được xử lý. Cảm ơn bạn đã đóng góp.")
                             .build());
+                } else {
+                    log.warn("[NOTI] ACTION=REVIEW_VIOLATION | TO=REPORTER | SKIPPED - reporterId is null | reviewRequestId={} | flashcardId={}",
+                            reviewRequestId, flashcard.getId());
                 }
             }
 
