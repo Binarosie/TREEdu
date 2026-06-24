@@ -19,61 +19,93 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pronunciation-check")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')") //  Áp dụng cho TẤT CẢ endpoints
+@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
 public class PronunciationController {
 
     private final iPronunciationService service;
 
+    // =========================================================================
+    // Topic helpers (giữ lại để tương thích với client cũ)
+    // =========================================================================
+
     /**
-     * Lấy danh sách tất cả topics
+     * GET /api/pronunciation-check/topics
      */
     @GetMapping("/topics")
-    public ResponseEntity<ApiResponse<List<TopicResponse>>> getAllTopics(Authentication authentication) {
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
+    public ResponseEntity<ApiResponse<List<TopicResponse>>> getAllTopics(
+            Authentication authentication) {
 
-        log.info("User {} fetching pronunciation topics", userDetails.getUser().getId());
-
-        List<TopicResponse> topics = service.getTopics();
-        return ResponseEntity.ok(ApiResponse.success(topics));
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        log.info("User {} fetching topics", userDetails.getUser().getId());
+        return ResponseEntity.ok(ApiResponse.success(service.getTopics()));
     }
 
     /**
-     * Lấy câu ngẫu nhiên từ topic
+     * GET /api/pronunciation-check/random-sentence?topic=...
      */
     @GetMapping("/random-sentence")
     public ResponseEntity<ApiResponse<String>> getRandomSentence(
             @RequestParam String topic,
             Authentication authentication) {
 
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
-        log.info(" User {} getting random sentence from topic: {}",
-                userDetails.getUser().getId(), topic);
-
-        String sentence = service.getRandomSentence(topic);
-        return ResponseEntity.ok(ApiResponse.success(sentence));
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        log.info("User {} getting random sentence, topic={}", userDetails.getUser().getId(), topic);
+        return ResponseEntity.ok(ApiResponse.success(service.getRandomSentence(topic)));
     }
 
+    // =========================================================================
+    // Pronunciation History CRUD
+    // =========================================================================
+
     /**
-     * Kiểm tra phát âm và lưu lịch sử
+     * POST /api/pronunciation-check
+     * Kiểm tra phát âm và lưu lịch sử.
      */
     @PostMapping
     public ResponseEntity<ApiResponse<PronunciationCheckResponse>> checkPronunciation(
             PronunciationCheckRequest request,
             Authentication authentication) {
 
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
-        log.info(" User {} checking pronunciation for text: {}",
-                userDetails.getUser().getId(), request.getExpectedText());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        log.info("User {} checking pronunciation: {}", userDetails.getUser().getId(),
+                request.getExpectedText());
 
         PronunciationCheckResponse response = service.checkAndSave(request);
-
-        log.info(" Pronunciation check completed with score: {}", response.getPronunciationScore());
-
+        log.info("Pronunciation score={}", response.getPronunciationScore());
         return ResponseEntity.ok(ApiResponse.success("Kiểm tra phát âm thành công", response));
+    }
+
+    /**
+     * GET /api/pronunciation-check/history
+     * Lấy toàn bộ lịch sử.
+     */
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<List<PronunciationCheckResponse>>> getAllHistory() {
+        return ResponseEntity.ok(ApiResponse.success(service.getAll()));
+    }
+
+    /**
+     * GET /api/pronunciation-check/history/{id}
+     * Lấy 1 lịch sử theo id.
+     */
+    @GetMapping("/history/{id}")
+    public ResponseEntity<ApiResponse<PronunciationCheckResponse>> getHistoryById(
+            @PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.success(service.getById(id)));
+    }
+
+    /**
+     * DELETE /api/pronunciation-check/history/{id}
+     * Xóa 1 lịch sử. ADMIN hoặc chính chủ (hiện tại mở cho ADMIN).
+     */
+    @DeleteMapping("/history/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteHistory(
+            @PathVariable String id,
+            Authentication authentication) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        log.info("User {} deleting history id={}", userDetails.getUser().getId(), id);
+        service.deleteHistory(id);
+        return ResponseEntity.ok(ApiResponse.success("Xóa lịch sử thành công", null));
     }
 }
