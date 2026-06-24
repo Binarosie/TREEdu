@@ -106,7 +106,7 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/{title}")
     public ResponseEntity<ApiResponse<List<FlashcardResponse>>> searchFlashcards(
             @PathVariable String title,
             Authentication authentication) {
