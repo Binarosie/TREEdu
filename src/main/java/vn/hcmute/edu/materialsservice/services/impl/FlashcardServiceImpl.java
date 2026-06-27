@@ -407,6 +407,7 @@ public class FlashcardServiceImpl implements iFlashcardService {
                 String userId = userDetails.getUser().getId().toString();
                 flashcards = flashcards.stream()
                         .filter(f -> f.getType() == EFlashcardType.SYSTEM ||
+                                f.getVisibility().PUBLIC.equals(f.getVisibility()) ||
                                 (f.getType() == EFlashcardType.BY_MEMBER &&
                                         userId.equals(f.getCreatedBy())))
                         .toList();

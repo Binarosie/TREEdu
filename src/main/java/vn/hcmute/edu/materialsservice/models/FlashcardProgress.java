@@ -19,13 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "flashcard_progress")
-@CompoundIndexes({
-        @CompoundIndex(
-                name = "userId_flashcardId_unique",
-                def = "{'userId': 1, 'flashcardId': 1}",
-                unique = true  // ← chặn duplicate hoàn toàn ở DB level
-        )
-})
+@CompoundIndex(name = "user_flashcard_unique", def = "{'userId': 1, 'flashcardId': 1}", unique = true)
 public class FlashcardProgress {
 
     @Id
