@@ -13,6 +13,8 @@ public interface FlashcardProgressRepository extends MongoRepository<FlashcardPr
 
     Optional<FlashcardProgress> findFirstByUserIdAndFlashcardId(String userId, String flashcardId);
 
+    Optional<FlashcardProgress> findFirstByUserIdAndFlashcardIdOrderByStartedAtDesc(String userId, String flashcardId);
+
     List<FlashcardProgress> findByUserId(String userId);
 
     List<FlashcardProgress> findByUserIdAndStatus(String userId, ELearningStatus status);
@@ -21,7 +23,5 @@ public interface FlashcardProgressRepository extends MongoRepository<FlashcardPr
 
     int countByFlashcardId(String flashcardId);
 
-    boolean existsByUserIdAndFlashcardId(String userId, String flashcardId);
-
-    void deleteByFlashcardId(String flashcardId);
+    List<FlashcardProgress> findByUserIdAndFlashcardId(String userId, String flashcardId);
 }
