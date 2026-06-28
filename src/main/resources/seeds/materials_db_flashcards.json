@@ -1,0 +1,140 @@
+[{
+  "_id": {
+    "$oid": "ebb8cac7f474e1ea7c716d64"
+  },
+  "title": "Các từ Tiếng Việt cơ bản - Level 1",
+  "description": "200 essential Vietnamese words for foreigners (A1 level). Includes pronouns, food, daily verbs, and common objects.",
+  "level": 1,
+  "topic": "Basic Vietnamese, Pronouns, Food, Daily Life",
+  "type": "SYSTEM",
+  "createdBy": "f865b45c-f293-4dc1-a81e-173096e94fc2",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-22T23:45:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-22T23:45:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+},
+{
+  "_id": {
+    "$oid": "f1a54ca7f474e1ea7c716d99"
+  },
+  "title": "Chủ đề: Động vật & Thiên nhiên",
+  "description": "Bộ từ vựng cơ bản dành cho người nước ngoài học Tiếng Việt (Bao gồm Đại từ, Động từ, Đồ ăn, Nơi chốn...)",
+  "level": 1,
+  "topic": "Basic Vietnamese",
+  "type": "SYSTEM",
+  "createdBy": "SYSTEM_ADMIN",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+},
+{
+  "_id": {
+    "$oid": "f2b65da7f474e1ea7c717e11"
+  },
+  "title": "Chủ đề: Cảm xúc, Tính cách & Đời sống xã hội",
+  "description": "Bộ từ vựng trung cấp Level 2 giúp diễn đạt tâm trạng, tính cách con người và các trải nghiệm cuộc sống.",
+  "level": 2,
+  "topic": "Basic Vietnamese",
+  "type": "SYSTEM",
+  "createdBy": "SYSTEM_ADMIN",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+},
+{
+  "_id": {
+    "$oid": "667cc345b456c78901234569"
+  },
+  "title": "Business & Office Vocabulary (B1)",
+  "description": "Bộ từ vựng trung cấp về môi trường công sở, kinh doanh, tài chính và quản lý công việc.",
+  "level": 3,
+  "topic": "Business & Office",
+  "type": "SYSTEM",
+  "createdBy": "SYSTEM_ADMIN",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-25T14:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-25T14:00:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+},
+{
+  "_id": {
+    "$oid": "667cc345b456c78901234999"
+  },
+  "title": "400 Từ vựng Tiếng Việt Cao cấp (Level 4 - C1)",
+  "description": "Bộ từ vựng chuyên sâu về Kinh tế vĩ mô, Thảo luận học thuật, Triết học công sở và Tư duy phản biện.",
+  "level": 4,
+  "topic": "Economics, Academy & Critical Thinking",
+  "type": "SYSTEM",
+  "createdBy": "SYSTEM_ADMIN",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+},
+{
+  "_id": {
+    "$oid": "667cc999b456c78901234111"
+  },
+  "title": "100 Từ vựng Tiếng Việt Cơ bản (Level 1 - A1/A2)",
+  "description": "Bộ từ vựng thiết yếu về cuộc sống quanh ta: Gia đình, Đồ vật trong nhà, Thức ăn, Hoạt động thường ngày và Đường phố.",
+  "level": 1,
+  "topic": "Daily Life & Everyday Vocabulary",
+  "type": "SYSTEM",
+  "createdBy": "SYSTEM_ADMIN",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-25T00:00:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+},
+{
+  "_id": {
+    "$oid": "667d0111b456c78901234777"
+  },
+  "title": "50 Từ vựng Tiếng Việt Cơ bản - Chủ đề Màu sắc (A1)",
+  "description": "Bộ từ vựng cơ bản về các màu sắc, sắc thái màu và các khái niệm hội họa thường gặp trong tiếng Việt.",
+  "level": 1,
+  "topic": "Colors & Visuals",
+  "type": "SYSTEM",
+  "createdBy": "SYSTEM_ADMIN",
+  "visibility": "PUBLIC",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2026-06-25T14:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-25T14:00:00.000Z"
+  },
+  "_class": "vn.hcmute.edu.materialsservice.models.Flashcard"
+}]

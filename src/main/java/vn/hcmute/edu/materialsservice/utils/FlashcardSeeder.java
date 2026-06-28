@@ -1,193 +1,160 @@
 package vn.hcmute.edu.materialsservice.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import vn.hcmute.edu.materialsservice.Enum.EFlashcardType;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 import vn.hcmute.edu.materialsservice.Enum.EWordForm;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
 import vn.hcmute.edu.materialsservice.models.Word;
-import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
-import vn.hcmute.edu.materialsservice.repository.WordRepository;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class FlashcardSeeder {
 
-        private final FlashcardRepository flashcardRepository;
-        private final WordRepository wordRepository;
+        private final MongoTemplate mongoTemplate;
+        private final ObjectMapper objectMapper;
+
+        private static final String FLASHCARD_COLLECTION = "flashcards";
+        private static final String WORD_COLLECTION      = "words";
 
         public void seedFlashcardsAndWords() {
-                if (flashcardRepository.count() > 0) {
-                        log.info("⏭️ Flashcards already exist, skipping flashcard seeding");
-                        return;
+                log.info("🃏 [FlashcardSeeder] Seeding flashcards and words...");
+                seedFlashcards();
+                seedWords();
+                log.info("✅ [FlashcardSeeder] Done.");
+        }
+
+        // -------------------------------------------------------------------------
+        // Flashcards
+        // -------------------------------------------------------------------------
+
+        private void seedFlashcards() {
+                try {
+                        List<Map<String, Object>> rawList = loadJson("seeds/materials_db_flashcards.json");
+                        int created = 0, skipped = 0;
+
+                        for (Map<String, Object> raw : rawList) {
+                                // id là String (hex ObjectId) lấy từ $oid
+                                String id = extractOid(raw);
+                                if (id == null) continue;
+
+                                // Skip nếu đã tồn tại
+                                if (mongoTemplate.exists(Query.query(Criteria.where("_id").is(id)), FLASHCARD_COLLECTION)) {
+                                        skipped++;
+                                        continue;
+                                }
+
+                                Flashcard flashcard = Flashcard.builder()
+                                        .id(id)
+                                        .title((String) raw.get("title"))
+                                        .description((String) raw.get("description"))
+                                        .level(toInt(raw.get("level")))
+                                        .topic((String) raw.get("topic"))
+                                        .type(parseEnum(EFlashcardType.class, (String) raw.get("type")))
+                                        .createdBy((String) raw.get("createdBy"))
+                                        .visibility(parseEnum(EFlashcardVisibility.class, (String) raw.get("visibility")))
+                                        .deleted(Boolean.TRUE.equals(raw.get("deleted")))
+                                        .build();
+
+                                mongoTemplate.save(flashcard, FLASHCARD_COLLECTION);
+                                created++;
+                                log.info("  ✔ Flashcard: {}", flashcard.getTitle());
+                        }
+
+                        log.info("  📊 Flashcards — created: {}, skipped: {}", created, skipped);
+
+                } catch (Exception e) {
+                        log.error("  ❌ Failed to seed flashcards", e);
                 }
+        }
 
-                log.info("🌱 Seeding flashcards and words...");
+        // -------------------------------------------------------------------------
+        // Words
+        // -------------------------------------------------------------------------
 
-                // Flashcard 1: Chào hỏi cơ bản
-                Flashcard flashcard1 = Flashcard.builder()
-                                .title("Chào hỏi cơ bản")
-                                .description("Các từ và cụm từ chào hỏi thông dụng")
-                                .level(1)
-                                .topic("Chào hỏi")
-                                .type(EFlashcardType.SYSTEM)
-                                .createdBy(null)
-                                .createdAt(LocalDateTime.now())
-                                .updatedAt(LocalDateTime.now())
-                                .build();
-                flashcard1 = flashcardRepository.save(flashcard1);
+        private void seedWords() {
+                try {
+                        List<Map<String, Object>> rawList = loadJson("seeds/materials_db_words.json");
+                        int created = 0, skipped = 0;
 
-                List<Word> words1 = Arrays.asList(
-                                Word.builder()
-                                                .flashcardId(flashcard1.getId())
-                                                .newWord("Xin chào")
-                                                .meaning("Lời chào hỏi lịch sự, thân thiện")
-                                                .wordForm(EWordForm.PHRASE)
-                                                .phoneme("/sin caːw/")
-                                                .audioURL("https://example.com/audio/xinchao.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard1.getId())
-                                                .newWord("Cảm ơn")
-                                                .meaning("Lời cảm ơn, bày tỏ lòng biết ơn")
-                                                .wordForm(EWordForm.PHRASE)
-                                                .phoneme("/kaːm ɔn/")
-                                                .audioURL("https://example.com/audio/camon.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard1.getId())
-                                                .newWord("Tạm biệt")
-                                                .meaning("Lời chào khi chia tay")
-                                                .wordForm(EWordForm.PHRASE)
-                                                .phoneme("/taːm biət/")
-                                                .audioURL("https://example.com/audio/tambiet.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build());
-                wordRepository.saveAll(words1);
+                        for (Map<String, Object> raw : rawList) {
+                                String id = extractOid(raw);
+                                if (id == null) continue;
 
-                // Flashcard 2: Động từ thường dùng
-                Flashcard flashcard2 = Flashcard.builder()
-                                .title("Động từ thường dùng")
-                                .description("Các động từ hay gặp trong cuộc sống hàng ngày")
-                                .level(1)
-                                .topic("Hoạt động hàng ngày")
-                                .type(EFlashcardType.SYSTEM)
-                                .createdBy(null)
-                                .createdAt(LocalDateTime.now())
-                                .updatedAt(LocalDateTime.now())
-                                .build();
-                flashcard2 = flashcardRepository.save(flashcard2);
+                                if (mongoTemplate.exists(Query.query(Criteria.where("_id").is(id)), WORD_COLLECTION)) {
+                                        skipped++;
+                                        continue;
+                                }
 
-                List<Word> words2 = Arrays.asList(
-                                Word.builder()
-                                                .flashcardId(flashcard2.getId())
-                                                .newWord("Ăn")
-                                                .meaning("Nhai và nuốt thức ăn")
-                                                .wordForm(EWordForm.VERB)
-                                                .phoneme("/aːn/")
-                                                .audioURL("https://example.com/audio/an.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard2.getId())
-                                                .newWord("Ngủ")
-                                                .meaning("Nghỉ ngơi bằng cách nhắm mắt và để não hoạt động chậm")
-                                                .wordForm(EWordForm.VERB)
-                                                .phoneme("/ŋuː/")
-                                                .audioURL("https://example.com/audio/ngu.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard2.getId())
-                                                .newWord("Học")
-                                                .meaning("Tiếp thu kiến thức hoặc kỹ năng")
-                                                .wordForm(EWordForm.VERB)
-                                                .phoneme("/hɔk/")
-                                                .audioURL("https://example.com/audio/hoc.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard2.getId())
-                                                .newWord("Làm")
-                                                .meaning("Thực hiện một công việc, hành động")
-                                                .wordForm(EWordForm.VERB)
-                                                .phoneme("/laːm/")
-                                                .audioURL("https://example.com/audio/lam.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build());
-                wordRepository.saveAll(words2);
+                                Word word = Word.builder()
+                                        .id(id)
+                                        .flashcardId((String) raw.get("flashcardId"))
+                                        .newWord((String) raw.get("newWord"))
+                                        .meaning((String) raw.get("meaning"))
+                                        .wordForm(parseEnum(EWordForm.class, (String) raw.get("wordForm")))
+                                        .phoneme((String) raw.get("phoneme"))
+                                        .audioURL((String) raw.getOrDefault("audioURL", ""))
+                                        .build();
 
-                // Flashcard 3: Tính từ miêu tả
-                Flashcard flashcard3 = Flashcard.builder()
-                                .title("Tính từ miêu tả")
-                                .description("Các tính từ thường dùng để miêu tả sự vật")
-                                .level(1)
-                                .topic("Chào hỏi")
-                                .type(EFlashcardType.SYSTEM)
-                                .createdBy(null)
-                                .createdAt(LocalDateTime.now())
-                                .updatedAt(LocalDateTime.now())
-                                .build();
-                flashcard3 = flashcardRepository.save(flashcard3);
+                                mongoTemplate.save(word, WORD_COLLECTION);
+                                created++;
+                        }
 
-                List<Word> words3 = Arrays.asList(
-                                Word.builder()
-                                                .flashcardId(flashcard3.getId())
-                                                .newWord("Đẹp")
-                                                .meaning("Có hình dáng, màu sắc đẹp mắt, dễ nhìn")
-                                                .wordForm(EWordForm.ADJECTIVE)
-                                                .phoneme("/ɗɛp/")
-                                                .audioURL("https://example.com/audio/dep.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard3.getId())
-                                                .newWord("Tốt")
-                                                .meaning("Có phẩm chất cao, tốt đẹp")
-                                                .wordForm(EWordForm.ADJECTIVE)
-                                                .phoneme("/tot/")
-                                                .audioURL("https://example.com/audio/tot.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard3.getId())
-                                                .newWord("Lớn")
-                                                .meaning("Có kích thước, quy mô cao")
-                                                .wordForm(EWordForm.ADJECTIVE)
-                                                .phoneme("/lɔːn/")
-                                                .audioURL("https://example.com/audio/lon.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build(),
-                                Word.builder()
-                                                .flashcardId(flashcard3.getId())
-                                                .newWord("Nhanh")
-                                                .meaning("Có tốc độ cao, di chuyển mau lẹ")
-                                                .wordForm(EWordForm.ADJECTIVE)
-                                                .phoneme("/ɲaɪŋ/")
-                                                .audioURL("https://example.com/audio/nhanh.mp3")
-                                                .createdAt(LocalDateTime.now())
-                                                .updatedAt(LocalDateTime.now())
-                                                .build());
-                wordRepository.saveAll(words3);
+                        log.info("  📊 Words — created: {}, skipped: {}", created, skipped);
 
-                log.info("✅ Seeded {} flashcards with {} words", 3, words1.size() + words2.size() + words3.size());
+                } catch (Exception e) {
+                        log.error("  ❌ Failed to seed words", e);
+                }
+        }
+
+        // -------------------------------------------------------------------------
+        // Helpers
+        // -------------------------------------------------------------------------
+
+        private List<Map<String, Object>> loadJson(String classpathPath) throws Exception {
+                ClassPathResource resource = new ClassPathResource(classpathPath);
+                try (InputStream is = resource.getInputStream()) {
+                        return objectMapper.readValue(is, new TypeReference<>() {});
+                }
+        }
+
+        @SuppressWarnings("unchecked")
+        private String extractOid(Map<String, Object> raw) {
+                Object idField = raw.get("_id");
+                if (idField instanceof Map) {
+                        return (String) ((Map<String, Object>) idField).get("$oid");
+                }
+                return idField != null ? idField.toString() : null;
+        }
+
+        private int toInt(Object value) {
+                if (value instanceof Number) return ((Number) value).intValue();
+                return 0;
+        }
+
+        /**
+         * Parse String → Enum an toàn, trả về null nếu không tìm thấy thay vì throw exception.
+         */
+        private <E extends Enum<E>> E parseEnum(Class<E> enumClass, String value) {
+                if (value == null) return null;
+                try {
+                        return Enum.valueOf(enumClass, value.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                        log.warn("  ⚠ Unknown enum value '{}' for {}, setting null", value, enumClass.getSimpleName());
+                        return null;
+                }
         }
 }
