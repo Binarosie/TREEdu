@@ -1,0 +1,6264 @@
+[{
+  "_id": {
+    "$oid": "6a34e26ae359e803b7cd433f"
+  },
+  "title": "Văn học Trung đại Việt Nam",
+  "level": 6,
+  "topic": "Văn học Chuyên sâu",
+  "timer": 25,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Câu thơ 'Cảo thơm lần giở trước đèn' trong Truyện Kiều miêu tả hành động gì?",
+      "options": [
+        {
+          "content": "Thắp đèn lồng trong đêm hội",
+          "isCorrect": false
+        },
+        {
+          "content": "Đốt nhang thơm thờ cúng tổ tiên",
+          "isCorrect": false
+        },
+        {
+          "content": "Mở những cuốn sách quý, sách xưa ra đọc",
+          "isCorrect": true
+        },
+        {
+          "content": "Ngửi mùi hương hoa sen trước gió",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Cảo' chỉ sách ghi chép bằng lụa thời xưa. 'Cảo thơm' là sách quý để lại tiếng thơm muôn đời."
+    },
+    {
+      "content": "Trong 'Bình Ngô đại cáo', Nguyễn Trãi đề cao tư tưởng gì lên hàng đầu?",
+      "options": [
+        {
+          "content": "Tư tưởng trung quân ái quốc",
+          "isCorrect": false
+        },
+        {
+          "content": "Tư tưởng nhân nghĩa (Yên dân và trừ bạo)",
+          "isCorrect": true
+        },
+        {
+          "content": "Tư tưởng hòa bình vĩnh cửu",
+          "isCorrect": false
+        },
+        {
+          "content": "Tư tưởng pháp trị",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu mở đầu 'Việc nhân nghĩa cốt ở yên dân / Quân điếu phạt trước lo trừ bạo' đã khẳng định tư tưởng cốt lõi của bài cáo là Nhân nghĩa."
+    },
+    {
+      "content": "Tác giả của 'Chinh phụ ngâm khúc' (bản nguyên tác chữ Hán) là ai?",
+      "options": [
+        {
+          "content": "Đoàn Thị Điểm",
+          "isCorrect": false
+        },
+        {
+          "content": "Nguyễn Gia Thiều",
+          "isCorrect": false
+        },
+        {
+          "content": "Đặng Trần Côn",
+          "isCorrect": true
+        },
+        {
+          "content": "Nguyễn Du",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bản gốc chữ Hán do Đặng Trần Côn sáng tác, sau đó được dịch ra chữ Nôm (bản dịch phổ biến nhất thường được cho là của Đoàn Thị Điểm)."
+    },
+    {
+      "content": "Câu 'Tuấn kiệt như sao buổi sớm / Nhân tài như lá mùa thu' sử dụng biện pháp tu từ gì và có ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Ẩn dụ - Chỉ sự rụng rơi, tàn úa của nhân tài",
+          "isCorrect": false
+        },
+        {
+          "content": "So sánh - Nhấn mạnh sự khan hiếm, thưa thớt của nhân tài",
+          "isCorrect": true
+        },
+        {
+          "content": "Nói quá - Khẳng định nhân tài có ở khắp mọi nơi",
+          "isCorrect": false
+        },
+        {
+          "content": "Hoán dụ - Ca ngợi vẻ đẹp của người anh hùng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Sao buổi sớm và lá mùa thu là những sự vật rất thưa thớt, ít ỏi. Câu thơ phản ánh thực trạng khan hiếm nhân tài cứu nước lúc bấy giờ."
+    },
+    {
+      "content": "Trong bài thơ 'Bánh trôi nước', Hồ Xuân Hương sử dụng thủ pháp nghệ thuật nào làm chủ đạo?",
+      "options": [
+        {
+          "content": "Vịnh vật ngôn chí (Mượn hình ảnh đồ vật để nói về thân phận con người)",
+          "isCorrect": true
+        },
+        {
+          "content": "Miêu tả hiện thực xã hội",
+          "isCorrect": false
+        },
+        {
+          "content": "Chơi chữ đồng âm",
+          "isCorrect": false
+        },
+        {
+          "content": "Tự sự kết hợp biểu cảm",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bề ngoài là miêu tả cái bánh trôi nước đang được luộc, bề trong là ẩn dụ cho thân phận trôi nổi, ba chìm bảy nổi của người phụ nữ phong kiến."
+    },
+    {
+      "content": "Chi tiết 'Chiếc bóng' trong tác phẩm 'Chuyện người con gái Nam Xương' (Nguyễn Dữ) đóng vai trò gì?",
+      "options": [
+        {
+          "content": "Chỉ là một chi tiết tả cảnh bình thường",
+          "isCorrect": false
+        },
+        {
+          "content": "Là chi tiết thắt nút và mở nút cho toàn bộ bi kịch của câu chuyện",
+          "isCorrect": true
+        },
+        {
+          "content": "Biểu tượng cho ma quỷ hiện hình",
+          "isCorrect": false
+        },
+        {
+          "content": "Thể hiện sự cô đơn vĩnh cửu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chiếc bóng trên vách do Vũ Nương chỉ cho con đã gây ra sự ghen tuông oan nghiệt của Trương Sinh (thắt nút), và sau này cũng chính chiếc bóng đó làm Trương Sinh tỉnh ngộ (mở nút)."
+    },
+    {
+      "content": "Trong văn học, khái niệm 'Tập Kiều' nghĩa là gì?",
+      "options": [
+        {
+          "content": "Viết lại Truyện Kiều bằng văn xuôi",
+          "isCorrect": false
+        },
+        {
+          "content": "Học thuộc lòng toàn bộ Truyện Kiều",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhặt các câu thơ trong Truyện Kiều và ghép lại thành một bài thơ mới có ý nghĩa trọn vẹn",
+          "isCorrect": true
+        },
+        {
+          "content": "Diễn kịch dựa trên cốt truyện Truyện Kiều",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Tập Kiều là một thú chơi văn chương tao nhã, đòi hỏi sự am hiểu sâu sắc về từ ngữ và hoàn cảnh trong Truyện Kiều để chắp vá thành tác phẩm mới hợp logic."
+    },
+    {
+      "content": "Tác phẩm nào dưới đây được mệnh danh là 'Thiên cổ hùng văn' của dân tộc Việt Nam?",
+      "options": [
+        {
+          "content": "Hịch tướng sĩ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nam quốc sơn hà",
+          "isCorrect": false
+        },
+        {
+          "content": "Bình Ngô đại cáo",
+          "isCorrect": true
+        },
+        {
+          "content": "Truyền kỳ mạn lục",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Bình Ngô đại cáo' mang ý nghĩa như một bản Tuyên ngôn Độc lập thứ hai của Việt Nam, lời văn hùng hồn, lý lẽ sắc bén nên được gọi là áng hùng văn muôn đời."
+    },
+    {
+      "content": "Chữ 'Đạo' trong câu 'Chở bao nhiêu đạo thuyền không khẳm' (Nguyễn Đình Chiểu) mang ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Tôn giáo, tín ngưỡng",
+          "isCorrect": false
+        },
+        {
+          "content": "Con đường đi lại trên sông",
+          "isCorrect": false
+        },
+        {
+          "content": "Đạo lý làm người, chính nghĩa, luân thường đạo lý",
+          "isCorrect": true
+        },
+        {
+          "content": "Kẻ trộm cướp (đạo tặc)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quan niệm văn chương của Nguyễn Đình Chiểu là 'Văn dĩ tải đạo' (Dùng văn chương để chuyên chở đạo lý làm người)."
+    },
+    {
+      "content": "Nữ sĩ Nguyễn Thị Hinh được biết đến nhiều nhất với bút danh nào?",
+      "options": [
+        {
+          "content": "Hồ Xuân Hương",
+          "isCorrect": false
+        },
+        {
+          "content": "Bà Huyện Thanh Quan",
+          "isCorrect": true
+        },
+        {
+          "content": "Đoàn Thị Điểm",
+          "isCorrect": false
+        },
+        {
+          "content": "Sương Nguyệt Anh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bà là vợ của tri huyện Thanh Quan nên được gọi là Bà Huyện Thanh Quan, nổi tiếng với bài 'Qua Đèo Ngang'."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e26ae359e803b7cd4340"
+  },
+  "title": "Ngữ dụng học và Trường từ vựng",
+  "level": 6,
+  "topic": "Ngôn ngữ học Nâng cao",
+  "timer": 25,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Trong giao tiếp, 'Hàm ý' (Ngôn ngoại) là gì?",
+      "options": [
+        {
+          "content": "Nghĩa đen của câu chữ được nói ra",
+          "isCorrect": false
+        },
+        {
+          "content": "Ý nghĩa không được diễn đạt trực tiếp bằng từ ngữ mà người nghe phải tự suy ra từ ngữ cảnh",
+          "isCorrect": true
+        },
+        {
+          "content": "Sự nhầm lẫn trong lúc nói chuyện",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ ngữ địa phương ít người biết",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Hàm ý là phần thông báo được giấu kín, đòi hỏi người nghe phải dùng suy luận và tri thức nền để giải mã."
+    },
+    {
+      "content": "Phương châm giao tiếp nào yêu cầu: 'Khi giao tiếp cần nói đúng vào đề tài, tránh nói lạc đề'?",
+      "options": [
+        {
+          "content": "Phương châm về lượng",
+          "isCorrect": false
+        },
+        {
+          "content": "Phương châm về chất",
+          "isCorrect": false
+        },
+        {
+          "content": "Phương châm quan hệ",
+          "isCorrect": true
+        },
+        {
+          "content": "Phương châm cách thức",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Phương châm quan hệ (hay còn gọi là phương châm liên quan) đòi hỏi lời nói phải ăn nhập với chủ đề đang thảo luận (tránh hiện tượng ông nói gà bà nói vịt)."
+    },
+    {
+      "content": "Thành ngữ 'Nói có sách, mách có chứng' liên quan trực tiếp đến việc vi phạm/tuân thủ phương châm giao tiếp nào?",
+      "options": [
+        {
+          "content": "Phương châm về chất",
+          "isCorrect": true
+        },
+        {
+          "content": "Phương châm lịch sự",
+          "isCorrect": false
+        },
+        {
+          "content": "Phương châm quan hệ",
+          "isCorrect": false
+        },
+        {
+          "content": "Phương châm về lượng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Phương châm về chất yêu cầu không nói những điều mình không có bằng chứng xác thực hoặc biết là sai sự thật."
+    },
+    {
+      "content": "Khái niệm 'Trường từ vựng' trong tiếng Việt được hiểu là gì?",
+      "options": [
+        {
+          "content": "Tập hợp tất cả các từ trong một ngôn ngữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Tập hợp các từ có ít nhất một nét chung về nghĩa",
+          "isCorrect": true
+        },
+        {
+          "content": "Những từ chỉ dùng trong trường học",
+          "isCorrect": false
+        },
+        {
+          "content": "Các từ mượn từ tiếng nước ngoài",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ví dụ: Trường từ vựng 'mắt' bao gồm: nhìn, ngó, liếc, chói, lóa, mù, cận thị... Chúng đều có điểm chung liên quan đến cơ quan thị giác."
+    },
+    {
+      "content": "Hiện tượng 'Chuyển nghĩa' của từ vựng tiếng Việt thường diễn ra theo hai phương thức cơ bản nào?",
+      "options": [
+        {
+          "content": "Từ ghép và Từ láy",
+          "isCorrect": false
+        },
+        {
+          "content": "Đồng nghĩa và Trái nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ và Hoán dụ",
+          "isCorrect": true
+        },
+        {
+          "content": "Nói quá và Nói giảm",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Từ một nghĩa gốc, người ta dùng cơ chế Ẩn dụ (dựa trên sự giống nhau) hoặc Hoán dụ (dựa trên sự gần gũi) để tạo ra các nghĩa chuyển mới."
+    },
+    {
+      "content": "'Thành ngữ' khác 'Tục ngữ' ở điểm cốt lõi nào?",
+      "options": [
+        {
+          "content": "Thành ngữ chỉ có 4 chữ, tục ngữ dài hơn",
+          "isCorrect": false
+        },
+        {
+          "content": "Thành ngữ là cụm từ chưa thành câu trọn vẹn, tục ngữ là một câu hoàn chỉnh đúc kết kinh nghiệm",
+          "isCorrect": true
+        },
+        {
+          "content": "Thành ngữ xuất phát từ Trung Quốc, tục ngữ của Việt Nam",
+          "isCorrect": false
+        },
+        {
+          "content": "Tục ngữ luôn luôn có vần điệu, thành ngữ thì không",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Thành ngữ chỉ đóng vai trò là một thành phần câu (như một tính từ/danh từ phức hợp). Tục ngữ tự thân nó đã là một phán đoán, một bài học trọn vẹn."
+    },
+    {
+      "content": "Từ 'Xuân' trong câu 'Ngày xuân em hãy còn dài / Xót tình máu mủ thay lời nước non' mang ý nghĩa chuyển đổi gì?",
+      "options": [
+        {
+          "content": "Mùa xuân trong năm",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự tươi đẹp của cảnh vật",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự sinh sôi nảy nở",
+          "isCorrect": false
+        },
+        {
+          "content": "Tuổi trẻ, thanh xuân của đời người",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Đây là phương thức chuyển nghĩa theo lối ẩn dụ. Lấy sự khởi đầu tốt đẹp của một năm để chỉ tuổi thanh xuân, thời tuổi trẻ của con người."
+    },
+    {
+      "content": "Hành động ngôn ngữ nào dưới đây thực hiện chức năng 'Hứa hẹn'?",
+      "options": [
+        {
+          "content": "Xin lỗi vì tôi đã đến trễ.",
+          "isCorrect": false
+        },
+        {
+          "content": "Tôi đảm bảo ngày mai sẽ hoàn thành dự án này.",
+          "isCorrect": true
+        },
+        {
+          "content": "Bạn không nên làm như vậy.",
+          "isCorrect": false
+        },
+        {
+          "content": "Trời hôm nay nóng quá nhỉ!",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu nói chứa động từ tình thái 'đảm bảo' nhằm tự ràng buộc bản thân người nói vào một hành động trong tương lai, đó là hành động hứa hẹn."
+    },
+    {
+      "content": "Trong câu 'Bên ngoài trời đang mưa to đấy.', nếu người nói đang ở trong phòng có cửa sổ mở, thì hàm ý của câu này có thể là gì?",
+      "options": [
+        {
+          "content": "Khen ngợi cơn mưa",
+          "isCorrect": false
+        },
+        {
+          "content": "Yêu cầu người nghe đóng cửa sổ lại",
+          "isCorrect": true
+        },
+        {
+          "content": "Hỏi xem người nghe có thích mưa không",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ chối một cuộc hẹn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dựa vào ngữ cảnh, thông báo về thời tiết thực chất là một hành động cầu khiến gián tiếp (nhắc nhở đóng cửa tránh tạt nước)."
+    },
+    {
+      "content": "Đại từ 'Tôi' và 'Ta' trong tiếng Việt có sự khác biệt tinh tế nào về ngữ dụng?",
+      "options": [
+        {
+          "content": "'Tôi' dùng cho nam giới, 'Ta' dùng cho nữ giới",
+          "isCorrect": false
+        },
+        {
+          "content": "'Tôi' luôn thể hiện sự khiêm tốn, 'Ta' luôn thể hiện sự kiêu ngạo",
+          "isCorrect": false
+        },
+        {
+          "content": "'Tôi' là nhân xưng khách quan, 'Ta' vừa là số ít (ngôi 1) vừa bao hàm cả số nhiều (người nói và người nghe)",
+          "isCorrect": true
+        },
+        {
+          "content": "Không có sự khác biệt, có thể thay thế hoàn toàn cho nhau",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Ta' mang tính chất cộng đồng và tình cảm hơn. Ví dụ: 'Chúng ta' (bao gồm cả người nghe), hoặc xưng 'Ta' mang sắc thái thân mật hoặc quyền uy tùy ngữ cảnh."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e26ae359e803b7cd4341"
+  },
+  "title": "Điển cố Uyên bác và Từ Hán Việt",
+  "level": 6,
+  "topic": "Văn hóa và Ngôn ngữ",
+  "timer": 25,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Điển cố 'Gót chân A-sin' bắt nguồn từ thần thoại Hy Lạp dùng để chỉ điều gì?",
+      "options": [
+        {
+          "content": "Sức mạnh vô địch không thể bị đánh bại",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự bỏ chạy hèn nhát trước kẻ thù",
+          "isCorrect": false
+        },
+        {
+          "content": "Điểm yếu chí mạng của một người tưởng chừng như hoàn hảo",
+          "isCorrect": true
+        },
+        {
+          "content": "Vết thương không bao giờ lành",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Achilles có cơ thể mình đồng da sắt ngoại trừ gót chân. Chàng bị bắn trúng gót chân và tử trận. Thành ngữ này chỉ điểm yếu nhất của con người."
+    },
+    {
+      "content": "Cụm từ 'Giấc Nam Kha' (Mộng Nam Kha) ám chỉ điều gì trong văn học cổ?",
+      "options": [
+        {
+          "content": "Giấc mộng được làm tiên",
+          "isCorrect": false
+        },
+        {
+          "content": "Giấc mộng công danh, phú quý rốt cuộc cũng chỉ là hư ảo, phù du",
+          "isCorrect": true
+        },
+        {
+          "content": "Cơn ác mộng ám ảnh kinh hoàng",
+          "isCorrect": false
+        },
+        {
+          "content": "Giấc mơ báo trước tương lai",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bắt nguồn từ tích Thuần Vu Phần nằm ngủ dưới gốc hòe, mơ thấy mình làm thái thú quận Nam Kha vinh hoa phú quý, khi tỉnh dậy mới biết chỉ là một giấc mơ."
+    },
+    {
+      "content": "Câu thơ 'Nợ tang bồng trang trắng vỗ tay reo' (Nguyễn Công Trứ), chữ 'Tang bồng' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Món nợ tiền bạc khổng lồ",
+          "isCorrect": false
+        },
+        {
+          "content": "Cung bằng gỗ dâu, tên bằng cỏ bồng - Chỉ chí làm trai vẫy vùng ngang dọc",
+          "isCorrect": true
+        },
+        {
+          "content": "Trống và kèn dùng trong đám ma",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự chơi bời lêu lổng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Theo tục xưa, khi sinh con trai người ta bắn 6 mũi tên bằng cỏ bồng ra 6 hướng bằng cung gỗ dâu, tượng trưng cho mong ước con lớn lên mang chí lớn bốn phương."
+    },
+    {
+      "content": "Điển tích 'Ngưu Lang - Chức Nữ' gắn liền với hiện tượng thiên nhiên nào trong tháng 7 âm lịch?",
+      "options": [
+        {
+          "content": "Bão tố",
+          "isCorrect": false
+        },
+        {
+          "content": "Sao chổi xuất hiện",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhật thực",
+          "isCorrect": false
+        },
+        {
+          "content": "Mưa ngâu",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Dân gian cho rằng những cơn mưa rả rích tháng 7 là nước mắt của Ngưu Lang và Chức Nữ khi được gặp nhau trên cầu Ô Thước."
+    },
+    {
+      "content": "Điển cố 'Thước Kiều' (Cầu Ô Thước) được tương truyền là do loài động vật nào kết thành?",
+      "options": [
+        {
+          "content": "Chim bồ câu",
+          "isCorrect": false
+        },
+        {
+          "content": "Chim quạ",
+          "isCorrect": true
+        },
+        {
+          "content": "Cá chép",
+          "isCorrect": false
+        },
+        {
+          "content": "Rồng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Ô' là quạ, 'Thước' là chim khách. Cầu Ô Thước do đàn quạ và chim khách kết cánh tạo thành qua dải Ngân Hà."
+    },
+    {
+      "content": "Thành ngữ Hán Việt 'Trung ngôn nghịch nhĩ' mang ý nghĩa tương đương với câu thuần Việt nào?",
+      "options": [
+        {
+          "content": "Có tật giật mình",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự thật mất lòng",
+          "isCorrect": true
+        },
+        {
+          "content": "Lòng vả cũng như lòng sung",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói một đằng làm một nẻo",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Trung ngôn' là lời nói thẳng, nói thật; 'Nghịch nhĩ' là trái tai, khó nghe. Những lời góp ý chân thật thường khiến người nghe khó chịu."
+    },
+    {
+      "content": "Trong từ Hán Việt, yếu tố 'Băng' trong từ 'Băng hà' có nghĩa gốc là gì?",
+      "options": [
+        {
+          "content": "Dòng sông đóng băng",
+          "isCorrect": false
+        },
+        {
+          "content": "Tuyết rơi mùa đông",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự qua đời của Vua chúa / Hoàng đế",
+          "isCorrect": true
+        },
+        {
+          "content": "Sự sụp đổ của một triều đại",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trong nghi thức cung đình xưa, sự ra đi của Vua được gọi là 'Băng hà' (núi lở sông cạn), thể hiện sự tổn thất to lớn của quốc gia."
+    },
+    {
+      "content": "Tích 'Hoàn bích quy Triệu' (Đưa ngọc bích về lại nước Triệu) ca ngợi phẩm chất của nhân vật lịch sử nào?",
+      "options": [
+        {
+          "content": "Khổng Minh",
+          "isCorrect": false
+        },
+        {
+          "content": "Lạn Tương Như",
+          "isCorrect": true
+        },
+        {
+          "content": "Quan Vũ",
+          "isCorrect": false
+        },
+        {
+          "content": "Tào Tháo",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Lạn Tương Như bằng trí dũng song toàn đã đi sứ nước Tần và bảo vệ thành công viên ngọc bích họ Hòa mang nguyên vẹn về nước Triệu."
+    },
+    {
+      "content": "Cụm từ 'Lá thắm chỉ hồng' trong văn học cổ thường dùng để chỉ điều gì?",
+      "options": [
+        {
+          "content": "Sắc đẹp của người phụ nữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa thu rụng lá",
+          "isCorrect": false
+        },
+        {
+          "content": "Tình duyên đôi lứa do trời định",
+          "isCorrect": true
+        },
+        {
+          "content": "Sự giàu sang phú quý",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Lá thắm' (Hồng diệp) và 'Chỉ hồng' (Xích thằng) là hai điển cố gắn liền với chuyện tình duyên, tơ hồng nguyệt lão se kết nam nữ."
+    },
+    {
+      "content": "Từ 'Sắc' trong cụm 'Sắc bất ba đào' (Truyện Kiều) mang ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Màu sắc",
+          "isCorrect": false
+        },
+        {
+          "content": "Sắc bén, nhọn",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhan sắc, vẻ đẹp của người phụ nữ",
+          "isCorrect": true
+        },
+        {
+          "content": "Ánh sáng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nguyên văn: 'Sắc bất ba đào dị nịch nhân' (Nhan sắc không có sóng gió nhưng lại dễ nhấn chìm người ta). 'Sắc' ở đây chỉ sắc đẹp khuynh thành."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e2f0e359e803b7cd4342"
+  },
+  "title": "Điển Cố và Điển Tích Văn Học",
+  "level": 5,
+  "topic": "Văn hóa và Văn học",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Điển cố 'Đẽo cày giữa đường' ám chỉ hạng người nào?",
+      "options": [
+        {
+          "content": "Người thợ mộc tài hoa",
+          "isCorrect": false
+        },
+        {
+          "content": "Người không có chủ kiến, ai bảo sao cũng nghe theo dẫn đến hỏng việc",
+          "isCorrect": true
+        },
+        {
+          "content": "Người làm việc vất vả nhưng không có kết quả",
+          "isCorrect": false
+        },
+        {
+          "content": "Người thích khoe khoang tài năng trước mặt người khác",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu chuyện kể về anh thợ mộc đẽo cày, ai đi qua góp ý cũng nghe theo làm cái cày hỏng béng, chỉ người thiếu lập trường."
+    },
+    {
+      "content": "Cụm từ 'Nợ như chúa Chổm' dùng để diễn tả điều gì?",
+      "options": [
+        {
+          "content": "Tình trạng nợ nần ngập đầu, nợ rất nhiều không thể trả nổi",
+          "isCorrect": true
+        },
+        {
+          "content": "Việc vay tiền dễ dàng của những người có quyền thế",
+          "isCorrect": false
+        },
+        {
+          "content": "Khoản nợ ân tình không bao giờ trả hết",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự giàu có, cho nhiều người khác vay tiền",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chúa Chổm (vua Lê Trang Tông lúc nhỏ) có tích mua chịu đồ ăn của rất nhiều người, sau làm vua ai cũng đến đòi, ám chỉ việc nợ nần chồng chất."
+    },
+    {
+      "content": "Nhân vật 'Sở Khanh' trong Truyện Kiều ngày nay được dùng như một danh từ chung để chỉ ai?",
+      "options": [
+        {
+          "content": "Người đàn ông tài giỏi, hào hoa",
+          "isCorrect": false
+        },
+        {
+          "content": "Kẻ trộm cắp tài sản chuyên nghiệp",
+          "isCorrect": false
+        },
+        {
+          "content": "Người đàn ông đê tiện, chuyên lừa gạt tình cảm của phụ nữ",
+          "isCorrect": true
+        },
+        {
+          "content": "Người quan tòa phân xử bất công",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Sở Khanh là nhân vật đã lừa gạt Thúy Kiều, đẩy nàng vào lầu ngưng bích, đại diện cho kẻ phụ tình, lừa đảo."
+    },
+    {
+      "content": "Thành ngữ 'Nước mắt cá sấu' bắt nguồn từ truyền thuyết phương Tây, ám chỉ điều gì?",
+      "options": [
+        {
+          "content": "Sự đau khổ tột cùng không thể khóc thành tiếng",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự thông cảm sâu sắc với người hoạn nạn",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự dũng cảm đối mặt với cái chết",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự xót thương giả tạo, đạo đức giả",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Cá sấu tiết ra nước mắt khi nhai con mồi (do cơ chế sinh lý), người ta mượn hình ảnh này để chỉ sự giả tạo, vừa làm hại người khác vừa tỏ ra thương xót."
+    },
+    {
+      "content": "Điển cố 'Gương vỡ lại lành' thường được dùng trong hoàn cảnh nào?",
+      "options": [
+        {
+          "content": "Đồ vật bị hỏng bỗng nhiên được sửa chữa",
+          "isCorrect": false
+        },
+        {
+          "content": "Vợ chồng xa cách, ly tán hoặc mâu thuẫn rồi lại đoàn tụ, hạnh phúc",
+          "isCorrect": true
+        },
+        {
+          "content": "Kẻ thù hóa giải hiềm khích trở thành bạn bè",
+          "isCorrect": false
+        },
+        {
+          "content": "Sức khỏe phục hồi sau bạo bệnh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bắt nguồn từ tích Từ Đức Ngôn và công chúa Nhạc Xương chia đôi tấm gương làm tin khi loạn lạc, sau này nhờ nửa tấm gương mà tìm lại được nhau."
+    },
+    {
+      "content": "Nhân vật 'Hoạn Thư' đại diện cho tính cách gì của con người?",
+      "options": [
+        {
+          "content": "Lòng tham lam vô đáy",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự ghen tuông cay độc, tàn nhẫn",
+          "isCorrect": true
+        },
+        {
+          "content": "Sự lười biếng, ỷ lại",
+          "isCorrect": false
+        },
+        {
+          "content": "Tính khoe khoang, hợm hĩnh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Hoạn Thư là vợ cả của Thúc Sinh trong Truyện Kiều, nổi tiếng với những đòn ghen tuông tinh vi và tàn ác."
+    },
+    {
+      "content": "Thành ngữ 'Túi cơm giá áo' (Giá áo túi cơm) dùng để mắng mỏ hạng người nào?",
+      "options": [
+        {
+          "content": "Người nghèo khổ không có cái ăn cái mặc",
+          "isCorrect": false
+        },
+        {
+          "content": "Kẻ tham lam ăn uống, thích chưng diện",
+          "isCorrect": false
+        },
+        {
+          "content": "Người làm nghề thợ may và nấu ăn",
+          "isCorrect": false
+        },
+        {
+          "content": "Kẻ bất tài, vô dụng, chỉ biết ăn bám mà không làm được việc gì",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Ví người chỉ như cái giá để treo áo, cái túi để đựng cơm, hoàn toàn vô tích sự với xã hội."
+    },
+    {
+      "content": "Tích 'Treo ấn từ quan' thường gợi nhớ đến việc gì của các bậc nho sĩ xưa?",
+      "options": [
+        {
+          "content": "Bị nhà vua cách chức, đuổi về quê",
+          "isCorrect": false
+        },
+        {
+          "content": "Chủ động từ bỏ con đường danh lợi, quan trường để về quê sống ẩn dật, thanh cao",
+          "isCorrect": true
+        },
+        {
+          "content": "Giao lại ấn tín cho người tài giỏi hơn mình",
+          "isCorrect": false
+        },
+        {
+          "content": "Chống đối triều đình, làm phản",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Hành động tháo ấn tín treo lên cửa và bỏ đi, thể hiện khí tiết không màng danh lợi, không bợ đỡ quyền uy."
+    },
+    {
+      "content": "Cụm từ 'Chung Tử Kỳ - Bá Nha' là biểu tượng của điều gì?",
+      "options": [
+        {
+          "content": "Tình yêu đôi lứa thủy chung",
+          "isCorrect": false
+        },
+        {
+          "content": "Tình bạn tri âm tri kỷ hiếm có",
+          "isCorrect": true
+        },
+        {
+          "content": "Sự đối đầu không khoan nhượng",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự phản bội trong gia đình",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bá Nha đánh đàn chỉ có Chung Tử Kỳ hiểu được tiếng lòng. Khi Tử Kỳ mất, Bá Nha đập nát đàn vì cho rằng trên đời không còn ai hiểu tiếng đàn của mình nữa."
+    },
+    {
+      "content": "Điển cố 'Tái ông thất mã' (Ông lão ở biên giới mất ngựa) mang thông điệp triết lý gì?",
+      "options": [
+        {
+          "content": "Sự việc ở đời có họa có phúc, trong họa có phúc, trong phúc có họa, không thể lường trước",
+          "isCorrect": true
+        },
+        {
+          "content": "Phải cẩn thận giữ gìn tài sản của mình",
+          "isCorrect": false
+        },
+        {
+          "content": "Không nên tin tưởng người lạ",
+          "isCorrect": false
+        },
+        {
+          "content": "Có tài năng thì ắt sẽ thành công",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chuyện kể việc mất ngựa tưởng là họa hóa ra phúc, được ngựa tưởng là phúc lại hóa họa, khuyên người ta bình tâm trước mọi biến cố."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e2f0e359e803b7cd4343"
+  },
+  "title": "Cấu trúc Ngữ pháp Phức tạp",
+  "level": 5,
+  "topic": "Ngữ pháp Tiếng Việt",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Câu ghép là câu có cấu trúc như thế nào?",
+      "options": [
+        {
+          "content": "Có một cụm Chủ - Vị nòng cốt",
+          "isCorrect": false
+        },
+        {
+          "content": "Có hai hoặc nhiều cụm Chủ - Vị không bao chứa nhau, mỗi cụm C-V tạo thành một vế câu",
+          "isCorrect": true
+        },
+        {
+          "content": "Chỉ có chủ ngữ hoặc chỉ có vị ngữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Có một chủ ngữ đi kèm với nhiều vị ngữ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu ghép bắt buộc phải có từ 2 cụm C-V trở lên, và các cụm C-V này bình đẳng, không cái nào là thành phần của cái nào."
+    },
+    {
+      "content": "Cặp quan hệ từ 'Tuy ... nhưng' biểu thị mối quan hệ gì giữa hai vế của câu ghép?",
+      "options": [
+        {
+          "content": "Quan hệ nguyên nhân - kết quả",
+          "isCorrect": false
+        },
+        {
+          "content": "Quan hệ điều kiện - kết quả",
+          "isCorrect": false
+        },
+        {
+          "content": "Quan hệ tăng tiến",
+          "isCorrect": false
+        },
+        {
+          "content": "Quan hệ tương phản (nhượng bộ - nghịch đối)",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Ví dụ: 'Tuy trời mưa lớn nhưng anh ấy vẫn đi học'. Hai vế mang ý nghĩa trái ngược, cản trở nhau nhưng hành động vẫn xảy ra."
+    },
+    {
+      "content": "Câu 'Không những Nam học giỏi mà cậu ấy còn hát rất hay.' sử dụng cặp quan hệ từ chỉ ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Nguyên nhân",
+          "isCorrect": false
+        },
+        {
+          "content": "Tăng tiến",
+          "isCorrect": true
+        },
+        {
+          "content": "Tương phản",
+          "isCorrect": false
+        },
+        {
+          "content": "Lựa chọn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cặp 'Không những ... mà còn' dùng để bổ sung thêm ý, nâng mức độ cao hơn (tăng tiến)."
+    },
+    {
+      "content": "Thành phần 'Khởi ngữ' trong câu có đặc điểm nhận diện nào?",
+      "options": [
+        {
+          "content": "Luôn đứng cuối câu, kết thúc bằng dấu chấm",
+          "isCorrect": false
+        },
+        {
+          "content": "Đứng trước chủ ngữ, nêu lên đề tài được nói đến trong câu",
+          "isCorrect": true
+        },
+        {
+          "content": "Luôn đi kèm với động từ chỉ hành động",
+          "isCorrect": false
+        },
+        {
+          "content": "Chỉ thời gian hoặc không gian",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ví dụ: 'Về việc học, nó rất chăm chỉ'. 'Về việc học' là khởi ngữ, nêu trước đề tài của câu."
+    },
+    {
+      "content": "Trong câu 'Chao ôi, mùa thu Hà Nội đẹp quá!', từ 'Chao ôi' là thành phần gì?",
+      "options": [
+        {
+          "content": "Thành phần gọi đáp",
+          "isCorrect": false
+        },
+        {
+          "content": "Thành phần phụ chú",
+          "isCorrect": false
+        },
+        {
+          "content": "Thành phần tình thái",
+          "isCorrect": false
+        },
+        {
+          "content": "Thành phần cảm thán",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Thành phần cảm thán được dùng để bộc lộ trực tiếp cảm xúc của người nói (vui, buồn, ngạc nhiên...)."
+    },
+    {
+      "content": "Thành phần Tình thái dùng để làm gì trong câu?",
+      "options": [
+        {
+          "content": "Thể hiện cách nhìn, thái độ đánh giá của người nói đối với sự việc (VD: chắc chắn, có lẽ...)",
+          "isCorrect": true
+        },
+        {
+          "content": "Để duy trì cuộc giao tiếp (VD: vâng, dạ...)",
+          "isCorrect": false
+        },
+        {
+          "content": "Giải thích thêm cho một từ ngữ đứng trước",
+          "isCorrect": false
+        },
+        {
+          "content": "Xác định thời gian xảy ra sự việc",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Các từ như 'chắc hẳn', 'hình như', 'có lẽ', 'chắc chắn' thể hiện độ tin cậy của người nói với thông tin đưa ra."
+    },
+    {
+      "content": "Cặp quan hệ từ 'Sở dĩ ... là vì' biểu thị quan hệ gì?",
+      "options": [
+        {
+          "content": "Kết quả trước - Nguyên nhân sau",
+          "isCorrect": true
+        },
+        {
+          "content": "Nguyên nhân trước - Kết quả sau",
+          "isCorrect": false
+        },
+        {
+          "content": "Điều kiện - Giả thiết",
+          "isCorrect": false
+        },
+        {
+          "content": "Đồng thời xảy ra",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Vế 'Sở dĩ...' nêu kết quả, vế '...là vì' dùng để giải thích nguyên nhân gây ra kết quả đó."
+    },
+    {
+      "content": "Câu 'Lan đi chợ, còn Mẹ nấu cơm.' là loại câu gì?",
+      "options": [
+        {
+          "content": "Câu đơn có nhiều vị ngữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu ghép có quan hệ đồng thời / tiếp nối",
+          "isCorrect": true
+        },
+        {
+          "content": "Câu rút gọn",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu đặc biệt",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Đây là câu ghép gồm 2 vế: 'Lan đi chợ' (C1-V1) và 'Mẹ nấu cơm' (C2-V2), nối với nhau bằng từ 'còn'."
+    },
+    {
+      "content": "Các từ 'Vâng', 'Dạ', 'Thưa', 'Này' thuộc thành phần biệt lập nào?",
+      "options": [
+        {
+          "content": "Tình thái",
+          "isCorrect": false
+        },
+        {
+          "content": "Cảm thán",
+          "isCorrect": false
+        },
+        {
+          "content": "Gọi đáp",
+          "isCorrect": true
+        },
+        {
+          "content": "Phụ chú",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Thành phần gọi đáp dùng để tạo lập hoặc duy trì quan hệ giao tiếp (gọi chú ý hoặc đáp lời)."
+    },
+    {
+      "content": "Câu đặc biệt là câu như thế nào?",
+      "options": [
+        {
+          "content": "Câu bị khuyết mất chủ ngữ do ngữ cảnh",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu có cấu tạo không thể xác định được nòng cốt Chủ ngữ - Vị ngữ",
+          "isCorrect": true
+        },
+        {
+          "content": "Câu có chứa thành phần khởi ngữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu dùng nhiều biện pháp tu từ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ví dụ: 'Mưa rào.' hoặc 'Một đêm mùa xuân.'. Cấu tạo của chúng là một cụm từ, không thể phân định chủ - vị, dùng để xác định thời gian, nơi chốn hoặc bộc lộ cảm xúc."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e2f0e359e803b7cd4344"
+  },
+  "title": "Biện pháp Tu từ Chuyên sâu",
+  "level": 5,
+  "topic": "Văn học và Tu từ học",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Trong câu 'Bàn tay ta làm nên tất cả / Có sức người sỏi đá cũng thành cơm', từ 'Bàn tay' là biện pháp tu từ gì?",
+      "options": [
+        {
+          "content": "Ẩn dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "So sánh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Đây là phép hoán dụ lấy bộ phận (Bàn tay) để gọi toàn thể (Con người / Sức lao động của con người)."
+    },
+    {
+      "content": "Cụm từ 'Giọng nói ngọt ngào' sử dụng biện pháp tu từ nào?",
+      "options": [
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ chuyển đổi cảm giác",
+          "isCorrect": true
+        },
+        {
+          "content": "Chơi chữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói quá",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Giọng nói' nhận biết bằng thính giác, 'ngọt ngào' nhận biết bằng vị giác. Sự chuyển đổi này tạo cảm giác cụ thể, sinh động hơn."
+    },
+    {
+      "content": "Câu ca dao 'Con ruồi đậu mâm xôi bậu / Mâm xôi bậu, con ruồi đậu mâm xôi' sử dụng biện pháp gì?",
+      "options": [
+        {
+          "content": "Chơi chữ (Đồng âm và Đảo trật tự từ)",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói quá",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ phẩm chất",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này lợi dụng sự đồng âm của từ 'đậu' (hành động đứng lại) và 'đậu' (loại hạt nấu xôi), cùng sự đảo ngữ để tạo sự lắt léo thú vị."
+    },
+    {
+      "content": "Trong câu thơ 'Lom khom dưới núi, tiều vài chú / Lác đác bên sông, chợ mấy nhà' có sử dụng biện pháp tu từ nào nổi bật?",
+      "options": [
+        {
+          "content": "Đảo ngữ",
+          "isCorrect": true
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu hỏi tu từ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói giảm nói tránh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Tác giả đảo động từ/tính từ 'Lom khom', 'Lác đác' lên đầu câu để nhấn mạnh sự nhỏ bé, thưa thớt của con người trước thiên nhiên."
+    },
+    {
+      "content": "Câu 'Nhớ nước đau lòng con quốc quốc / Thương nhà mỏi miệng cái gia gia' dùng biện pháp chơi chữ dựa trên hiện tượng nào?",
+      "options": [
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói lái",
+          "isCorrect": false
+        },
+        {
+          "content": "Dùng từ đồng âm (Hán - Việt)",
+          "isCorrect": true
+        },
+        {
+          "content": "Điệp âm đầu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Quốc' tiếng Hán nghĩa là nước, đồng âm với chim cuốc. 'Gia' tiếng Hán là nhà, đồng âm với chim đa đa."
+    },
+    {
+      "content": "Câu hỏi tu từ là câu hỏi nhằm mục đích gì?",
+      "options": [
+        {
+          "content": "Yêu cầu người nghe cung cấp thông tin",
+          "isCorrect": false
+        },
+        {
+          "content": "Giao việc cho người khác",
+          "isCorrect": false
+        },
+        {
+          "content": "Không nhằm mục đích tìm kiếm câu trả lời, mà để bộc lộ cảm xúc, khẳng định ý hoặc gợi suy nghĩ",
+          "isCorrect": true
+        },
+        {
+          "content": "Kết thúc đoạn văn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ví dụ 'Mẹ ơi, con biết đi đâu bây giờ?' không cần mẹ trả lời, mà thể hiện sự bế tắc, đau khổ của nhân vật."
+    },
+    {
+      "content": "Cụm từ 'Nắng giòn tan' trong bài thơ tả cảnh mùa hè là ví dụ cho biện pháp gì?",
+      "options": [
+        {
+          "content": "So sánh",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ chuyển đổi cảm giác",
+          "isCorrect": true
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Điệp từ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nắng (thị giác, xúc giác) được miêu tả bằng tính từ 'giòn tan' (vị giác, thính giác), gợi cái nắng hanh hao, rực rỡ."
+    },
+    {
+      "content": "Câu 'Áo nâu cùng với áo xanh / Nông thôn cùng với thị thành đứng lên' dùng biện pháp hoán dụ. 'Áo nâu', 'áo xanh' chỉ ai?",
+      "options": [
+        {
+          "content": "Người thích mặc màu nâu và màu xanh",
+          "isCorrect": false
+        },
+        {
+          "content": "Trẻ em và người già",
+          "isCorrect": false
+        },
+        {
+          "content": "Nông dân và công nhân",
+          "isCorrect": true
+        },
+        {
+          "content": "Giáo viên và học sinh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Lấy trang phục đặc trưng (áo nâu - nông dân, áo xanh công sở - công nhân) để chỉ tầng lớp người lao động đó."
+    },
+    {
+      "content": "Trong câu 'Vì sao Trái Đất nặng ân tình / Nhắc mãi tên Người: Hồ Chí Minh', chữ 'Trái Đất' dùng biện pháp gì?",
+      "options": [
+        {
+          "content": "Hoán dụ lấy vật chứa đựng để gọi vật bị chứa đựng",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhân hóa toàn bộ",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ hình dáng",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói quá",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Trái Đất' (vật chứa) ở đây hoán dụ cho 'Nhân loại / Con người trên toàn thế giới' (vật bị chứa đựng)."
+    },
+    {
+      "content": "Biện pháp Điệp cấu trúc (Điệp cú pháp) có tác dụng gì lớn nhất?",
+      "options": [
+        {
+          "content": "Làm cho câu thơ ngắn gọn hơn",
+          "isCorrect": false
+        },
+        {
+          "content": "Che giấu đi ý nghĩa thật của câu",
+          "isCorrect": false
+        },
+        {
+          "content": "Tạo nhịp điệu cân xứng, âm hưởng mạnh mẽ và nhấn mạnh ý tưởng",
+          "isCorrect": true
+        },
+        {
+          "content": "Tạo ra tiếng cười",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Lặp lại một cấu trúc ngữ pháp (VD: Người ta đi cấy lấy công / Tôi nay đi cấy còn trông nhiều bề...) tạo ra sự đối xứng, nhịp nhàng và nhấn ý."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e2f0e359e803b7cd4345"
+  },
+  "title": "Từ vựng Hán Việt Hàn Lâm",
+  "level": 5,
+  "topic": "Từ vựng Nâng cao",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Trong từ Hán Việt, 'Thiên', 'Vạn', 'Ức' lần lượt tương đương với các số nào trong toán học thuần Việt?",
+      "options": [
+        {
+          "content": "Mười, Trăm, Nghìn",
+          "isCorrect": false
+        },
+        {
+          "content": "Nghìn, Mười nghìn, Trăm triệu",
+          "isCorrect": true
+        },
+        {
+          "content": "Trăm, Nghìn, Triệu",
+          "isCorrect": false
+        },
+        {
+          "content": "Nghìn, Triệu, Tỷ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Thiên (1.000), Vạn (10.000), Ức (100.000.000 theo hệ đếm cổ)."
+    },
+    {
+      "content": "Từ 'Bất hủ' mang ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Không thể đánh bại",
+          "isCorrect": false
+        },
+        {
+          "content": "Không bao giờ chết, không bao giờ mai một, giá trị tồn tại vĩnh viễn",
+          "isCorrect": true
+        },
+        {
+          "content": "Không thể cứu chữa",
+          "isCorrect": false
+        },
+        {
+          "content": "Không chịu thay đổi",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Bất' (không), 'Hủ' (mục nát). Sự vật bất hủ là sự vật có giá trị to lớn, sống mãi với thời gian (VD: tác phẩm bất hủ)."
+    },
+    {
+      "content": "Từ 'Độc tôn' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Sự cô đơn tột cùng",
+          "isCorrect": false
+        },
+        {
+          "content": "Đứng ở vị trí duy nhất, được tôn sùng cao nhất không ai sánh bằng",
+          "isCorrect": true
+        },
+        {
+          "content": "Con trai trưởng trong dòng họ",
+          "isCorrect": false
+        },
+        {
+          "content": "Người độc thân",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Độc' (một mình/duy nhất), 'Tôn' (tôn kính, tôn trọng). Nghĩa là vị trí cao nhất và duy nhất."
+    },
+    {
+      "content": "Từ 'Kỳ phùng địch thủ' thường dùng để chỉ đối tượng nào?",
+      "options": [
+        {
+          "content": "Kẻ thù không đội trời chung",
+          "isCorrect": false
+        },
+        {
+          "content": "Những kẻ lừa đảo chuyên nghiệp",
+          "isCorrect": false
+        },
+        {
+          "content": "Đối thủ ngang tài, ngang sức gặp nhau",
+          "isCorrect": true
+        },
+        {
+          "content": "Người đồng đội đáng tin cậy",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Kỳ' (cờ), 'phùng' (gặp), 'địch thủ' (người đối kháng). Ý nói những tay cao thủ đánh cờ gặp nhau, mở rộng ra là đối thủ cân sức cân tài."
+    },
+    {
+      "content": "Yếu tố 'Minh' trong từ 'Minh triết', 'Văn minh' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Buổi sáng",
+          "isCorrect": false
+        },
+        {
+          "content": "Bí mật",
+          "isCorrect": false
+        },
+        {
+          "content": "Sáng sủa, sáng suốt, thấu hiểu rõ ràng",
+          "isCorrect": true
+        },
+        {
+          "content": "Dòng sông",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Minh' (明) được ghép từ chữ Nhật (mặt trời) và chữ Nguyệt (mặt trăng), mang nghĩa rực sáng, thông minh, sáng suốt."
+    },
+    {
+      "content": "Từ 'Vô song' (VD: Lực lượng vô song) có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Không có thật",
+          "isCorrect": false
+        },
+        {
+          "content": "Độc nhất vô nhị, không có cái thứ hai sánh bằng",
+          "isCorrect": true
+        },
+        {
+          "content": "Bị mất phương hướng",
+          "isCorrect": false
+        },
+        {
+          "content": "Không giới hạn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Vô' (không có), 'song' (đôi, hai). Vô song là không có đôi, không có cái tương đương để so sánh cùng."
+    },
+    {
+      "content": "Yếu tố 'Ngọc' trong 'Ngọc thể', 'Ngọc diện' trong ngôn ngữ văn chương cổ đại dùng để làm gì?",
+      "options": [
+        {
+          "content": "Để chỉ các loại đá quý",
+          "isCorrect": false
+        },
+        {
+          "content": "Là cách nói tôn xưng, ca ngợi vẻ đẹp quý phái của vua chúa hoặc người đẹp",
+          "isCorrect": true
+        },
+        {
+          "content": "Để chỉ sức khỏe yếu ớt",
+          "isCorrect": false
+        },
+        {
+          "content": "Để chỉ đồ trang sức",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Ngọc' mang nghĩa bóng chỉ sự tôn quý, tinh khiết. 'Ngọc thể' (thân thể vua/người đẹp), 'Ngọc diện' (gương mặt đẹp như ngọc)."
+    },
+    {
+      "content": "Từ Hán Việt 'Hữu nghị' thể hiện tình cảm gì?",
+      "options": [
+        {
+          "content": "Tình yêu đôi lứa",
+          "isCorrect": false
+        },
+        {
+          "content": "Tình đồng chí trong chiến đấu",
+          "isCorrect": false
+        },
+        {
+          "content": "Sự kính trọng với người lớn tuổi",
+          "isCorrect": false
+        },
+        {
+          "content": "Tình bạn bè thân thiện, sự giao hảo tốt đẹp (thường dùng giữa các quốc gia, tổ chức)",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Hữu' (bạn bè), 'nghị' (sự tốt đẹp/hòa thuận). Hữu nghị là sự giao lưu kết bạn hòa bình."
+    },
+    {
+      "content": "Thành ngữ Hán Việt 'Bách chiến bách thắng' mang thông điệp gì?",
+      "options": [
+        {
+          "content": "Trăm trận đánh thì thua mất một nửa",
+          "isCorrect": false
+        },
+        {
+          "content": "Phải đánh hàng trăm trận mới chiến thắng",
+          "isCorrect": false
+        },
+        {
+          "content": "Đánh trăm trận thắng cả trăm, bách chiến bách thắng chỉ sự bách phát bách trúng, luôn luôn thành công",
+          "isCorrect": true
+        },
+        {
+          "content": "Không nên tham lam đánh quá nhiều trận",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Bách' (trăm - số nhiều). Ý nói quân đội có sức mạnh tuyệt đối, đánh đâu thắng đó."
+    },
+    {
+      "content": "Yếu tố 'Tri' trong 'Tri kỷ', 'Tri âm' có nghĩa gốc là gì?",
+      "options": [
+        {
+          "content": "Bỏ đi",
+          "isCorrect": false
+        },
+        {
+          "content": "Khóc lóc",
+          "isCorrect": false
+        },
+        {
+          "content": "Nắm giữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Biết, thấu hiểu",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Tri' (知) là biết, hiểu. 'Tri kỷ' là người hiểu rõ bản thân mình, 'Tri âm' là người hiểu tiếng đàn, tiếng lòng của mình."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e300e359e803b7cd4346"
+  },
+  "title": "Thành ngữ và Tục ngữ Nâng cao",
+  "level": 4,
+  "topic": "Văn hóa dân gian",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Điền từ thích hợp: 'Cháy nhà ra mặt ...'",
+      "options": [
+        {
+          "content": "Mèo",
+          "isCorrect": false
+        },
+        {
+          "content": "Chuột",
+          "isCorrect": true
+        },
+        {
+          "content": "Cáo",
+          "isCorrect": false
+        },
+        {
+          "content": "Chó",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Thành ngữ này chỉ việc khi có biến cố, khó khăn xảy ra thì bản chất thật (thường là xấu xa) của một người mới bị lộ diện."
+    },
+    {
+      "content": "Câu tục ngữ 'Vỏ quýt dày có móng tay ...' điền từ nào ở cuối?",
+      "options": [
+        {
+          "content": "Nhọn",
+          "isCorrect": true
+        },
+        {
+          "content": "Sắc",
+          "isCorrect": false
+        },
+        {
+          "content": "Cứng",
+          "isCorrect": false
+        },
+        {
+          "content": "Dài",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này ý nói người ghê gớm, tài giỏi đến đâu cũng sẽ có người khác cao tay hơn trị được."
+    },
+    {
+      "content": "Thành ngữ nào dùng để chỉ người keo kiệt, bủn xỉn quá mức?",
+      "options": [
+        {
+          "content": "Ném tiền qua cửa sổ",
+          "isCorrect": false
+        },
+        {
+          "content": "Vắt cổ chày ra nước",
+          "isCorrect": true
+        },
+        {
+          "content": "Rút dây động rừng",
+          "isCorrect": false
+        },
+        {
+          "content": "Tham bát bỏ mâm",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Vắt cổ chày ra nước' châm biếm người quá keo kiệt, cố bòn rút đến những thứ không thể vắt ra được."
+    },
+    {
+      "content": "Thành ngữ 'Gắp lửa bỏ bàn ...' chỉ hành động vu khống, hãm hại người khác.",
+      "options": [
+        {
+          "content": "Chân",
+          "isCorrect": false
+        },
+        {
+          "content": "Ghế",
+          "isCorrect": false
+        },
+        {
+          "content": "Tay",
+          "isCorrect": true
+        },
+        {
+          "content": "Thờ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này ám chỉ việc cố tình vu oan giáng họa, gán tội lỗi cho người vô tội."
+    },
+    {
+      "content": "Thành ngữ 'Đàn gảy tai ...' mang ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Nói với người không biết nghe, không chịu hiểu",
+          "isCorrect": true
+        },
+        {
+          "content": "Chơi nhạc cho động vật nghe",
+          "isCorrect": false
+        },
+        {
+          "content": "Khen ngợi người có tài năng âm nhạc",
+          "isCorrect": false
+        },
+        {
+          "content": "Làm việc gì đó vô ích, tốn sức",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trâu không biết thưởng thức âm nhạc, nói lý lẽ với người ngang bướng cũng vô ích như gảy đàn cho trâu nghe."
+    },
+    {
+      "content": "Câu 'Kẻ cắp gặp bà ...' điền từ nào?",
+      "options": [
+        {
+          "content": "Chúa",
+          "isCorrect": false
+        },
+        {
+          "content": "Già",
+          "isCorrect": true
+        },
+        {
+          "content": "Tiên",
+          "isCorrect": false
+        },
+        {
+          "content": "Mụ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Kẻ cắp gặp bà già' chỉ việc người ranh mãnh, xảo quyệt lại đụng phải một người còn ghê gớm, lọc lõi hơn mình."
+    },
+    {
+      "content": "Thành ngữ 'Cáo mượn oai ...' chỉ kẻ dựa dẫm vào thế lực của người khác để dọa dẫm.",
+      "options": [
+        {
+          "content": "Hùm",
+          "isCorrect": true
+        },
+        {
+          "content": "Sói",
+          "isCorrect": false
+        },
+        {
+          "content": "Rồng",
+          "isCorrect": false
+        },
+        {
+          "content": "Gấu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Hùm (hổ) là chúa sơn lâm. Cáo mượn oai hùm chỉ kẻ hèn nhát nhưng mượn danh uy thế người khác để dọa nạt."
+    },
+    {
+      "content": "Hoàn thiện thành ngữ: 'Giậu đổ ... leo'.",
+      "options": [
+        {
+          "content": "Bầu",
+          "isCorrect": false
+        },
+        {
+          "content": "Bí",
+          "isCorrect": false
+        },
+        {
+          "content": "Bìm",
+          "isCorrect": true
+        },
+        {
+          "content": "Mướp",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Giậu đổ bìm leo' ý nói khi một người sa cơ lỡ bước, bị kẻ khác thừa cơ lấn lướt, ức hiếp thêm."
+    },
+    {
+      "content": "Câu tục ngữ 'Chữ tác đánh chữ ...' chỉ sự nhầm lẫn tai hại do thiếu hiểu biết.",
+      "options": [
+        {
+          "content": "Tộ",
+          "isCorrect": true
+        },
+        {
+          "content": "Tài",
+          "isCorrect": false
+        },
+        {
+          "content": "Tướng",
+          "isCorrect": false
+        },
+        {
+          "content": "Tiền",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ Tác (作) và chữ Tộ (祚) trong chữ Hán viết gần giống nhau, dễ bị nhầm. Nghĩa bóng chỉ sự đọc sai, hiểu lầm ngớ ngẩn."
+    },
+    {
+      "content": "Hoàn thiện thành ngữ: 'Khẩu phật tâm ...'.",
+      "options": [
+        {
+          "content": "Ác",
+          "isCorrect": false
+        },
+        {
+          "content": "Ma",
+          "isCorrect": false
+        },
+        {
+          "content": "Xà",
+          "isCorrect": true
+        },
+        {
+          "content": "Quỷ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Khẩu phật tâm xà' chỉ người miệng nói lời từ bi thiện lương nhưng trong lòng lại nham hiểm, độc ác như rắn độc."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e300e359e803b7cd4347"
+  },
+  "title": "Phân loại Câu theo Mục đích nói",
+  "level": 4,
+  "topic": "Ngữ pháp Tiếng Việt",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Câu trần thuật có chức năng chính là gì?",
+      "options": [
+        {
+          "content": "Dùng để hỏi thông tin",
+          "isCorrect": false
+        },
+        {
+          "content": "Dùng để kể, tả, giới thiệu, nhận định",
+          "isCorrect": true
+        },
+        {
+          "content": "Dùng để bộc lộ cảm xúc",
+          "isCorrect": false
+        },
+        {
+          "content": "Dùng để ra lệnh, yêu cầu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu trần thuật (câu kể) là kiểu câu cơ bản nhất, dùng để trình bày một sự việc, thông tin."
+    },
+    {
+      "content": "Câu 'Mẹ ơi, con yêu mẹ nhiều lắm!' thuộc loại câu nào?",
+      "options": [
+        {
+          "content": "Câu nghi vấn",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu cầu khiến",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu cảm thán",
+          "isCorrect": true
+        },
+        {
+          "content": "Câu trần thuật",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này dùng để bộc lộ tình cảm, cảm xúc mãnh liệt nên là câu cảm thán."
+    },
+    {
+      "content": "Câu 'Hãy đóng cửa sổ lại.' là kiểu câu gì?",
+      "options": [
+        {
+          "content": "Câu cầu khiến",
+          "isCorrect": true
+        },
+        {
+          "content": "Câu nghi vấn",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu trần thuật",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu cảm thán",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này có từ 'Hãy' và dùng để ra lệnh, yêu cầu người khác làm một việc, nên là câu cầu khiến."
+    },
+    {
+      "content": "Từ ngữ nào thường KHÔNG xuất hiện trong câu cầu khiến?",
+      "options": [
+        {
+          "content": "Hãy",
+          "isCorrect": false
+        },
+        {
+          "content": "Đừng",
+          "isCorrect": false
+        },
+        {
+          "content": "Chớ",
+          "isCorrect": false
+        },
+        {
+          "content": "Tại sao",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Từ 'Tại sao' là từ để hỏi, thường xuất hiện trong câu nghi vấn, không dùng trong câu cầu khiến."
+    },
+    {
+      "content": "Câu 'Bạn đã làm bài tập về nhà chưa?' thuộc kiểu câu nào?",
+      "options": [
+        {
+          "content": "Câu trần thuật",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu cầu khiến",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu nghi vấn",
+          "isCorrect": true
+        },
+        {
+          "content": "Câu cảm thán",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này dùng để hỏi thông tin người khác chưa biết, kết thúc bằng dấu chấm hỏi, là câu nghi vấn."
+    },
+    {
+      "content": "Dấu câu nào thường đặt ở cuối câu cầu khiến?",
+      "options": [
+        {
+          "content": "Dấu chấm hoặc dấu chấm than",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu phẩy",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu chấm hỏi",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu ngoặc kép",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu cầu khiến thường kết thúc bằng dấu chấm than (!) nếu có ý nhấn mạnh, hoặc dấu chấm (.) trong ngữ điệu nhẹ nhàng."
+    },
+    {
+      "content": "Câu 'Trời hôm nay đẹp quá!' dùng để làm gì?",
+      "options": [
+        {
+          "content": "Để hỏi",
+          "isCorrect": false
+        },
+        {
+          "content": "Để bộc lộ cảm xúc khen ngợi",
+          "isCorrect": true
+        },
+        {
+          "content": "Để yêu cầu ai đó làm gì",
+          "isCorrect": false
+        },
+        {
+          "content": "Để kể một câu chuyện",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Với từ 'quá', câu này là câu cảm thán dùng để bày tỏ sự ngạc nhiên, khen ngợi trước vẻ đẹp của thời tiết."
+    },
+    {
+      "content": "Trong câu 'Bao giờ bạn đi Hà Nội?', từ dùng để hỏi là từ nào?",
+      "options": [
+        {
+          "content": "Bạn",
+          "isCorrect": false
+        },
+        {
+          "content": "Hà Nội",
+          "isCorrect": false
+        },
+        {
+          "content": "Bao giờ",
+          "isCorrect": true
+        },
+        {
+          "content": "Đi",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Bao giờ' là đại từ nghi vấn dùng để hỏi về thời gian."
+    },
+    {
+      "content": "Câu 'Ngày mai, lớp chúng ta sẽ đi cắm trại.' thuộc kiểu câu nào?",
+      "options": [
+        {
+          "content": "Câu trần thuật",
+          "isCorrect": true
+        },
+        {
+          "content": "Câu cảm thán",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu cầu khiến",
+          "isCorrect": false
+        },
+        {
+          "content": "Câu nghi vấn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này chỉ đơn thuần cung cấp một thông tin, giới thiệu về kế hoạch tương lai, nên là câu trần thuật."
+    },
+    {
+      "content": "Từ ngữ nào là dấu hiệu nhận biết của câu cảm thán?",
+      "options": [
+        {
+          "content": "Ai, gì, nào, sao",
+          "isCorrect": false
+        },
+        {
+          "content": "Hãy, đừng, chớ, đi",
+          "isCorrect": false
+        },
+        {
+          "content": "Ôi, than ôi, hỡi ơi, quá, lắm",
+          "isCorrect": true
+        },
+        {
+          "content": "Là, có, sẽ, đang",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Các thán từ như ôi, than ôi, chao ôi... hoặc các từ chỉ mức độ cao như quá, lắm, tuyệt... là đặc trưng của câu cảm thán."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e300e359e803b7cd4348"
+  },
+  "title": "Từ Đồng âm và Từ Nhiều nghĩa",
+  "level": 4,
+  "topic": "Từ vựng Nâng cao",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Từ đồng âm là những từ có đặc điểm gì?",
+      "options": [
+        {
+          "content": "Viết và đọc giống nhau nhưng nghĩa hoàn toàn khác nhau, không liên quan đến nhau",
+          "isCorrect": true
+        },
+        {
+          "content": "Có nghĩa giống nhau nhưng cách đọc khác nhau",
+          "isCorrect": false
+        },
+        {
+          "content": "Có 1 nghĩa gốc và nhiều nghĩa chuyển",
+          "isCorrect": false
+        },
+        {
+          "content": "Viết sai chính tả",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Từ đồng âm là hiện tượng trùng nhau về âm thanh (cách đọc, cách viết) nhưng ý nghĩa khác xa nhau."
+    },
+    {
+      "content": "Từ nhiều nghĩa là những từ có đặc điểm gì?",
+      "options": [
+        {
+          "content": "Đọc giống nhau nhưng nghĩa không liên quan gì",
+          "isCorrect": false
+        },
+        {
+          "content": "Một từ có 1 nghĩa gốc và nhiều nghĩa chuyển, các nghĩa này có mối liên hệ với nhau",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhiều từ dùng chung để gọi 1 sự vật",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ trái nghĩa với nhau",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Từ nhiều nghĩa bao giờ cũng có sự liên hệ ý nghĩa với nhau dựa trên một đặc điểm chung."
+    },
+    {
+      "content": "Hai từ 'Bàn' trong 'Cái bàn' và 'Bàn bạc' là hiện tượng gì?",
+      "options": [
+        {
+          "content": "Từ đồng nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ trái nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ đồng âm",
+          "isCorrect": true
+        },
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Bàn' (đồ vật) và 'Bàn' (thảo luận) có nghĩa hoàn toàn khác biệt, không có nét nghĩa chung."
+    },
+    {
+      "content": "Từ 'Đường' trong 'Đường đi' và 'Đường cát' là hiện tượng gì?",
+      "options": [
+        {
+          "content": "Từ đồng âm",
+          "isCorrect": true
+        },
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ đồng nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ láy",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Một bên là lối đi, một bên là thực phẩm có vị ngọt. Chúng trùng âm nhưng khác nghĩa hoàn toàn."
+    },
+    {
+      "content": "Từ 'Mắt' trong 'Đôi mắt' và 'Mắt dứa' là hiện tượng gì?",
+      "options": [
+        {
+          "content": "Từ đồng âm",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": true
+        },
+        {
+          "content": "Từ đồng nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ láy",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Mắt dứa' là nghĩa chuyển, được gọi tên dựa trên sự giống nhau về hình dáng với 'đôi mắt' (nghĩa gốc)."
+    },
+    {
+      "content": "Từ 'Cổ' trong 'Cổ tay' và 'Cổ chai' là hiện tượng gì?",
+      "options": [
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": true
+        },
+        {
+          "content": "Từ đồng âm",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ đồng nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ trái nghĩa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Cổ' là bộ phận thuôn nhỏ nối giữa phần đầu và thân. Đây là sự chuyển nghĩa dựa trên hình dáng."
+    },
+    {
+      "content": "Từ 'Sao' trong 'Ngôi sao' và 'Sao chép' là hiện tượng gì?",
+      "options": [
+        {
+          "content": "Từ đồng âm",
+          "isCorrect": true
+        },
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ ghép",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ đồng nghĩa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Sao' (thiên thể) và 'Sao' (chép lại) không có bất kì sự liên hệ nào về ý nghĩa."
+    },
+    {
+      "content": "Từ 'Chân' trong câu nào dưới đây mang NGHĨA GỐC?",
+      "options": [
+        {
+          "content": "Chân núi",
+          "isCorrect": false
+        },
+        {
+          "content": "Chân bàn",
+          "isCorrect": false
+        },
+        {
+          "content": "Đau chân",
+          "isCorrect": true
+        },
+        {
+          "content": "Chân trời",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nghĩa gốc của 'chân' là bộ phận dưới cùng của cơ thể người hoặc động vật, dùng để đi lại."
+    },
+    {
+      "content": "Từ 'Lá' trong 'Lá cây' và 'Lá thư' là từ nhiều nghĩa. Vậy sự chuyển nghĩa này dựa trên cơ sở nào?",
+      "options": [
+        {
+          "content": "Giống nhau về màu sắc",
+          "isCorrect": false
+        },
+        {
+          "content": "Giống nhau về hình dáng (mỏng, dẹt)",
+          "isCorrect": true
+        },
+        {
+          "content": "Giống nhau về chức năng",
+          "isCorrect": false
+        },
+        {
+          "content": "Giống nhau về kích thước",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cả lá cây và lá thư (hay lá cờ, lá bài) đều có điểm chung là mỏng, phẳng, dẹt."
+    },
+    {
+      "content": "Câu thành ngữ 'Con ngựa đá con ngựa đá' sử dụng biện pháp chơi chữ dựa trên hiện tượng nào?",
+      "options": [
+        {
+          "content": "Từ đồng âm",
+          "isCorrect": true
+        },
+        {
+          "content": "Từ nhiều nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ đồng nghĩa",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ trái nghĩa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ 'đá' thứ nhất là động từ (hành động vung chân), chữ 'đá' thứ hai là danh từ (khoáng vật). Đây là từ đồng âm."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e300e359e803b7cd4349"
+  },
+  "title": "Từ Hán Việt Nâng cao",
+  "level": 4,
+  "topic": "Từ vựng Nâng cao",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Yếu tố 'Mộc' trong cụm từ 'Thảo mộc' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Nước",
+          "isCorrect": false
+        },
+        {
+          "content": "Gỗ / Cây",
+          "isCorrect": true
+        },
+        {
+          "content": "Lửa",
+          "isCorrect": false
+        },
+        {
+          "content": "Đất",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Mộc' (木) trong Hán Việt có nghĩa là cây cối hoặc gỗ."
+    },
+    {
+      "content": "Yếu tố 'Thạch' trong 'Thạch nhũ', 'Đá thạch anh' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Đá",
+          "isCorrect": true
+        },
+        {
+          "content": "Vàng",
+          "isCorrect": false
+        },
+        {
+          "content": "Gió",
+          "isCorrect": false
+        },
+        {
+          "content": "Băng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Thạch' (石) mang ý nghĩa là hòn đá."
+    },
+    {
+      "content": "Từ 'Bạch' trong các từ 'Bạch mã', 'Bạch phát' chỉ màu sắc gì?",
+      "options": [
+        {
+          "content": "Đen",
+          "isCorrect": false
+        },
+        {
+          "content": "Đỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Trắng",
+          "isCorrect": true
+        },
+        {
+          "content": "Xanh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Bạch' (白) trong Hán Việt là màu trắng. Bạch mã là ngựa trắng."
+    },
+    {
+      "content": "Từ 'Thanh' trong 'Thanh thiên' (Bao Thanh Thiên) chỉ màu sắc gì?",
+      "options": [
+        {
+          "content": "Màu xanh",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu đỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu tím",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu vàng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Thanh' (青) là màu xanh. 'Thanh thiên' là bầu trời xanh, ngụ ý sự trong sạch, công minh."
+    },
+    {
+      "content": "Yếu tố 'Tiền' trong từ 'Tiền bối' mang nghĩa là gì?",
+      "options": [
+        {
+          "content": "Đồng tiền",
+          "isCorrect": false
+        },
+        {
+          "content": "Đi ra",
+          "isCorrect": false
+        },
+        {
+          "content": "Phía trước / Trước",
+          "isCorrect": true
+        },
+        {
+          "content": "Bên trong",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Tiền' (前) có nghĩa là phía trước, người đi trước (Thế hệ trước)."
+    },
+    {
+      "content": "Yếu tố 'Hậu' trong từ 'Hậu quả', 'Hậu duệ' mang nghĩa là gì?",
+      "options": [
+        {
+          "content": "To lớn",
+          "isCorrect": false
+        },
+        {
+          "content": "Xấu xí",
+          "isCorrect": false
+        },
+        {
+          "content": "Phía sau / Sau",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhanh chóng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Hậu' (后) là phía sau, đến sau. Hậu quả là kết quả đến sau hành động."
+    },
+    {
+      "content": "Trong câu 'Thượng lộ bình an', yếu tố 'Thượng' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Trời",
+          "isCorrect": false
+        },
+        {
+          "content": "Lên (Lên đường) / Trái ngược với Hạ (Dưới)",
+          "isCorrect": true
+        },
+        {
+          "content": "Ông chủ",
+          "isCorrect": false
+        },
+        {
+          "content": "Chậm",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Thượng lộ' tức là bước lên đường đi. Lời chúc 'Thượng lộ bình an' nghĩa là chúc lên đường gặp nhiều may mắn, an toàn."
+    },
+    {
+      "content": "Từ 'Hồng' trong 'Hồng ngọc', 'Hồng kỳ' chỉ màu gì?",
+      "options": [
+        {
+          "content": "Màu đỏ",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu xanh",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu cam",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu tím",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Hồng' (红) trong Hán Việt có nghĩa là màu đỏ thắm."
+    },
+    {
+      "content": "Yếu tố 'Tâm' trong cụm 'Tâm hồn', 'Hảo tâm' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Cái đầu",
+          "isCorrect": false
+        },
+        {
+          "content": "Máu",
+          "isCorrect": false
+        },
+        {
+          "content": "Trái tim / Tấm lòng",
+          "isCorrect": true
+        },
+        {
+          "content": "Con mắt",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Tâm' (心) mang nghĩa bóng là lòng dạ, tư tưởng, tình cảm của con người; nghĩa đen là trái tim."
+    },
+    {
+      "content": "Từ Hán Việt 'Vương' mang nghĩa là gì?",
+      "options": [
+        {
+          "content": "Nông dân",
+          "isCorrect": false
+        },
+        {
+          "content": "Kẻ cướp",
+          "isCorrect": false
+        },
+        {
+          "content": "Vua / Người đứng đầu",
+          "isCorrect": true
+        },
+        {
+          "content": "Thầy giáo",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Vương' (王) là vua, người trị vì một nước hoặc đứng đầu một loài (ví dụ: Chúa tể sơn lâm gọi là Hổ vương)."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e300e359e803b7cd434a"
+  },
+  "title": "Trạng ngữ trong Câu",
+  "level": 4,
+  "topic": "Ngữ pháp Tiếng Việt",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Trạng ngữ đóng vai trò gì trong câu?",
+      "options": [
+        {
+          "content": "Thành phần chính, bắt buộc phải có",
+          "isCorrect": false
+        },
+        {
+          "content": "Thành phần phụ, thêm vào để bổ sung ý nghĩa cho câu",
+          "isCorrect": true
+        },
+        {
+          "content": "Là từ nối các câu lại với nhau",
+          "isCorrect": false
+        },
+        {
+          "content": "Chỉ dùng để bộc lộ cảm xúc",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trạng ngữ là thành phần phụ của câu, làm rõ thời gian, địa điểm, nguyên nhân, mục đích... của sự việc."
+    },
+    {
+      "content": "Trạng ngữ thường được ngăn cách với Chủ ngữ và Vị ngữ bởi dấu câu nào?",
+      "options": [
+        {
+          "content": "Dấu chấm",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu hai chấm",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu phẩy",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu ngoặc kép",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Khi viết, trạng ngữ thường được tách biệt với nòng cốt câu (Chủ - Vị) bằng dấu phẩy."
+    },
+    {
+      "content": "Trạng ngữ chỉ thời gian dùng để trả lời cho câu hỏi nào?",
+      "options": [
+        {
+          "content": "Ở đâu?",
+          "isCorrect": false
+        },
+        {
+          "content": "Vì sao?",
+          "isCorrect": false
+        },
+        {
+          "content": "Bao giờ? Khi nào? Mấy giờ?",
+          "isCorrect": true
+        },
+        {
+          "content": "Bằng gì?",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trạng ngữ chỉ thời gian xác định thời điểm xảy ra sự việc trong câu."
+    },
+    {
+      "content": "Trong câu 'Sáng nay, trời mưa rất to.', đâu là trạng ngữ?",
+      "options": [
+        {
+          "content": "Trời",
+          "isCorrect": false
+        },
+        {
+          "content": "Sáng nay",
+          "isCorrect": true
+        },
+        {
+          "content": "Mưa",
+          "isCorrect": false
+        },
+        {
+          "content": "Rất to",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Sáng nay' là trạng ngữ chỉ thời gian, đứng ở đầu câu."
+    },
+    {
+      "content": "Trạng ngữ chỉ nơi chốn dùng để trả lời cho câu hỏi nào?",
+      "options": [
+        {
+          "content": "Ở đâu?",
+          "isCorrect": true
+        },
+        {
+          "content": "Như thế nào?",
+          "isCorrect": false
+        },
+        {
+          "content": "Lúc nào?",
+          "isCorrect": false
+        },
+        {
+          "content": "Để làm gì?",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trạng ngữ chỉ nơi chốn xác định không gian, địa điểm diễn ra sự việc."
+    },
+    {
+      "content": "Trong câu 'Vì lười học, Nam bị điểm kém.', cụm 'Vì lười học' là loại trạng ngữ gì?",
+      "options": [
+        {
+          "content": "Trạng ngữ chỉ mục đích",
+          "isCorrect": false
+        },
+        {
+          "content": "Trạng ngữ chỉ nguyên nhân",
+          "isCorrect": true
+        },
+        {
+          "content": "Trạng ngữ chỉ phương tiện",
+          "isCorrect": false
+        },
+        {
+          "content": "Trạng ngữ chỉ thời gian",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cụm từ bắt đầu bằng 'Vì...' giải thích lý do dẫn đến sự việc 'Nam bị điểm kém', trả lời cho câu hỏi 'Tại sao?'."
+    },
+    {
+      "content": "Trong câu 'Để bảo vệ môi trường, chúng ta hãy trồng thêm cây xanh.', cụm 'Để bảo vệ môi trường' là trạng ngữ gì?",
+      "options": [
+        {
+          "content": "Trạng ngữ chỉ mục đích",
+          "isCorrect": true
+        },
+        {
+          "content": "Trạng ngữ chỉ nguyên nhân",
+          "isCorrect": false
+        },
+        {
+          "content": "Trạng ngữ chỉ nơi chốn",
+          "isCorrect": false
+        },
+        {
+          "content": "Trạng ngữ chỉ phương tiện",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cụm từ bắt đầu bằng 'Để...' nêu lên mục đích của hành động 'trồng cây', trả lời cho câu hỏi 'Để làm gì?'."
+    },
+    {
+      "content": "Trạng ngữ chỉ phương tiện thường bắt đầu bằng từ nào?",
+      "options": [
+        {
+          "content": "Nhờ, bởi, tại",
+          "isCorrect": false
+        },
+        {
+          "content": "Bằng, với",
+          "isCorrect": true
+        },
+        {
+          "content": "Để, nhằm",
+          "isCorrect": false
+        },
+        {
+          "content": "Trên, dưới, trong, ngoài",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ví dụ: 'Bằng chiếc nạng gỗ, anh ấy vẫn leo lên được đỉnh núi.' ('Bằng...' là trạng ngữ chỉ phương tiện)."
+    },
+    {
+      "content": "Vị trí của trạng ngữ trong câu có thể nằm ở đâu?",
+      "options": [
+        {
+          "content": "Chỉ được nằm ở đầu câu",
+          "isCorrect": false
+        },
+        {
+          "content": "Chỉ được nằm ở cuối câu",
+          "isCorrect": false
+        },
+        {
+          "content": "Có thể linh hoạt nằm ở đầu câu, giữa câu hoặc cuối câu",
+          "isCorrect": true
+        },
+        {
+          "content": "Bắt buộc phải nằm giữa chủ ngữ và vị ngữ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trạng ngữ có vị trí rất linh động. Ví dụ: Sáng nay tôi đi học / Tôi sáng nay đi học / Tôi đi học sáng nay."
+    },
+    {
+      "content": "Xác định trạng ngữ trong câu: 'Ngoài vườn, những bông hoa hồng đang đua nhau nở rực rỡ.'",
+      "options": [
+        {
+          "content": "Ngoài vườn",
+          "isCorrect": true
+        },
+        {
+          "content": "Những bông hoa hồng",
+          "isCorrect": false
+        },
+        {
+          "content": "Đang đua nhau nở",
+          "isCorrect": false
+        },
+        {
+          "content": "Rực rỡ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Ngoài vườn' trả lời cho câu hỏi 'Ở đâu?', đóng vai trò trạng ngữ chỉ nơi chốn."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e320e359e803b7cd434b"
+  },
+  "title": "Từ Láy và Từ Ghép",
+  "level": 3,
+  "topic": "Cấu tạo từ",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Từ nào dưới đây là TỪ LÁY?",
+      "options": [
+        {
+          "content": "Quần áo",
+          "isCorrect": false
+        },
+        {
+          "content": "Lung linh",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhà cửa",
+          "isCorrect": false
+        },
+        {
+          "content": "Bàn ghế",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Lung linh' là từ láy phụ âm đầu (chữ l), hai tiếng lặp lại âm đầu để tạo sự gợi hình."
+    },
+    {
+      "content": "Từ nào dưới đây là TỪ GHÉP?",
+      "options": [
+        {
+          "content": "Rực rỡ",
+          "isCorrect": false
+        },
+        {
+          "content": "Xinh xắn",
+          "isCorrect": false
+        },
+        {
+          "content": "Sách vở",
+          "isCorrect": true
+        },
+        {
+          "content": "Lấp lánh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Sách' và 'vở' đều là những tiếng có nghĩa độc lập, khi ghép lại tạo thành từ ghép."
+    },
+    {
+      "content": "Trong các từ sau, từ nào KHÔNG PHẢI là từ láy?",
+      "options": [
+        {
+          "content": "Tươi tốt",
+          "isCorrect": true
+        },
+        {
+          "content": "Mát mẻ",
+          "isCorrect": false
+        },
+        {
+          "content": "Lạnh lẽo",
+          "isCorrect": false
+        },
+        {
+          "content": "Tròn trĩnh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Tươi tốt' là từ ghép vì cả hai tiếng 'tươi' và 'tốt' đều có nghĩa rõ ràng."
+    },
+    {
+      "content": "Từ 'Đo đỏ' thuộc loại từ láy nào?",
+      "options": [
+        {
+          "content": "Láy toàn bộ",
+          "isCorrect": true
+        },
+        {
+          "content": "Láy phụ âm đầu",
+          "isCorrect": false
+        },
+        {
+          "content": "Láy vần",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ ghép",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Đo đỏ' là dạng láy toàn bộ (tiếng trước lặp lại gần như hoàn toàn tiếng sau nhưng có biến đổi thanh điệu)."
+    },
+    {
+      "content": "Từ nào là từ ghép phân loại (chính phụ)?",
+      "options": [
+        {
+          "content": "Xe đạp",
+          "isCorrect": true
+        },
+        {
+          "content": "Chăn màn",
+          "isCorrect": false
+        },
+        {
+          "content": "Ăn uống",
+          "isCorrect": false
+        },
+        {
+          "content": "Học hành",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Xe đạp' có tiếng chính là 'xe', tiếng phụ 'đạp' phân loại đây là loại xe dùng lực đạp."
+    },
+    {
+      "content": "Từ 'Lao xao' miêu tả âm thanh gì?",
+      "options": [
+        {
+          "content": "Tiếng sấm sét",
+          "isCorrect": false
+        },
+        {
+          "content": "Tiếng gió thổi lá cây hoặc tiếng người nói chuyện nhỏ",
+          "isCorrect": true
+        },
+        {
+          "content": "Tiếng mưa rơi nặng hạt",
+          "isCorrect": false
+        },
+        {
+          "content": "Tiếng xe cộ ngoài đường",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Lao xao' là từ láy tượng thanh, thường tả âm thanh nhỏ, rộn lên xen lẫn vào nhau."
+    },
+    {
+      "content": "Từ nào sau đây là TỪ GHÉP tổng hợp (đẳng lập)?",
+      "options": [
+        {
+          "content": "Hoa hồng",
+          "isCorrect": false
+        },
+        {
+          "content": "Máy bay",
+          "isCorrect": false
+        },
+        {
+          "content": "Ruột bút",
+          "isCorrect": false
+        },
+        {
+          "content": "Giày dép",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Giày' và 'dép' bình đẳng về mặt ngữ pháp, gộp lại mang ý nghĩa chỉ chung các loại đồ đi ở chân."
+    },
+    {
+      "content": "Từ láy 'Lưa thưa' thường dùng để miêu tả cái gì?",
+      "options": [
+        {
+          "content": "Màu sắc",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùi vị",
+          "isCorrect": false
+        },
+        {
+          "content": "Mật độ ít, rải rác",
+          "isCorrect": true
+        },
+        {
+          "content": "Âm thanh to",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Lưa thưa' miêu tả sự vật phân bố không đều, chỗ có chỗ không và thưa thớt."
+    },
+    {
+      "content": "Trong câu 'Cô ấy có dáng người mảnh mai', từ 'mảnh mai' là loại từ gì?",
+      "options": [
+        {
+          "content": "Từ ghép",
+          "isCorrect": false
+        },
+        {
+          "content": "Từ láy",
+          "isCorrect": true
+        },
+        {
+          "content": "Đại từ",
+          "isCorrect": false
+        },
+        {
+          "content": "Danh từ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Mảnh mai' là từ láy phụ âm đầu (chữ m), gợi tả vẻ thon thả, nhỏ nhắn."
+    },
+    {
+      "content": "Từ nào dưới đây là từ láy VẦN?",
+      "options": [
+        {
+          "content": "Lấp lánh",
+          "isCorrect": false
+        },
+        {
+          "content": "Lưa thưa",
+          "isCorrect": false
+        },
+        {
+          "content": "Lao đao",
+          "isCorrect": false
+        },
+        {
+          "content": "Bồi hồi",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Bồi hồi' lặp lại phần vần 'ôi', còn phụ âm đầu khác nhau (b và h)."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e320e359e803b7cd434c"
+  },
+  "title": "Biện pháp Tu từ",
+  "level": 3,
+  "topic": "Ngữ pháp và Văn học",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Câu thơ 'Trẻ em như búp trên cành' sử dụng biện pháp tu từ nào?",
+      "options": [
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "So sánh",
+          "isCorrect": true
+        },
+        {
+          "content": "Ẩn dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu thơ sử dụng từ 'như' để đối chiếu 'trẻ em' với 'búp trên cành', đây là phép so sánh."
+    },
+    {
+      "content": "Biện pháp gọi hoặc tả con vật, cây cối bằng những từ ngữ vốn dùng cho con người gọi là gì?",
+      "options": [
+        {
+          "content": "Nhân hóa",
+          "isCorrect": true
+        },
+        {
+          "content": "So sánh",
+          "isCorrect": false
+        },
+        {
+          "content": "Điệp ngữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói quá",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nhân hóa là biến những vật không phải người mang đặc điểm, tính cách giống như người."
+    },
+    {
+      "content": "Câu 'Ông mặt trời mặc áo lửa gắt gỏng chiếu tia nắng xuống' dùng biện pháp gì?",
+      "options": [
+        {
+          "content": "Nhân hóa",
+          "isCorrect": true
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Chơi chữ",
+          "isCorrect": false
+        },
+        {
+          "content": "So sánh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Mặt trời được gọi bằng 'Ông', có hành động 'mặc áo' và tính cách 'gắt gỏng' như con người."
+    },
+    {
+      "content": "Trong câu 'Mặt trời của bắp thì nằm trên đồi / Mặt trời của mẹ, em nằm trên lưng', cụm 'Mặt trời của mẹ' sử dụng phép tu từ gì?",
+      "options": [
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói giảm nói tránh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Mặt trời của mẹ' là ẩn dụ chỉ đứa con, mang ý nghĩa đứa con là nguồn sống, ánh sáng của mẹ."
+    },
+    {
+      "content": "Câu 'Đẹp như tiên' là ví dụ cho biện pháp tu từ nào?",
+      "options": [
+        {
+          "content": "So sánh",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "Điệp từ",
+          "isCorrect": false
+        },
+        {
+          "content": "Ẩn dụ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Sử dụng từ 'như' để ví vẻ đẹp của một người với vẻ đẹp của các vị tiên."
+    },
+    {
+      "content": "Biện pháp lặp lại từ ngữ để nhấn mạnh ý, gợi cảm xúc gọi là gì?",
+      "options": [
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói quá",
+          "isCorrect": false
+        },
+        {
+          "content": "Điệp ngữ",
+          "isCorrect": true
+        },
+        {
+          "content": "So sánh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Điệp ngữ (hoặc điệp từ) là việc nhắc lại một từ, cụm từ nhiều lần để tạo nhịp điệu và nhấn mạnh."
+    },
+    {
+      "content": "Câu 'Bác đã đi rồi sao Bác ơi' sử dụng biện pháp tu từ nào để tránh cảm giác đau buồn?",
+      "options": [
+        {
+          "content": "Nói quá",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói giảm nói tránh",
+          "isCorrect": true
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Từ 'đi' được dùng để thay thế cho từ 'mất' hoặc 'chết', giúp giảm đi sự bi thương."
+    },
+    {
+      "content": "Câu 'Lỗ mũi mười tám gánh lông / Chồng yêu chồng bảo râu rồng trời cho' dùng phép tu từ gì?",
+      "options": [
+        {
+          "content": "Nói quá (Phóng đại)",
+          "isCorrect": true
+        },
+        {
+          "content": "Nói giảm nói tránh",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "Hoán dụ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Không ai có lỗ mũi chứa được 'mười tám gánh lông', đây là cách nói phóng đại để gây cười."
+    },
+    {
+      "content": "Đâu là từ dùng để nhận biết phép SO SÁNH trong câu?",
+      "options": [
+        {
+          "content": "Là, như, tựa như",
+          "isCorrect": true
+        },
+        {
+          "content": "Và, với, cùng",
+          "isCorrect": false
+        },
+        {
+          "content": "Hoặc, hay là",
+          "isCorrect": false
+        },
+        {
+          "content": "Tại vì, cho nên",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Các từ 'như', 'là', 'tựa', 'giống như' thường đóng vai trò là từ nối trong phép so sánh."
+    },
+    {
+      "content": "Câu 'Áo chàm đưa buổi phân ly' dùng hình ảnh 'áo chàm' để chỉ những người dân miền núi. Đây là biện pháp gì?",
+      "options": [
+        {
+          "content": "Hoán dụ",
+          "isCorrect": true
+        },
+        {
+          "content": "Ẩn dụ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhân hóa",
+          "isCorrect": false
+        },
+        {
+          "content": "So sánh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dùng trang phục đặc trưng (áo chàm) để gọi thay thế cho người mặc nó (người dân Việt Bắc) là phép hoán dụ."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e320e359e803b7cd434d"
+  },
+  "title": "Sử dụng Dấu Câu Tiếng Việt",
+  "level": 3,
+  "topic": "Ngữ pháp và Văn học",
+  "timer": 15,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Dấu câu nào dùng để kết thúc một câu trần thuật (câu kể)?",
+      "options": [
+        {
+          "content": "Dấu chấm (.)",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu phẩy (,)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu hỏi chấm (?)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu chấm than (!)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dấu chấm dùng để báo hiệu một câu kể đã cung cấp trọn vẹn thông tin."
+    },
+    {
+      "content": "Dấu câu nào có chức năng ngăn cách các bộ phận cùng chức vụ trong câu (VD: các chủ ngữ, các vị ngữ)?",
+      "options": [
+        {
+          "content": "Dấu phẩy (,)",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu hai chấm (:)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu chấm phẩy (;)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu gạch ngang (-)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dấu phẩy thường dùng để liệt kê hoặc ngăn cách các thành phần đồng chức năng."
+    },
+    {
+      "content": "Dấu nào dùng để đánh dấu phần trích dẫn trực tiếp lời nói của nhân vật?",
+      "options": [
+        {
+          "content": "Dấu ngoặc kép (\"\")",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu phẩy (,)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu ngoặc đơn ()",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu chấm hỏi (?)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Lời nói trực tiếp hoặc một câu trích dẫn nguyên văn luôn được đặt trong dấu ngoặc kép."
+    },
+    {
+      "content": "Để bộc lộ cảm xúc mạnh (vui, buồn, tức giận, ngạc nhiên), ta thường dùng dấu câu nào ở cuối câu?",
+      "options": [
+        {
+          "content": "Dấu chấm than (!)",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu chấm (.)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu phẩy (,)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu hai chấm (:)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dấu chấm than (chấm cảm) dùng cho câu cảm thán hoặc câu cầu khiến."
+    },
+    {
+      "content": "Dấu câu nào thường đứng trước dấu ngoặc kép hoặc báo hiệu phần giải thích liệt kê?",
+      "options": [
+        {
+          "content": "Dấu ngoặc đơn ()",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu hai chấm (:)",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu chấm than (!)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu gạch ngang (-)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dấu hai chấm dùng để báo hiệu lời dẫn trực tiếp hoặc bắt đầu một phần liệt kê chi tiết."
+    },
+    {
+      "content": "Dấu gạch ngang (-) ở đầu dòng thường có tác dụng gì?",
+      "options": [
+        {
+          "content": "Kết thúc câu",
+          "isCorrect": false
+        },
+        {
+          "content": "Đánh dấu chỗ bắt đầu lời nói của nhân vật trong đoạn đối thoại",
+          "isCorrect": true
+        },
+        {
+          "content": "Thay thế dấu chấm",
+          "isCorrect": false
+        },
+        {
+          "content": "Đánh dấu câu hỏi",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trong văn bản, dấu gạch đầu dòng dùng để liệt kê hoặc đánh dấu lời thoại trực tiếp của các nhân vật."
+    },
+    {
+      "content": "Trong câu: 'Ôi, phong cảnh ở đây đẹp quá', dấu phẩy có tác dụng gì?",
+      "options": [
+        {
+          "content": "Ngăn cách trạng ngữ với chủ ngữ",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngăn cách từ ngữ cảm thán với nòng cốt câu",
+          "isCorrect": true
+        },
+        {
+          "content": "Ngăn cách các vế trong câu ghép",
+          "isCorrect": false
+        },
+        {
+          "content": "Kết thúc câu hỏi",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Từ 'Ôi' là thán từ bộc lộ cảm xúc, dấu phẩy dùng để tách nó ra khỏi thành phần chính của câu."
+    },
+    {
+      "content": "Dấu ngoặc đơn () dùng để làm gì trong câu?",
+      "options": [
+        {
+          "content": "Đánh dấu phần chú thích, giải thích thêm",
+          "isCorrect": true
+        },
+        {
+          "content": "Kết thúc câu",
+          "isCorrect": false
+        },
+        {
+          "content": "Đánh dấu câu hỏi",
+          "isCorrect": false
+        },
+        {
+          "content": "Bắt đầu đoạn văn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Phần nằm trong dấu ngoặc đơn thường là thông tin bổ sung, giải nghĩa rõ hơn cho từ ngữ đứng trước nó."
+    },
+    {
+      "content": "Nếu một câu dùng để hỏi thông tin người khác, cuối câu bắt buộc phải có dấu gì?",
+      "options": [
+        {
+          "content": "Dấu chấm than (!)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu chấm (.)",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu chấm hỏi (?)",
+          "isCorrect": true
+        },
+        {
+          "content": "Dấu chấm lửng (...)",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu nghi vấn (câu hỏi) luôn luôn kết thúc bằng dấu chấm hỏi."
+    },
+    {
+      "content": "Dấu chấm lửng (...) thể hiện ý nghĩa gì?",
+      "options": [
+        {
+          "content": "Kết thúc câu khẳng định hoàn toàn",
+          "isCorrect": false
+        },
+        {
+          "content": "Lời nói bị đứt quãng hoặc ý liệt kê chưa hết",
+          "isCorrect": true
+        },
+        {
+          "content": "Bắt đầu lời nói trực tiếp",
+          "isCorrect": false
+        },
+        {
+          "content": "Chỉ cảm xúc vui vẻ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dấu ba chấm (chấm lửng) dùng để chỉ ra rằng lời nói bị ngập ngừng hoặc còn nhiều sự vật chưa được liệt kê ra hết."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e320e359e803b7cd434e"
+  },
+  "title": "Thành ngữ và Tục ngữ Chuyên sâu",
+  "level": 3,
+  "topic": "Văn hóa dân gian",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Điền từ thích hợp vào câu tục ngữ: 'Có công mài sắt, có ngày nên ...'",
+      "options": [
+        {
+          "content": "Kiếm",
+          "isCorrect": false
+        },
+        {
+          "content": "Dao",
+          "isCorrect": false
+        },
+        {
+          "content": "Kim",
+          "isCorrect": true
+        },
+        {
+          "content": "Thép",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu tục ngữ khuyên răn con người phải kiên trì, nhẫn nại thì việc khó đến đâu cũng sẽ thành công."
+    },
+    {
+      "content": "Thành ngữ 'Ếch ngồi đáy giếng' chỉ kiểu người như thế nào?",
+      "options": [
+        {
+          "content": "Người tài giỏi, biết mọi thứ",
+          "isCorrect": false
+        },
+        {
+          "content": "Người có hiểu biết hạn hẹp nhưng lại hay kiêu ngạo",
+          "isCorrect": true
+        },
+        {
+          "content": "Người nghèo khổ",
+          "isCorrect": false
+        },
+        {
+          "content": "Người thích đi du lịch",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Con ếch ở trong giếng tưởng bầu trời chỉ bằng cái vung. Ám chỉ sự thiếu hiểu biết nhưng huênh hoang."
+    },
+    {
+      "content": "Câu ca dao 'Gần mực thì đen, gần đèn thì...' khuyên chúng ta điều gì?",
+      "options": [
+        {
+          "content": "Tối",
+          "isCorrect": false
+        },
+        {
+          "content": "Sáng",
+          "isCorrect": true
+        },
+        {
+          "content": "Đỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Trắng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này khuyên ta nên chọn môi trường tốt, bạn bè tốt để chơi vì môi trường sẽ ảnh hưởng trực tiếp đến tính cách."
+    },
+    {
+      "content": "Điền từ: 'Thuận vợ thuận chồng, tát ... Đông cũng cạn'.",
+      "options": [
+        {
+          "content": "Biển",
+          "isCorrect": true
+        },
+        {
+          "content": "Sông",
+          "isCorrect": false
+        },
+        {
+          "content": "Suối",
+          "isCorrect": false
+        },
+        {
+          "content": "Hồ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu tục ngữ đề cao sức mạnh của sự đoàn kết, đồng lòng trong đời sống vợ chồng."
+    },
+    {
+      "content": "Thành ngữ 'Nước đổ đầu vịt' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Tắm cho con vịt",
+          "isCorrect": false
+        },
+        {
+          "content": "Làm việc gì đó rất dễ dàng",
+          "isCorrect": false
+        },
+        {
+          "content": "Khuyên bảo ai đó nhưng họ không chịu nghe, không tiếp thu",
+          "isCorrect": true
+        },
+        {
+          "content": "Phung phí nước sạch",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Lông vịt không thấm nước, nước dội vào trôi đi hết, giống như việc khuyên bảo người bảo thủ."
+    },
+    {
+      "content": "Câu tục ngữ 'Tốt gỗ hơn tốt...' nói lên triết lý gì?",
+      "options": [
+        {
+          "content": "nước sơn",
+          "isCorrect": true
+        },
+        {
+          "content": "vỏ ngoài",
+          "isCorrect": false
+        },
+        {
+          "content": "cái lá",
+          "isCorrect": false
+        },
+        {
+          "content": "nhành hoa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Tốt gỗ hơn tốt nước sơn' khuyên ta coi trọng vẻ đẹp tâm hồn, phẩm chất bên trong hơn là hình thức bề ngoài."
+    },
+    {
+      "content": "Thành ngữ 'Môi hở răng...' nói về sự gắn bó nào?",
+      "options": [
+        {
+          "content": "Đau",
+          "isCorrect": false
+        },
+        {
+          "content": "Lạnh",
+          "isCorrect": true
+        },
+        {
+          "content": "Rụng",
+          "isCorrect": false
+        },
+        {
+          "content": "Sâu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Môi hở răng lạnh' chỉ những người thân thuộc, có quan hệ mật thiết phải biết đùm bọc, nếu một bên gặp nạn thì bên kia cũng bị ảnh hưởng."
+    },
+    {
+      "content": "Điền từ vào câu: 'Cái ... đánh chết cái đẹp'.",
+      "options": [
+        {
+          "content": "Nết",
+          "isCorrect": true
+        },
+        {
+          "content": "Xấu",
+          "isCorrect": false
+        },
+        {
+          "content": "Ác",
+          "isCorrect": false
+        },
+        {
+          "content": "Tính",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cái nết (tính cách, phẩm chất) quan trọng và đánh giá cao hơn vẻ đẹp nhan sắc."
+    },
+    {
+      "content": "Thành ngữ 'Há miệng chờ...' dùng để mỉa mai người lười biếng?",
+      "options": [
+        {
+          "content": "Sung",
+          "isCorrect": true
+        },
+        {
+          "content": "Cơm",
+          "isCorrect": false
+        },
+        {
+          "content": "Thịt",
+          "isCorrect": false
+        },
+        {
+          "content": "Tiền",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Há miệng chờ sung' chỉ những kẻ lười lao động, chỉ mong chờ may mắn tự tìm đến."
+    },
+    {
+      "content": "Câu 'Chó cậy gần nhà, gà cậy gần...' điền từ gì ở cuối?",
+      "options": [
+        {
+          "content": "Chuồng",
+          "isCorrect": true
+        },
+        {
+          "content": "Sân",
+          "isCorrect": false
+        },
+        {
+          "content": "Rơm",
+          "isCorrect": false
+        },
+        {
+          "content": "Bếp",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu này mỉa mai những kẻ ỷ lại vào ưu thế sân nhà, địa bàn quen thuộc để lên mặt bắt nạt người khác."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e320e359e803b7cd434f"
+  },
+  "title": "Từ Hán Việt thông dụng",
+  "level": 3,
+  "topic": "Từ vựng nâng cao",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Yếu tố 'Gia' trong từ 'Gia đình' có nghĩa gốc là gì?",
+      "options": [
+        {
+          "content": "Nước",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhà",
+          "isCorrect": true
+        },
+        {
+          "content": "Thêm vào",
+          "isCorrect": false
+        },
+        {
+          "content": "Người",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trong Hán Việt, 'Gia' (家) mang ý nghĩa là nhà, nơi cư trú của một gia đình."
+    },
+    {
+      "content": "Yếu tố 'Quốc' trong từ 'Quốc gia', 'Tổ quốc' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Nước",
+          "isCorrect": true
+        },
+        {
+          "content": "Vua",
+          "isCorrect": false
+        },
+        {
+          "content": "Dân",
+          "isCorrect": false
+        },
+        {
+          "content": "Trời",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Quốc' (国) có nghĩa là quốc gia, đất nước."
+    },
+    {
+      "content": "Từ Hán Việt nào sau đây có nghĩa tương đương với từ 'Biển' trong thuần Việt?",
+      "options": [
+        {
+          "content": "Giang",
+          "isCorrect": false
+        },
+        {
+          "content": "Sơn",
+          "isCorrect": false
+        },
+        {
+          "content": "Hải",
+          "isCorrect": true
+        },
+        {
+          "content": "Thủy",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Hải' (海) có nghĩa là biển (ví dụ: hải sản, hải quân)."
+    },
+    {
+      "content": "Yếu tố 'Nhân' trong các từ 'Nhân loại', 'Nhân vật' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Tình yêu",
+          "isCorrect": false
+        },
+        {
+          "content": "Người",
+          "isCorrect": true
+        },
+        {
+          "content": "Hạt giống",
+          "isCorrect": false
+        },
+        {
+          "content": "Bên trong",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Nhân' (人) có nghĩa là con người."
+    },
+    {
+      "content": "Cặp từ Hán Việt 'Thiên - Địa' mang nghĩa là gì?",
+      "options": [
+        {
+          "content": "Mặt trời - Mặt trăng",
+          "isCorrect": false
+        },
+        {
+          "content": "Núi - Sông",
+          "isCorrect": false
+        },
+        {
+          "content": "Trời - Đất",
+          "isCorrect": true
+        },
+        {
+          "content": "Gió - Mưa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Thiên' (天) là Trời, 'Địa' (地) là Đất."
+    },
+    {
+      "content": "Trong từ 'Thủy thủ', yếu tố 'Thủy' có nghĩa là gì?",
+      "options": [
+        {
+          "content": "Cây cối",
+          "isCorrect": false
+        },
+        {
+          "content": "Lửa",
+          "isCorrect": false
+        },
+        {
+          "content": "Sắt thép",
+          "isCorrect": false
+        },
+        {
+          "content": "Nước",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Thủy' (水) là nước. Thủy thủ là những người làm việc trên tàu bè di chuyển trên mặt nước."
+    },
+    {
+      "content": "Yếu tố 'Sơn' trong cụm 'Sơn thủy hữu tình' mang nghĩa là gì?",
+      "options": [
+        {
+          "content": "Rừng",
+          "isCorrect": false
+        },
+        {
+          "content": "Đá",
+          "isCorrect": false
+        },
+        {
+          "content": "Núi",
+          "isCorrect": true
+        },
+        {
+          "content": "Mây",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Sơn' (山) mang ý nghĩa là ngọn núi."
+    },
+    {
+      "content": "Từ Hán Việt 'Phụ nữ' dùng để chỉ đối tượng nào?",
+      "options": [
+        {
+          "content": "Trẻ em",
+          "isCorrect": false
+        },
+        {
+          "content": "Người già",
+          "isCorrect": false
+        },
+        {
+          "content": "Đàn ông",
+          "isCorrect": false
+        },
+        {
+          "content": "Đàn bà / Nữ giới",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Phụ nữ' là danh từ chung để gọi những người mang giới tính nữ đã trưởng thành."
+    },
+    {
+      "content": "Từ Hán Việt nào mang nghĩa là 'Năm mới'?",
+      "options": [
+        {
+          "content": "Tân niên",
+          "isCorrect": true
+        },
+        {
+          "content": "Tất niên",
+          "isCorrect": false
+        },
+        {
+          "content": "Kỷ niệm",
+          "isCorrect": false
+        },
+        {
+          "content": "Sinh nhật",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Tân' là mới, 'Niên' là năm. Tân niên là năm mới."
+    },
+    {
+      "content": "Trong từ 'Đồng bào', chữ 'Đồng' mang nghĩa là gì?",
+      "options": [
+        {
+          "content": "Trẻ em",
+          "isCorrect": false
+        },
+        {
+          "content": "Cánh đồng",
+          "isCorrect": false
+        },
+        {
+          "content": "Cùng chung",
+          "isCorrect": true
+        },
+        {
+          "content": "Tiền xu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Đồng' nghĩa là cùng chung (cùng sinh ra từ một bọc - truyền thuyết Âu Cơ)."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e336e359e803b7cd4350"
+  },
+  "title": "Mẹo hay Chính tả Tiếng Việt",
+  "level": 2,
+  "topic": "Quy tắc chính tả",
+  "timer": 15,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Theo quy tắc chính tả, âm 'gh' sẽ đi được với những chữ cái nào sau đây?",
+      "options": [
+        {
+          "content": "a, o, u",
+          "isCorrect": false
+        },
+        {
+          "content": "e, ê, i",
+          "isCorrect": true
+        },
+        {
+          "content": "u, ô, ư",
+          "isCorrect": false
+        },
+        {
+          "content": "b, c, d",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trong tiếng Việt, 'gh' chỉ đứng trước các nguyên âm e, ê, i (Ví dụ: ghế, ghi, nghe)."
+    },
+    {
+      "content": "Từ nào sau đây viết ĐÚNG chính tả?",
+      "options": [
+        {
+          "content": "Con nghé",
+          "isCorrect": true
+        },
+        {
+          "content": "Con ngé",
+          "isCorrect": false
+        },
+        {
+          "content": "Con ghé",
+          "isCorrect": false
+        },
+        {
+          "content": "Con nhe",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Âm 'ngh' bắt buộc phải đứng trước 'e', nên 'nghé' là đúng chính tả."
+    },
+    {
+      "content": "Chọn từ viết ĐÚNG để điền vào chỗ trống: 'Cái ...éo cắt giấy'.",
+      "options": [
+        {
+          "content": "chéo",
+          "isCorrect": false
+        },
+        {
+          "content": "céo",
+          "isCorrect": false
+        },
+        {
+          "content": "khéo",
+          "isCorrect": false
+        },
+        {
+          "content": "kéo",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Chữ 'k' đứng trước nguyên âm 'e' để tạo thành từ 'kéo'."
+    },
+    {
+      "content": "Từ nào sau đây viết SAI chính tả?",
+      "options": [
+        {
+          "content": "Kính trọng",
+          "isCorrect": false
+        },
+        {
+          "content": "Củ kiệu",
+          "isCorrect": false
+        },
+        {
+          "content": "Kủ cải",
+          "isCorrect": true
+        },
+        {
+          "content": "Kim khâu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ 'c' đi với 'u' tạo thành 'củ'. Viết 'kủ' là sai quy tắc chính tả."
+    },
+    {
+      "content": "Điền chữ thích hợp vào chỗ trống để tạo thành món ăn ngày Tết: 'Bánh ...ưng'.",
+      "options": [
+        {
+          "content": "tr",
+          "isCorrect": false
+        },
+        {
+          "content": "ch",
+          "isCorrect": true
+        },
+        {
+          "content": "x",
+          "isCorrect": false
+        },
+        {
+          "content": "s",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Món ăn truyền thống ngày Tết của Việt Nam được viết là 'Bánh chưng'."
+    },
+    {
+      "content": "Từ nào dưới đây chỉ một loại quả có vị chua?",
+      "options": [
+        {
+          "content": "Quả tranh",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả chanh",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả sanh",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả xanh",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Quả chanh' viết bằng âm 'ch' là đúng, còn 'xanh' là tính từ chỉ màu sắc."
+    },
+    {
+      "content": "Điền âm đầu thích hợp vào chỗ trống: 'Đi ...ọc bài'.",
+      "options": [
+        {
+          "content": "h",
+          "isCorrect": true
+        },
+        {
+          "content": "hgh",
+          "isCorrect": false
+        },
+        {
+          "content": "kh",
+          "isCorrect": false
+        },
+        {
+          "content": "g",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Từ đúng là 'học bài' với âm đầu là chữ 'h'."
+    },
+    {
+      "content": "Từ nào dùng để chỉ phương tiện giao thông 4 bánh?",
+      "options": [
+        {
+          "content": "Xe ô tô",
+          "isCorrect": true
+        },
+        {
+          "content": "Se ô tô",
+          "isCorrect": false
+        },
+        {
+          "content": "Che ô tô",
+          "isCorrect": false
+        },
+        {
+          "content": "Tre ô tô",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Xe' (phương tiện di chuyển) viết bằng chữ 'x'."
+    },
+    {
+      "content": "Từ nào viết đúng chính tả cho loài vật thích gặm nhấm thức ăn vụn trong nhà?",
+      "options": [
+        {
+          "content": "Con suột",
+          "isCorrect": false
+        },
+        {
+          "content": "Con truột",
+          "isCorrect": false
+        },
+        {
+          "content": "Con chuột",
+          "isCorrect": true
+        },
+        {
+          "content": "Con chuộc",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Tên đúng của loài vật này là 'Con chuột' (phụ âm đầu ch, vần uôt)."
+    },
+    {
+      "content": "Từ nào chỉ đồ vật chứa kiến thức để chúng ta đọc hằng ngày?",
+      "options": [
+        {
+          "content": "Quyển xách",
+          "isCorrect": false
+        },
+        {
+          "content": "Quyển sách",
+          "isCorrect": true
+        },
+        {
+          "content": "Quyển trách",
+          "isCorrect": false
+        },
+        {
+          "content": "Quyển chách",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Quyển sách' được viết bằng chữ 's'."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e336e359e803b7cd4351"
+  },
+  "title": "Thế giới các loại Từ",
+  "level": 2,
+  "topic": "Từ đồng nghĩa & Trái nghĩa",
+  "timer": 15,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Từ nào TRÁI NGHĨA với từ 'to lớn'?",
+      "options": [
+        {
+          "content": "Khổng lồ",
+          "isCorrect": false
+        },
+        {
+          "content": "Cao lớn",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhỏ bé",
+          "isCorrect": true
+        },
+        {
+          "content": "Rộng rãi",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Nhỏ bé' biểu thị kích thước rất ít, ngược lại hoàn toàn với 'to lớn'."
+    },
+    {
+      "content": "Từ nào ĐỒNG NGHĨA với từ 'chăm chỉ'?",
+      "options": [
+        {
+          "content": "Siêng năng",
+          "isCorrect": true
+        },
+        {
+          "content": "Lười biếng",
+          "isCorrect": false
+        },
+        {
+          "content": "Thông minh",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhanh nhẹn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Siêng năng' và 'chăm chỉ' đều chỉ sự cố gắng làm việc liên tục, không ngại khó."
+    },
+    {
+      "content": "Từ nào TRÁI NGHĨA với từ 'ngày'?",
+      "options": [
+        {
+          "content": "Sáng",
+          "isCorrect": false
+        },
+        {
+          "content": "Đêm",
+          "isCorrect": true
+        },
+        {
+          "content": "Trưa",
+          "isCorrect": false
+        },
+        {
+          "content": "Chiều",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ngày (có ánh sáng mặt trời) trái nghĩa với Đêm (khi trời tối)."
+    },
+    {
+      "content": "Từ nào TRÁI NGHĨA với từ 'nóng'?",
+      "options": [
+        {
+          "content": "Ấm áp",
+          "isCorrect": false
+        },
+        {
+          "content": "Lạnh",
+          "isCorrect": true
+        },
+        {
+          "content": "Mát mẻ",
+          "isCorrect": false
+        },
+        {
+          "content": "Khô ráo",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nóng và Lạnh là hai trạng thái nhiệt độ đối lập hoàn toàn nhau."
+    },
+    {
+      "content": "Từ nào ĐỒNG NGHĨA với từ 'đẹp'?",
+      "options": [
+        {
+          "content": "Xấu xí",
+          "isCorrect": false
+        },
+        {
+          "content": "Xinh",
+          "isCorrect": true
+        },
+        {
+          "content": "Dễ thương",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngoan",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Xinh' và 'đẹp' đều mô tả vẻ bề ngoài ưa nhìn, có tính thẩm mỹ."
+    },
+    {
+      "content": "Từ nào TRÁI NGHĨA với từ 'ngoan ngoãn'?",
+      "options": [
+        {
+          "content": "Hiền lành",
+          "isCorrect": false
+        },
+        {
+          "content": "Lễ phép",
+          "isCorrect": false
+        },
+        {
+          "content": "Nghịch ngợm / Hư",
+          "isCorrect": true
+        },
+        {
+          "content": "Chậm chạp",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trẻ nghe lời gọi là ngoan ngoãn, không nghe lời và hay quậy phá gọi là hư/nghịch ngợm."
+    },
+    {
+      "content": "Khi bạn khóc, hành động TRÁI NGHĨA với khóc là gì?",
+      "options": [
+        {
+          "content": "Cười",
+          "isCorrect": true
+        },
+        {
+          "content": "La hét",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngủ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Khóc biểu thị sự buồn bã, ngược lại Cười biểu thị sự vui vẻ."
+    },
+    {
+      "content": "Từ nào TRÁI NGHĨA với từ 'cao'?",
+      "options": [
+        {
+          "content": "Dài",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngắn",
+          "isCorrect": false
+        },
+        {
+          "content": "Thấp",
+          "isCorrect": true
+        },
+        {
+          "content": "To",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Thấp' là từ trái nghĩa trực tiếp với 'cao' xét về khoảng cách chiều thẳng đứng."
+    },
+    {
+      "content": "Trong miền Nam, từ nào ĐỒNG NGHĨA với từ 'Bố'?",
+      "options": [
+        {
+          "content": "Tía",
+          "isCorrect": false
+        },
+        {
+          "content": "Ba",
+          "isCorrect": true
+        },
+        {
+          "content": "Cha",
+          "isCorrect": false
+        },
+        {
+          "content": "Cậu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Người miền Nam thường xưng hô xách định người sinh ra mình là 'Ba' đồng nghĩa với từ 'Bố' toàn dân."
+    },
+    {
+      "content": "Từ nào TRÁI NGHĨA với từ 'nhanh'?",
+      "options": [
+        {
+          "content": "Mau",
+          "isCorrect": false
+        },
+        {
+          "content": "Chậm",
+          "isCorrect": true
+        },
+        {
+          "content": "Lẹ",
+          "isCorrect": false
+        },
+        {
+          "content": "Dừng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Chậm' là trạng thái di chuyển mất nhiều thời gian, trái ngược với 'nhanh'."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e336e359e803b7cd4352"
+  },
+  "title": "Bốn mùa và Thời tiết",
+  "level": 2,
+  "topic": "Từ vựng mở rộng",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Mùa nào trong năm thường có hoa đào nở rực rỡ và có ngày Tết cổ truyền?",
+      "options": [
+        {
+          "content": "Mùa hạ",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa thu",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa xuân",
+          "isCorrect": true
+        },
+        {
+          "content": "Mùa đông",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Mùa xuân là mùa đầu tiên trong năm, mùa của cây cối đâm chồi và ngày Tết."
+    },
+    {
+      "content": "Mùa nào có thời tiết nóng nhất và các bạn học sinh được nghỉ học dài ngày?",
+      "options": [
+        {
+          "content": "Mùa hè (Mùa hạ)",
+          "isCorrect": true
+        },
+        {
+          "content": "Mùa xuân",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa thu",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa đông",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Mùa hè trời nắng gắt, nhiệt độ cao và là thời gian nghỉ hè của học sinh."
+    },
+    {
+      "content": "Tết Trung Thu với lồng đèn và bánh nướng diễn ra vào mùa nào?",
+      "options": [
+        {
+          "content": "Mùa đông",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa xuân",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa hạ",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa thu",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Tết Trung thu diễn ra vào ngày rằm tháng 8 âm lịch, chính giữa mùa thu."
+    },
+    {
+      "content": "Mùa nào lạnh nhất trong năm ở miền Bắc Việt Nam, cây cối rụng hết lá?",
+      "options": [
+        {
+          "content": "Mùa đông",
+          "isCorrect": true
+        },
+        {
+          "content": "Mùa xuân",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa hè",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa thu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Mùa đông có gió mùa đông bắc tràn về làm thời tiết chuyển lạnh buốt."
+    },
+    {
+      "content": "Hiện tượng những giọt nước rơi từ đám mây xuống mặt đất gọi là gì?",
+      "options": [
+        {
+          "content": "Gió",
+          "isCorrect": false
+        },
+        {
+          "content": "Nắng",
+          "isCorrect": false
+        },
+        {
+          "content": "Mưa",
+          "isCorrect": true
+        },
+        {
+          "content": "Tuyết",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nước ngưng tụ trên mây thành giọt nặng rồi rơi xuống gọi là hiện tượng mưa."
+    },
+    {
+      "content": "Tiếng nổ lớn vang lên trên bầu trời khi có mưa giông kèm tia sáng chớp gọi là hiện tượng gì?",
+      "options": [
+        {
+          "content": "Bão",
+          "isCorrect": false
+        },
+        {
+          "content": "Sấm sét",
+          "isCorrect": true
+        },
+        {
+          "content": "Sương mù",
+          "isCorrect": false
+        },
+        {
+          "content": "Cầu vồng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Sấm sét là hiện tượng phóng điện trong khí quyển tạo ra tia chớp và tiếng sấm nổ."
+    },
+    {
+      "content": "Khác với miền Bắc có 4 mùa, miền Nam Việt Nam có 2 mùa chính là những mùa nào?",
+      "options": [
+        {
+          "content": "Mùa nóng và mùa lạnh",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa mưa và mùa khô",
+          "isCorrect": true
+        },
+        {
+          "content": "Mùa xuân và mùa đông",
+          "isCorrect": false
+        },
+        {
+          "content": "Mùa hoa và mùa lá",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Khí hậu miền Nam thuộc vùng nhiệt đới xavan, chia làm mùa mưa và mùa khô rõ rệt."
+    },
+    {
+      "content": "Khi thời tiết chuyển sang giá rét, chúng ta cần mặc trang phục gì để bảo vệ sức khỏe?",
+      "options": [
+        {
+          "content": "Áo khoác dày",
+          "isCorrect": true
+        },
+        {
+          "content": "Áo cộc tay",
+          "isCorrect": false
+        },
+        {
+          "content": "Đồ bơi",
+          "isCorrect": false
+        },
+        {
+          "content": "Váy mỏng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Áo khoác dày giúp giữ nhiệt cho cơ thể không bị nhiễm lạnh."
+    },
+    {
+      "content": "Hiện tượng thiên tai có gió xoáy rất mạnh thổi liên tục kèm mưa lớn dữ dội gọi là gì?",
+      "options": [
+        {
+          "content": "Nắng hạn",
+          "isCorrect": false
+        },
+        {
+          "content": "Lũ lụt",
+          "isCorrect": false
+        },
+        {
+          "content": "Bão",
+          "isCorrect": true
+        },
+        {
+          "content": "Sóng thần",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bão là một trạng thái thời tiết cực đoan có gió mạnh cấp 6 trở lên kèm mưa lớn."
+    },
+    {
+      "content": "Vòng cung gồm nhiều màu sắc rực rỡ xuất hiện trên bầu trời sau cơn mưa khi có ánh nắng chiếu qua gọi là gì?",
+      "options": [
+        {
+          "content": "Mặt trăng",
+          "isCorrect": false
+        },
+        {
+          "content": "Vì sao",
+          "isCorrect": false
+        },
+        {
+          "content": "Cầu vồng",
+          "isCorrect": true
+        },
+        {
+          "content": "Mây mù",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cầu vồng là hiện tượng tán sắc ánh sáng mặt trời khi khúc xạ qua các giọt nước mưa."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e336e359e803b7cd4353"
+  },
+  "title": "Thành ngữ và Ca dao quen thuộc",
+  "level": 2,
+  "topic": "Văn hóa dân gian",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Điền từ thích hợp vào thành ngữ sau để chỉ một loài vật di chuyển cực kỳ tốn thời gian: 'Chậm như ...'.",
+      "options": [
+        {
+          "content": "Thỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Rùa",
+          "isCorrect": true
+        },
+        {
+          "content": "Sóc",
+          "isCorrect": false
+        },
+        {
+          "content": "Chim",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Rùa bò rất chậm nên dân gian ví von những ai làm việc chậm chạp là 'Chậm như rùa'."
+    },
+    {
+      "content": "Thành ngữ nào dùng để khen ngợi hành động di chuyển nhanh thoăn thoắt?",
+      "options": [
+        {
+          "content": "Nhanh như cắt",
+          "isCorrect": true
+        },
+        {
+          "content": "Nhanh như sên",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhanh như rùa",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhanh như bò",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Nhanh như cắt' (chim cắt bay rất nhanh) ví với hành động nhanh nhẹn."
+    },
+    {
+      "content": "Điền từ vào câu tục ngữ răn dạy lòng biết ơn: 'Ăn quả nhớ kẻ ...'.",
+      "options": [
+        {
+          "content": "mua quả",
+          "isCorrect": false
+        },
+        {
+          "content": "bán cây",
+          "isCorrect": false
+        },
+        {
+          "content": "trồng cây",
+          "isCorrect": true
+        },
+        {
+          "content": "hái quả",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Ăn quả nhớ kẻ trồng cây' khuyên chúng ta hưởng thành quả phải nhớ ơn người làm ra nó."
+    },
+    {
+      "content": "Hoàn thiện câu ca dao ca ngợi công lao to lớn của người cha: 'Công cha như núi ...'.",
+      "options": [
+        {
+          "content": "Thái Sơn",
+          "isCorrect": true
+        },
+        {
+          "content": "Ngũ Hành",
+          "isCorrect": false
+        },
+        {
+          "content": "Fansipan",
+          "isCorrect": false
+        },
+        {
+          "content": "Trường Sơn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bài ca dao kinh điển: 'Công cha như núi Thái Sơn / Nghĩa mẹ như nước trong nguồn chảy ra'."
+    },
+    {
+      "content": "Theo câu ca dao trên, 'Nghĩa mẹ' được ví von so sánh giống với hình ảnh tự nhiên nào?",
+      "options": [
+        {
+          "content": "Nước trong nguồn chảy ra",
+          "isCorrect": true
+        },
+        {
+          "content": "Biển rộng bao la",
+          "isCorrect": false
+        },
+        {
+          "content": "Vầng trăng sáng",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngọn gió mát",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nước trong nguồn là dòng nước mát lành ngọt ngào không bao giờ cạn, giống tình yêu của mẹ."
+    },
+    {
+      "content": "Thành ngữ nào dùng để chỉ người có tính cách nhút nhát, sợ sệt mọi thứ?",
+      "options": [
+        {
+          "content": "Dũng cảm như hổ",
+          "isCorrect": false
+        },
+        {
+          "content": "Nhát như thỏ đế",
+          "isCorrect": true
+        },
+        {
+          "content": "Gan như quạ",
+          "isCorrect": false
+        },
+        {
+          "content": "Hiền như rùa",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Con thỏ rất nhát gan, hễ nghe tiếng động là chạy trốn nên có câu 'Nhát như thỏ đế'."
+    },
+    {
+      "content": "Thành ngữ nào dùng để ví von một người có sức lực vượt trội, khỏe khoắn?",
+      "options": [
+        {
+          "content": "Khỏe như voi",
+          "isCorrect": true
+        },
+        {
+          "content": "Khỏe như mèo",
+          "isCorrect": false
+        },
+        {
+          "content": "Khỏe như muỗi",
+          "isCorrect": false
+        },
+        {
+          "content": "Khỏe như sâu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Voi là loài động vật to lớn có sức kéo khỏe mạnh nhất trong rừng."
+    },
+    {
+      "content": "Khi muốn nói một người có tính cách cực kỳ hiền hậu, người ta nói: 'Hiền như ...'.",
+      "options": [
+        {
+          "content": "Hổ",
+          "isCorrect": false
+        },
+        {
+          "content": "Bụt",
+          "isCorrect": true
+        },
+        {
+          "content": "Cáo",
+          "isCorrect": false
+        },
+        {
+          "content": "Chó sói",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bụt trong truyện cổ tích luôn hiện lên cứu giúp người nghèo khổ, đại diện cho sự hiền từ."
+    },
+    {
+      "content": "Hoàn thiện câu thành ngữ thể hiện tinh thần tương thân tương ái: 'Lá lành đùm lá ...'.",
+      "options": [
+        {
+          "content": "đẹp",
+          "isCorrect": false
+        },
+        {
+          "content": "rách",
+          "isCorrect": true
+        },
+        {
+          "content": "xanh",
+          "isCorrect": false
+        },
+        {
+          "content": "héo",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Lá lành đùm lá rách' là bài học về việc người có điều kiện giúp đỡ người hoàn cảnh khó khăn."
+    },
+    {
+      "content": "Điền từ còn thiếu vào chỗ trống: 'Thương người như thể thương ...'.",
+      "options": [
+        {
+          "content": "thân",
+          "isCorrect": true
+        },
+        {
+          "content": "bạn",
+          "isCorrect": false
+        },
+        {
+          "content": "tiền",
+          "isCorrect": false
+        },
+        {
+          "content": "vật",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Câu tục ngữ khuyên chúng ta yêu thương người khác giống như yêu thương chính bản thân mình."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e336e359e803b7cd4354"
+  },
+  "title": "Hành động và Trạng thái",
+  "level": 2,
+  "topic": "Từ loại cơ bản",
+  "timer": 20,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Từ nào dưới đây là ĐỘNG TỪ chỉ hành động di chuyển nhanh bằng chân?",
+      "options": [
+        {
+          "content": "Ngồi",
+          "isCorrect": false
+        },
+        {
+          "content": "Chạy",
+          "isCorrect": true
+        },
+        {
+          "content": "Đứng",
+          "isCorrect": false
+        },
+        {
+          "content": "Nằm",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Chạy' là hành động dời chân liên tục với tốc độ cao."
+    },
+    {
+      "content": "Từ nào là TÍNH TỪ chỉ mùi vị ngọt ngào của kẹo sô-cô-la?",
+      "options": [
+        {
+          "content": "Cay",
+          "isCorrect": false
+        },
+        {
+          "content": "Đắng",
+          "isCorrect": false
+        },
+        {
+          "content": "Chua",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngọt",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "'Ngọt' là tính từ chỉ cảm giác của lưỡi khi tiếp xúc với đường, mật ong."
+    },
+    {
+      "content": "Hành động chăm chú nghe thầy cô giảng bài trên lớp được gọi là gì?",
+      "options": [
+        {
+          "content": "Học",
+          "isCorrect": true
+        },
+        {
+          "content": "Chơi",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngủ gật",
+          "isCorrect": false
+        },
+        {
+          "content": "Nói chuyện",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Học' là hành động tiếp thu kiến thức một cách có chủ đích."
+    },
+    {
+      "content": "Trạng thái cơ thể khi lâu ngày không uống nước và cảm thấy cần nước gọi là gì?",
+      "options": [
+        {
+          "content": "Đói",
+          "isCorrect": false
+        },
+        {
+          "content": "Khát",
+          "isCorrect": true
+        },
+        {
+          "content": "No",
+          "isCorrect": false
+        },
+        {
+          "content": "Mệt",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Khát' (khát nước) là tín hiệu báo cơ thể cần bổ sung chất lỏng."
+    },
+    {
+      "content": "Hành động sử dụng đôi mắt để theo dõi một bộ phim hoạt hình gọi là gì?",
+      "options": [
+        {
+          "content": "Xem (Nhìn)",
+          "isCorrect": true
+        },
+        {
+          "content": "Nghe",
+          "isCorrect": false
+        },
+        {
+          "content": "Ngửi",
+          "isCorrect": false
+        },
+        {
+          "content": "Nếm",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chúng ta dùng thị giác (mắt) để thực hiện hành động 'Xem'."
+    },
+    {
+      "content": "Từ nào là TÍNH TỪ miêu tả kích thước chiều dài của một chiếc thước kẻ dài?",
+      "options": [
+        {
+          "content": "Dài",
+          "isCorrect": true
+        },
+        {
+          "content": "Ngắn",
+          "isCorrect": false
+        },
+        {
+          "content": "Rộng",
+          "isCorrect": false
+        },
+        {
+          "content": "Dày",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Dài' là tính từ đo khoảng cách từ điểm đầu đến điểm cuối của vật."
+    },
+    {
+      "content": "Hành động phát ra âm thanh thành tiếng, mở rộng miệng khi gặp chuyện vui gọi là gì?",
+      "options": [
+        {
+          "content": "Khóc",
+          "isCorrect": false
+        },
+        {
+          "content": "Hét",
+          "isCorrect": false
+        },
+        {
+          "content": "Cười",
+          "isCorrect": true
+        },
+        {
+          "content": "Nói",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Biểu hiện cơ mặt giãn ra kèm âm thanh sảng khoái khi vui gọi là 'Cười'."
+    },
+    {
+      "content": "Trạng thái tâm lý lo sợ khi gặp một con vật hung dữ bất ngờ gọi là gì?",
+      "options": [
+        {
+          "content": "Vui sướng",
+          "isCorrect": false
+        },
+        {
+          "content": "Sợ hãi",
+          "isCorrect": true
+        },
+        {
+          "content": "Tức giận",
+          "isCorrect": false
+        },
+        {
+          "content": "Yêu mến",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Sợ hãi' là cảm xúc bất an, e dè trước mối nguy hiểm."
+    },
+    {
+      "content": "Hành động dùng giọng hát phối hợp với giai điệu bài hát nhạc gọi là gì?",
+      "options": [
+        {
+          "content": "Hát",
+          "isCorrect": true
+        },
+        {
+          "content": "Múa",
+          "isCorrect": false
+        },
+        {
+          "content": "Đàn",
+          "isCorrect": false
+        },
+        {
+          "content": "Vẽ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Phát ra âm thanh có cao độ, trường độ theo lời nhạc gọi là hành động 'Hát'."
+    },
+    {
+      "content": "Từ nào dưới đây là TÍNH TỪ chỉ phẩm chất tốt đẹp của một người hay chia sẻ đồ chơi với bạn?",
+      "options": [
+        {
+          "content": "Tốt bụng",
+          "isCorrect": true
+        },
+        {
+          "content": "Ích kỷ",
+          "isCorrect": false
+        },
+        {
+          "content": "Keo kiệt",
+          "isCorrect": false
+        },
+        {
+          "content": "Dữ dằn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "'Tốt bụng' chỉ người có lòng nhân hậu, luôn sẵn sàng giúp đỡ mọi người xung quanh."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e34ae359e803b7cd4355"
+  },
+  "title": "Vui học Chữ cái Tiếng Việt",
+  "level": 1,
+  "topic": "Chữ cái cơ bản",
+  "timer": 10,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Chữ cái nào đứng đầu tiên trong bảng chữ cái Tiếng Việt?",
+      "options": [
+        {
+          "content": "B",
+          "isCorrect": false
+        },
+        {
+          "content": "A",
+          "isCorrect": true
+        },
+        {
+          "content": "C",
+          "isCorrect": false
+        },
+        {
+          "content": "D",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ A là chữ cái bắt đầu của bảng chữ cái Tiếng Việt."
+    },
+    {
+      "content": "Chữ cái nào sau đây có dấu mũ trên đầu?",
+      "options": [
+        {
+          "content": "O",
+          "isCorrect": false
+        },
+        {
+          "content": "U",
+          "isCorrect": false
+        },
+        {
+          "content": "I",
+          "isCorrect": false
+        },
+        {
+          "content": "Ô",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Chữ Ô được tạo thành bằng cách thêm dấu mũ vào chữ O."
+    },
+    {
+      "content": "Trong từ 'Mẹ', chữ cái nào là chữ in hoa?",
+      "options": [
+        {
+          "content": "M",
+          "isCorrect": true
+        },
+        {
+          "content": "ẹ",
+          "isCorrect": false
+        },
+        {
+          "content": "Dấu nặng",
+          "isCorrect": false
+        },
+        {
+          "content": "Không có chữ nào",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ M đứng đầu câu nên được viết in hoa."
+    },
+    {
+      "content": "Chữ cái nào sau đây có một dấu gạch ngang nhỏ ở thân chữ?",
+      "options": [
+        {
+          "content": "D",
+          "isCorrect": false
+        },
+        {
+          "content": "T",
+          "isCorrect": false
+        },
+        {
+          "content": "Đ",
+          "isCorrect": true
+        },
+        {
+          "content": "H",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ Đ có cấu tạo giống chữ D nhưng được thêm một nét gạch ngang ngắn."
+    },
+    {
+      "content": "Chữ cái nào có hình dáng giống như một vòng tròn khép kín hoàn toàn?",
+      "options": [
+        {
+          "content": "C",
+          "isCorrect": false
+        },
+        {
+          "content": "O",
+          "isCorrect": true
+        },
+        {
+          "content": "U",
+          "isCorrect": false
+        },
+        {
+          "content": "G",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ O tròn xoe như quả trứng gà, là một đường cong khép kín."
+    },
+    {
+      "content": "Từ 'Bố' bắt đầu bằng chữ cái nào?",
+      "options": [
+        {
+          "content": "P",
+          "isCorrect": false
+        },
+        {
+          "content": "M",
+          "isCorrect": false
+        },
+        {
+          "content": "H",
+          "isCorrect": false
+        },
+        {
+          "content": "B",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Từ 'Bố' có phụ âm đầu là chữ B."
+    },
+    {
+      "content": "Chữ cái nào sau đây có thêm một dấu móc nhỏ (gọi là dấu râu)?",
+      "options": [
+        {
+          "content": "Ơ",
+          "isCorrect": true
+        },
+        {
+          "content": "A",
+          "isCorrect": false
+        },
+        {
+          "content": "E",
+          "isCorrect": false
+        },
+        {
+          "content": "O",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ Ơ được tạo ra bằng cách thêm dấu râu vào phía trên bên phải của chữ O."
+    },
+    {
+      "content": "Chữ cái nào thường đi sau chữ 'Q' để tạo thành cụm chữ 'Qu'?",
+      "options": [
+        {
+          "content": "A",
+          "isCorrect": false
+        },
+        {
+          "content": "U",
+          "isCorrect": true
+        },
+        {
+          "content": "I",
+          "isCorrect": false
+        },
+        {
+          "content": "O",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Trong tiếng Việt, chữ Q luôn đi kèm với chữ U để tạo thành âm đầu 'Qu'."
+    },
+    {
+      "content": "Chữ cái nào dưới đây có dấu trăng khuyết ngửa lên trên đầu?",
+      "options": [
+        {
+          "content": "Â",
+          "isCorrect": false
+        },
+        {
+          "content": "Ă",
+          "isCorrect": true
+        },
+        {
+          "content": "E",
+          "isCorrect": false
+        },
+        {
+          "content": "O",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chữ Ă có một dấu á (hình vầng trăng khuyết ngửa) ở trên đầu."
+    },
+    {
+      "content": "Chữ cái nào đứng ở vị trí cuối cùng trong bảng chữ cái Tiếng Việt?",
+      "options": [
+        {
+          "content": "X",
+          "isCorrect": false
+        },
+        {
+          "content": "V",
+          "isCorrect": false
+        },
+        {
+          "content": "Y",
+          "isCorrect": true
+        },
+        {
+          "content": "U",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bảng chữ cái tiếng Việt gồm 29 chữ cái, kết thúc bằng chữ Y."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e34ae359e803b7cd4356"
+  },
+  "title": "Thế giới Động vật quanh em",
+  "level": 1,
+  "topic": "Từ vựng cơ bản",
+  "timer": 12,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Con vật nào sau đây thường kêu 'Meo meo'?",
+      "options": [
+        {
+          "content": "Con chó",
+          "isCorrect": false
+        },
+        {
+          "content": "Con vịt",
+          "isCorrect": false
+        },
+        {
+          "content": "Con mèo",
+          "isCorrect": true
+        },
+        {
+          "content": "Con gà",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Tiếng kêu đặc trưng của con mèo là meo meo."
+    },
+    {
+      "content": "Con vật nào giữ nhà cho chúng ta?",
+      "options": [
+        {
+          "content": "Con chó",
+          "isCorrect": true
+        },
+        {
+          "content": "Con chim",
+          "isCorrect": false
+        },
+        {
+          "content": "Con thỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Con cá",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Con chó là loài vật trung thành, thường được nuôi để trông nhà."
+    },
+    {
+      "content": "Con vật nào bơi dưới nước?",
+      "options": [
+        {
+          "content": "Con sóc",
+          "isCorrect": false
+        },
+        {
+          "content": "Con cá",
+          "isCorrect": true
+        },
+        {
+          "content": "Con voi",
+          "isCorrect": false
+        },
+        {
+          "content": "Con gà",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Cá là loài động vật sống và bơi lội dưới nước."
+    },
+    {
+      "content": "Con bò cho chúng ta thức uống gì rất bổ dưỡng?",
+      "options": [
+        {
+          "content": "Nước ngọt",
+          "isCorrect": false
+        },
+        {
+          "content": "Nước cam",
+          "isCorrect": false
+        },
+        {
+          "content": "Trà đá",
+          "isCorrect": false
+        },
+        {
+          "content": "Sữa",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Sữa bò là một thức uống cung cấp rất nhiều canxi và dưỡng chất."
+    },
+    {
+      "content": "Con vật nào gáy 'Ò ó o' vào mỗi buổi sáng để báo thức?",
+      "options": [
+        {
+          "content": "Con lợn",
+          "isCorrect": false
+        },
+        {
+          "content": "Con gà trống",
+          "isCorrect": true
+        },
+        {
+          "content": "Con vịt",
+          "isCorrect": false
+        },
+        {
+          "content": "Con mèo",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Gà trống thường gáy to vào buổi sáng sớm khi mặt trời mọc."
+    },
+    {
+      "content": "Con vật to lớn nào có cái vòi rất dài và đôi tai to như cái quạt?",
+      "options": [
+        {
+          "content": "Con voi",
+          "isCorrect": true
+        },
+        {
+          "content": "Con hổ",
+          "isCorrect": false
+        },
+        {
+          "content": "Con ngựa",
+          "isCorrect": false
+        },
+        {
+          "content": "Con khỉ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Voi là loài vật nổi bật với chiếc vòi dài đa năng và hai tai rất to."
+    },
+    {
+      "content": "Con vật nào thích ăn củ cà rốt và có đôi tai dài, bộ lông trắng tinh?",
+      "options": [
+        {
+          "content": "Con chuột",
+          "isCorrect": false
+        },
+        {
+          "content": "Con sóc",
+          "isCorrect": false
+        },
+        {
+          "content": "Con thỏ",
+          "isCorrect": true
+        },
+        {
+          "content": "Con dê",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Thỏ có thói quen gặm nhấm và món ăn yêu thích của chúng là cà rốt."
+    },
+    {
+      "content": "Con vật nào có hai cánh, biết bay và hay hót líu lo trên cành cây?",
+      "options": [
+        {
+          "content": "Con chim",
+          "isCorrect": true
+        },
+        {
+          "content": "Con cá",
+          "isCorrect": false
+        },
+        {
+          "content": "Con ếch",
+          "isCorrect": false
+        },
+        {
+          "content": "Con rắn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Chim là loài động vật thuộc lớp thú có cánh, đa số biết bay và có tiếng hót."
+    },
+    {
+      "content": "Con vật nào có cái cổ rất dài để ăn lá cây ở trên cao?",
+      "options": [
+        {
+          "content": "Con sư tử",
+          "isCorrect": false
+        },
+        {
+          "content": "Con hươu cao cổ",
+          "isCorrect": true
+        },
+        {
+          "content": "Con gấu",
+          "isCorrect": false
+        },
+        {
+          "content": "Con cừu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Hươu cao cổ là loài động vật có chiều cao và chiếc cổ dài nhất thế giới."
+    },
+    {
+      "content": "Con vật nào di chuyển chậm chạp và mang một chiếc mai rất cứng trên lưng?",
+      "options": [
+        {
+          "content": "Con báo",
+          "isCorrect": false
+        },
+        {
+          "content": "Con ngựa",
+          "isCorrect": false
+        },
+        {
+          "content": "Con rùa",
+          "isCorrect": true
+        },
+        {
+          "content": "Con thạch sùng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Rùa nổi tiếng với tốc độ bò chậm và có chiếc mai cứng để bảo vệ cơ thể."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e34ae359e803b7cd4357"
+  },
+  "title": "Trái cây thơm ngon",
+  "level": 1,
+  "topic": "Từ vựng cơ bản",
+  "timer": 10,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Quả nào sau đây có vỏ màu vàng và hình dáng cong như mặt trăng khuyết?",
+      "options": [
+        {
+          "content": "Quả táo",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả nho",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả chuối",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả dưa hấu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quả chuối chín có vỏ màu vàng và dáng cong."
+    },
+    {
+      "content": "Bên trong quả dưa hấu thường có ruột màu gì?",
+      "options": [
+        {
+          "content": "Màu đỏ",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu xanh",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu tím",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Dưa hấu có vỏ xanh nhưng ruột bên trong thường có màu đỏ tươi."
+    },
+    {
+      "content": "Quả nào sau đây có vị rất chua?",
+      "options": [
+        {
+          "content": "Quả dưa lưới",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả chanh",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả na",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả nhãn",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quả chanh chứa nhiều vitamin C và có vị rất chua."
+    },
+    {
+      "content": "Quả nào vỏ có nhiều gai nhọn, mùi rất nồng và được gọi là 'Vua trái cây'?",
+      "options": [
+        {
+          "content": "Quả sầu riêng",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả mít",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả chôm chôm",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả ổi",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Sầu riêng đặc trưng bởi lớp vỏ đầy gai nhọn và mùi thơm cực kỳ đậm đà."
+    },
+    {
+      "content": "Quả nào chín có màu đỏ, vỏ xù xì, cùi trắng ngọt lịm và có một hạt đen ở giữa?",
+      "options": [
+        {
+          "content": "Quả dâu tây",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả vải",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả đu đủ",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả khế",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quả vải khi chín có vỏ đỏ rực, thịt quả (cùi) màu trắng mọng nước và ngọt."
+    },
+    {
+      "content": "Quả nào nhỏ tròn, mọc thành từng chùm, thường có màu tím hoặc màu xanh?",
+      "options": [
+        {
+          "content": "Quả nho",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả bưởi",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả dừa",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả măng cụt",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nho là loài cây dây leo, quả mọc thành từng chùm dày đặc."
+    },
+    {
+      "content": "Quả nào dáng tròn, vỏ màu cam, chứa nhiều nước và múi chua ngọt?",
+      "options": [
+        {
+          "content": "Quả dưa chuột",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả hồng",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả cam",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả lê",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quả cam có màu cam đặc trưng khi chín, rất giàu vitamin C."
+    },
+    {
+      "content": "Quả nào mọc ở trên cây cao, bên trong có nước ngọt mát lịm giải nhiệt mùa hè?",
+      "options": [
+        {
+          "content": "Quả me",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả dừa",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả hồng xiêm",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả bơ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Nước dừa là thức uống tự nhiên mát lành nằm bên trong quả dừa cứng cáp."
+    },
+    {
+      "content": "Quả nào có một hạt rất to, thịt màu vàng sậm, ăn rất thơm và ngọt lịm?",
+      "options": [
+        {
+          "content": "Quả xoài",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả chôm chôm",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả thanh long",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả lựu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quả xoài chín có phần thịt quả màu vàng, vị ngọt lịm ôm lấy một chiếc hạt dẹt to ở giữa."
+    },
+    {
+      "content": "Quả nào có rất nhiều mắt ở vỏ ngoài, khi cắt ra có hình ngôi sao nếu cắt ngang?",
+      "options": [
+        {
+          "content": "Quả dứa (thơm)",
+          "isCorrect": true
+        },
+        {
+          "content": "Quả ổi",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả cóc",
+          "isCorrect": false
+        },
+        {
+          "content": "Quả khế",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Quả dứa (hay còn gọi là thơm/khóm) nổi bật với các mắt dứa bao quanh lớp vỏ."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e34ae359e803b7cd4358"
+  },
+  "title": "Nhận biết Màu sắc",
+  "level": 1,
+  "topic": "Từ vựng cơ bản",
+  "timer": 10,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Lá cây bình thường có màu gì?",
+      "options": [
+        {
+          "content": "Màu xanh lá",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu hồng",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu xám",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Phần lớn lá cây trong tự nhiên có màu xanh lá do chứa chất diệp lục."
+    },
+    {
+      "content": "Ông mặt trời thường được vẽ với màu gì?",
+      "options": [
+        {
+          "content": "Màu xanh dương",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu nâu",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đỏ / vàng",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu tím",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Mặt trời tỏa ra ánh sáng ấm áp, thường được biểu thị bằng màu đỏ hoặc vàng."
+    },
+    {
+      "content": "Trời tối (ban đêm) thường có màu gì?",
+      "options": [
+        {
+          "content": "Màu trắng",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đen",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu xanh lá",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu cam",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Ban đêm khi không có ánh sáng mặt trời, không gian sẽ chuyển sang màu đen tối."
+    },
+    {
+      "content": "Hoa hồng nhung thường nổi tiếng nhất với màu gì?",
+      "options": [
+        {
+          "content": "Màu xám",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu xanh dương",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đỏ",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Hoa hồng nhung màu đỏ rực rỡ là loài hoa hồng phổ biến và được yêu thích nhất."
+    },
+    {
+      "content": "Đám mây vào những ngày nắng đẹp, trời trong xanh thường có màu gì?",
+      "options": [
+        {
+          "content": "Màu trắng",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu tím",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu nâu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Những đám mây bồng bềnh ngày nắng có màu trắng tinh khôi."
+    },
+    {
+      "content": "Nước biển hoặc bầu trời ban ngày thường có màu chủ đạo là màu gì?",
+      "options": [
+        {
+          "content": "Màu xanh dương",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu vàng",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu hồng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Xanh dương (xanh nước biển/xanh da trời) là màu của bầu trời và đại dương."
+    },
+    {
+      "content": "Củ cà rốt có màu gì nổi bật nhất?",
+      "options": [
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu tím",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu cam",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu trắng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Củ cà rốt chứa nhiều chất carotene nên có màu cam rất rực rỡ."
+    },
+    {
+      "content": "Thanh sô-cô-la (chocolate) ngọt ngào thường có màu gì?",
+      "options": [
+        {
+          "content": "Màu xanh lá",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu nâu",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu vàng",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đỏ",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Sô-cô-la được làm từ hạt ca-cao nên có màu nâu đặc trưng."
+    },
+    {
+      "content": "Khi trộn màu đỏ với màu trắng lại với nhau, ta được màu gì?",
+      "options": [
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu xanh",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu hồng",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu nâu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Màu đỏ giảm bớt sắc độ bằng màu trắng sẽ chuyển hóa thành màu hồng nhạt."
+    },
+    {
+      "content": "Củ khoai mỡ nấu canh thường có màu gì rất lạ mắt?",
+      "options": [
+        {
+          "content": "Màu tím",
+          "isCorrect": true
+        },
+        {
+          "content": "Màu đỏ",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu xanh dương",
+          "isCorrect": false
+        },
+        {
+          "content": "Màu đen",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Khoai mỡ là loại củ nổi tiếng với màu tím lãng mạn khi nấu thành canh."
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6a34e34ae359e803b7cd4359"
+  },
+  "title": "Gia đình yêu thương",
+  "level": 1,
+  "topic": "Từ vựng cơ bản",
+  "timer": 15,
+  "questionCount": 10,
+  "questions": [
+    {
+      "content": "Người sinh ra mình được gọi là gì?",
+      "options": [
+        {
+          "content": "Anh chị",
+          "isCorrect": false
+        },
+        {
+          "content": "Chú bác",
+          "isCorrect": false
+        },
+        {
+          "content": "Bố Mẹ",
+          "isCorrect": true
+        },
+        {
+          "content": "Bạn bè",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Bố và Mẹ là người đã sinh ra và nuôi dưỡng chúng ta trưởng thành."
+    },
+    {
+      "content": "Mẹ của Mẹ được gọi là gì?",
+      "options": [
+        {
+          "content": "Bà ngoại",
+          "isCorrect": true
+        },
+        {
+          "content": "Bà nội",
+          "isCorrect": false
+        },
+        {
+          "content": "Cô",
+          "isCorrect": false
+        },
+        {
+          "content": "Dì",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Người sinh ra mẹ mình thì mình gọi bằng danh xưng là Bà ngoại."
+    },
+    {
+      "content": "Bố của Bố được gọi là gì?",
+      "options": [
+        {
+          "content": "Ông ngoại",
+          "isCorrect": false
+        },
+        {
+          "content": "Cậu",
+          "isCorrect": false
+        },
+        {
+          "content": "Chú",
+          "isCorrect": false
+        },
+        {
+          "content": "Ông nội",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Người sinh ra bố mình thì mình gọi bằng danh xưng là Ông nội."
+    },
+    {
+      "content": "Em trai của mẹ được gọi là gì?",
+      "options": [
+        {
+          "content": "Chú",
+          "isCorrect": false
+        },
+        {
+          "content": "Cậu",
+          "isCorrect": true
+        },
+        {
+          "content": "Bác",
+          "isCorrect": false
+        },
+        {
+          "content": "Dượng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Theo văn hóa xưng hô Việt Nam, em trai của mẹ được gọi là Cậu."
+    },
+    {
+      "content": "Người sinh ra trước mình, là con trai của bố mẹ mình thì gọi là gì?",
+      "options": [
+        {
+          "content": "Anh trai",
+          "isCorrect": true
+        },
+        {
+          "content": "Em trai",
+          "isCorrect": false
+        },
+        {
+          "content": "Chị gái",
+          "isCorrect": false
+        },
+        {
+          "content": "Em gái",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Anh trai là người con trai lớn hơn sinh ra trước mình trong nhà."
+    },
+    {
+      "content": "Người sinh ra sau mình, là con gái của bố mẹ mình thì gọi là gì?",
+      "options": [
+        {
+          "content": "Chị gái",
+          "isCorrect": false
+        },
+        {
+          "content": "Em gái",
+          "isCorrect": true
+        },
+        {
+          "content": "Anh trai",
+          "isCorrect": false
+        },
+        {
+          "content": "Em trai",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Em gái là người con gái nhỏ tuổi hơn sinh ra sau mình."
+    },
+    {
+      "content": "Chị gái hoặc anh trai của bố hoặc mẹ (người lớn tuổi hơn bố mẹ) thì gọi là gì?",
+      "options": [
+        {
+          "content": "Bác",
+          "isCorrect": true
+        },
+        {
+          "content": "Chú",
+          "isCorrect": false
+        },
+        {
+          "content": "Dì",
+          "isCorrect": false
+        },
+        {
+          "content": "Cậu",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Anh hoặc chị của cả bố và mẹ đều được gọi chung là Bác."
+    },
+    {
+      "content": "Em gái của bố thì mình sẽ gọi bằng gì?",
+      "options": [
+        {
+          "content": "Dì",
+          "isCorrect": false
+        },
+        {
+          "content": "Mẹ",
+          "isCorrect": false
+        },
+        {
+          "content": "Cô",
+          "isCorrect": true
+        },
+        {
+          "content": "Thím",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Em gái của bố thì xưng hô đúng chuẩn là Cô."
+    },
+    {
+      "content": "Bố của Mẹ mình được gọi là gì?",
+      "options": [
+        {
+          "content": "Ông nội",
+          "isCorrect": false
+        },
+        {
+          "content": "Ông ngoại",
+          "isCorrect": true
+        },
+        {
+          "content": "Bác",
+          "isCorrect": false
+        },
+        {
+          "content": "Chú",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Người đàn ông sinh ra mẹ mình thì mình gọi là Ông ngoại."
+    },
+    {
+      "content": "Con của cô, dì, chú hoặc bác trong họ hàng thì được gọi là gì của mình?",
+      "options": [
+        {
+          "content": "Anh em họ",
+          "isCorrect": true
+        },
+        {
+          "content": "Anh em ruột",
+          "isCorrect": false
+        },
+        {
+          "content": "Bạn thân",
+          "isCorrect": false
+        },
+        {
+          "content": "Người dưng",
+          "isCorrect": false
+        }
+      ],
+      "explanation": "Những người con của anh em bố mẹ được gọi là anh chị em họ của mình."
+    }
+  ]
+}]

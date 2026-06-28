@@ -3,25 +3,26 @@ package vn.hcmute.edu.materialsservice.repository;
 import vn.hcmute.edu.materialsservice.models.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+import vn.hcmute.edu.materialsservice.services.IStreakService;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface UserRepository extends MongoRepository<User, UUID> {
+public interface UserRepository extends MongoRepository<User, String> { // ← String
     Optional<User> findByEmail(String email);
 
-    // check email exists
     boolean existsByEmail(String email);
 
-    // check user active
-    boolean existsByIdAndIsActive(UUID userId, boolean isActive);
+    boolean existsByIdAndIsActive(String userId, boolean isActive);
 
-    Optional<User> findById(UUID userId);
+    Optional<User> findById(String userId);
 
-    // 🔥 XÓA TẤT CẢ USER INACTIVE CÙNG EMAIL (auto-clean duplicates)
     void deleteByEmailAndIsActive(String email, boolean isActive);
 
-    // 🔥 XÓA TẤT CẢ USER KHÁC CÙNG EMAIL TRỪ USER HIỆN TẠI
-    void deleteByEmailAndIdNot(String email, UUID Id);
+    void deleteByEmailAndIdNot(String email, String id);
+
+    List<User> findByUserType(String userType);
+
+
 }

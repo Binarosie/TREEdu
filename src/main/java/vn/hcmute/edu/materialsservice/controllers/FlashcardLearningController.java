@@ -8,8 +8,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import vn.hcmute.edu.materialsservice.dtos.request.MarkWordViewedRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.SubmitWordAnswerRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.ApiResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardProgressResponse;
+import vn.hcmute.edu.materialsservice.dtos.response.WordCheckResponse;
 import vn.hcmute.edu.materialsservice.Enum.ELearningStatus;
 import vn.hcmute.edu.materialsservice.services.iFlashcardLearningService;
 
@@ -24,10 +26,8 @@ public class FlashcardLearningController {
 
     private final iFlashcardLearningService learningService;
 
-    /**
-     * Bắt đầu học hoặc tiếp tục học flashcard
-     * POST /api/flashcards/learn/{flashcardId}/start
-     */
+    // Bắt đầu học hoặc tiếp tục học flashcard
+    // POST /api/flashcards/learn/{flashcardId}/start
     @PostMapping("/{flashcardId}/start")
     public ResponseEntity<ApiResponse<FlashcardProgressResponse>> startLearning(
             @PathVariable String flashcardId,
@@ -37,10 +37,8 @@ public class FlashcardLearningController {
         return ResponseEntity.ok(ApiResponse.success("Bắt đầu học flashcard thành công", response));
     }
 
-    /**
-     * Đánh dấu một word đã xem
-     * PUT /api/flashcards/learn/{flashcardId}/mark-viewed
-     */
+    // Đánh dấu một word đã xem
+    // PUT /api/flashcards/learn/{flashcardId}/mark-viewed
     @PutMapping("/{flashcardId}/mark-viewed")
     public ResponseEntity<ApiResponse<FlashcardProgressResponse>> markWordViewed(
             @PathVariable String flashcardId,
@@ -52,10 +50,23 @@ public class FlashcardLearningController {
         return ResponseEntity.ok(ApiResponse.success("Đánh dấu word đã xem thành công", response));
     }
 
-    /**
-     * Lấy tiến trình học của một flashcard
-     * GET /api/flashcards/learn/{flashcardId}
-     */
+    // Gõ và submit từ vựng, hệ thống check đúng/sai
+    // POST /api/flashcards/learn/{flashcardId}/submit-answer
+    @PostMapping("/{flashcardId}/submit-answer")
+    public ResponseEntity<ApiResponse<WordCheckResponse>> submitWordAnswer(
+            @PathVariable String flashcardId,
+            @Valid @RequestBody SubmitWordAnswerRequest request,
+            Authentication authentication) {
+
+        WordCheckResponse response = learningService.submitWordAnswer(
+                flashcardId, request.getWordId(), request.getUserAnswer(), authentication);
+
+        String message = response.isCorrect() ? "✅ Chính xác!" : "❌ Sai, vui lòng thử lại";
+        return ResponseEntity.ok(ApiResponse.success(message, response));
+    }
+
+    // Lấy tiến trình học của một flashcard
+    // GET /api/flashcards/learn/{flashcardId}
     @GetMapping("/{flashcardId}")
     public ResponseEntity<ApiResponse<FlashcardProgressResponse>> getLearningProgress(
             @PathVariable String flashcardId,
@@ -65,10 +76,8 @@ public class FlashcardLearningController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    /**
-     * Lấy tất cả flashcard đang học
-     * GET /api/flashcards/learn
-     */
+    // Lấy tất cả flashcard đang học
+    // GET /api/flashcards/learn
     @GetMapping
     public ResponseEntity<ApiResponse<List<FlashcardProgressResponse>>> getAllLearningProgress(
             Authentication authentication) {
@@ -77,10 +86,8 @@ public class FlashcardLearningController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * Lấy flashcard đang học theo trạng thái
-     * GET /api/flashcards/learn/status/{status}
-     */
+    // Lấy flashcard đang học theo trạng thái
+    // GET /api/flashcards/learn/status/{status}
     @GetMapping("/status/{status}")
     public ResponseEntity<ApiResponse<List<FlashcardProgressResponse>>> getLearningProgressByStatus(
             @PathVariable ELearningStatus status,
@@ -90,10 +97,8 @@ public class FlashcardLearningController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * Reset tiến trình học (học lại từ đầu)
-     * POST /api/flashcards/learn/{flashcardId}/reset
-     */
+    // Reset tiến trình học (học lại từ đầu)
+    // POST /api/flashcards/learn/{flashcardId}/reset
     @PostMapping("/{flashcardId}/reset")
     public ResponseEntity<ApiResponse<FlashcardProgressResponse>> resetProgress(
             @PathVariable String flashcardId,

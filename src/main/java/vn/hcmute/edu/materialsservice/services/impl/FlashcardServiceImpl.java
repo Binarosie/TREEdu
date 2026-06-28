@@ -2,6 +2,12 @@ package vn.hcmute.edu.materialsservice.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -11,9 +17,11 @@ import vn.hcmute.edu.materialsservice.dtos.response.FlashcardResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardWithWordsResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.WordResponse;
 import vn.hcmute.edu.materialsservice.Enum.EFlashcardType;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 import vn.hcmute.edu.materialsservice.Mapper.FlashcardMapper;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
+import vn.hcmute.edu.materialsservice.models.NotificationEvent;
 import vn.hcmute.edu.materialsservice.models.Word;
 import vn.hcmute.edu.materialsservice.repository.FlashcardProgressRepository;
 import vn.hcmute.edu.materialsservice.repository.FlashcardRepository;
@@ -23,6 +31,8 @@ import vn.hcmute.edu.materialsservice.exceptions.FlashcardAlreadyExistsException
 import vn.hcmute.edu.materialsservice.exceptions.FlashcardNotFoundException;
 import vn.hcmute.edu.materialsservice.exceptions.InvalidFlashcardDataException;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
+import vn.hcmute.edu.materialsservice.services.observer.NotificationCenter;
+import vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +47,7 @@ public class FlashcardServiceImpl implements iFlashcardService {
     private final FlashcardMapper flashcardMapper;
     private final WordMapper wordMapper;
     private final FlashcardProgressRepository progressRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     @Transactional
@@ -55,7 +66,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
         flashcard.setUpdatedAt(LocalDateTime.now());
         flashcard.setDeleted(false);
 
-        // ================= LOGIC PHÂN LOẠI =================
         boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
                         a.getAuthority().equals("ROLE_SUPPORTER"));
@@ -67,12 +77,17 @@ public class FlashcardServiceImpl implements iFlashcardService {
             flashcard.setType(EFlashcardType.BY_MEMBER);
             flashcard.setCreatedBy(userDetails.getUser().getId().toString());
         }
-        // ===================================================
 
         Flashcard saved = flashcardRepository.save(flashcard);
 
         FlashcardResponse response = flashcardMapper.toResponse(saved);
+
         response.setWordCount(0);
+
+        boolean isOwner = saved.getCreatedBy() != null &&
+                saved.getCreatedBy().equals(userDetails.getUser().getId().toString());
+
+        response.setIsOwner(isOwner);
 
         return response;
     }
@@ -83,13 +98,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
         Flashcard existingFlashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
 
-        long progressCount = progressRepository.findByFlashcardId(id).size();
-        if (progressCount > 0) {
-            throw new IllegalStateException(
-                    "Không thể cập nhật flashcard này vì đã có " + progressCount + " người học. "
-                            + "Chỉ được cập nhật flashcard chưa có ai học.");
-        }
-
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String userId = userDetails.getUser().getId().toString();
@@ -98,7 +106,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
         boolean isSupporter = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_SUPPORTER"));
 
-        // ================= RULE =================
         if (existingFlashcard.getType() == EFlashcardType.SYSTEM) {
             if (!isAdmin && !isSupporter) {
                 throw new AccessDeniedException(
@@ -111,8 +118,26 @@ public class FlashcardServiceImpl implements iFlashcardService {
                 throw new AccessDeniedException(
                         "Bạn chỉ có thể cập nhật flashcard do chính bạn tạo");
             }
+
+            // Logic kiểm tra progress khi member sửa flashcard của họ
+            var allProgress = progressRepository.findByFlashcardId(id);
+            var otherUserProgress = allProgress.stream()
+                    .filter(p -> !p.getUserId().equals(existingFlashcard.getCreatedBy()))
+                    .toList();
+
+            // Nếu flashcard PUBLIC
+            if (existingFlashcard.getVisibility() == EFlashcardVisibility.PUBLIC) {
+                if (!otherUserProgress.isEmpty()) {
+                    throw new IllegalStateException(
+                            "Flashcard này đang công khai và có " + otherUserProgress.size()
+                                    + " người khác học. Không thể chỉnh sửa.");
+                }
+                // Chưa có ai khác học => tự động chuyển về PRIVATE để cho phép sửa
+                existingFlashcard.setVisibility(EFlashcardVisibility.PRIVATE);
+                log.info("Flashcard tự động chuyển về PRIVATE khi sửa (chưa có ai khác học)");
+            }
+            // Nếu PRIVATE => cho sửa bình thường, tiến trình cũ vẫn giữ nguyên
         }
-        // ========================================
 
         List<Flashcard> flashcardsWithSameTitle = flashcardRepository
                 .findByTitleContainingIgnoreCase(request.getTitle());
@@ -163,7 +188,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
         boolean isSupporter = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_SUPPORTER"));
 
-        // ================= RULE =================
         if (flashcard.getType() == EFlashcardType.SYSTEM) {
             if (!isAdmin && !isSupporter) {
                 throw new AccessDeniedException(
@@ -177,7 +201,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
                         "Bạn chỉ có thể xóa flashcard do chính bạn tạo");
             }
         }
-        // ========================================
 
         flashcard.setDeleted(true);
         flashcard.setDeletedAt(LocalDateTime.now());
@@ -193,7 +216,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
 
-        // ================= FILTER THEO ROLE =================
         if (authentication != null && authentication.isAuthenticated()) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -217,7 +239,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
                         "Bạn cần đăng nhập để xem flashcard này");
             }
         }
-        // ===================================================
 
         FlashcardResponse response = flashcardMapper.toResponse(flashcard);
         response.setWordCount((int) wordRepository.countByFlashcardId(id));
@@ -225,39 +246,54 @@ public class FlashcardServiceImpl implements iFlashcardService {
         return response;
     }
 
-    // METHOD MỚI: Lấy flashcard kèm tất cả words
     @Override
-    public FlashcardWithWordsResponse getFlashcardWithWords(String id, Authentication authentication) {
+    public FlashcardWithWordsResponse getFlashcardWithWords(
+            String id,
+            Authentication authentication) {
+
         log.info("Getting flashcard with words, ID: {}", id);
 
-        // Lấy flashcard
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
 
-        // ================= FILTER THEO ROLE =================
+        boolean isOwner = false;
+        boolean isAdminOrSupporter = false;
+
+        // ===== CHECK AUTH =====
         if (authentication != null && authentication.isAuthenticated()) {
+
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
+            String userId = userDetails.getUser().getId().toString();
+
+            isAdminOrSupporter = userDetails.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
                             a.getAuthority().equals("ROLE_SUPPORTER"));
 
+            isOwner = flashcard.getCreatedBy() != null &&
+                    flashcard.getCreatedBy().equals(userId);
+
+            // Nếu không phải admin/supporter
             if (!isAdminOrSupporter) {
-                String userId = userDetails.getUser().getId().toString();
-                if (flashcard.getType() == EFlashcardType.BY_MEMBER &&
-                        !userId.equals(flashcard.getCreatedBy())) {
+
+                // PRIVATE + không phải owner
+                if (flashcard.getVisibility() == EFlashcardVisibility.PRIVATE
+                        && !isOwner) {
+
                     throw new AccessDeniedException(
                             "Bạn không có quyền xem flashcard này");
                 }
             }
+
         } else {
-            // GUEST chỉ xem SYSTEM flashcard
-            if (flashcard.getType() != EFlashcardType.SYSTEM) {
+
+            // Guest chỉ xem PUBLIC
+            if (flashcard.getVisibility() != EFlashcardVisibility.PUBLIC) {
+
                 throw new AccessDeniedException(
                         "Bạn cần đăng nhập để xem flashcard này");
             }
         }
-        // ===================================================
 
         // Lấy tất cả words của flashcard
         List<Word> words = wordRepository.findByFlashcardId(id);
@@ -270,6 +306,14 @@ public class FlashcardServiceImpl implements iFlashcardService {
                 .description(flashcard.getDescription())
                 .level(flashcard.getLevel())
                 .topic(flashcard.getTopic())
+
+                // THÊM MẤY FIELD NÀY
+                .type(flashcard.getType().name())
+                .createdBy(flashcard.getCreatedBy())
+                .visibility(flashcard.getVisibility())
+                .isViolated(flashcard.getIsViolated())
+                .isOwner(isOwner)
+
                 .wordCount(words.size())
                 .words(wordResponses)
                 .createdAt(flashcard.getCreatedAt())
@@ -308,15 +352,9 @@ public class FlashcardServiceImpl implements iFlashcardService {
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
                             || a.getAuthority().equals("ROLE_SUPPORTER"));
 
-            System.out.println("isAdminOrSupporter: " + isAdminOrSupporter);
-
             if (!isAdminOrSupporter) {
                 flashcards = flashcards.stream()
                         .filter(f -> {
-                            System.out.println("Flashcard ID: " + f.getId()
-                                    + " | type=" + f.getType()
-                                    + " | createdBy=" + f.getCreatedBy());
-
                             return f.getType() == EFlashcardType.SYSTEM ||
                                     (f.getType() == EFlashcardType.BY_MEMBER &&
                                             userId.equals(f.getCreatedBy()));
@@ -324,15 +362,10 @@ public class FlashcardServiceImpl implements iFlashcardService {
                         .toList();
             }
         } else {
-            System.out.println(">>> GUEST MODE");
             flashcards = flashcards.stream()
                     .filter(f -> f.getType() == EFlashcardType.SYSTEM)
                     .toList();
         }
-        // ===================================================
-
-        System.out.println("Flashcards after filter: " + flashcards.size());
-        System.out.println("===================================");
 
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
@@ -345,28 +378,24 @@ public class FlashcardServiceImpl implements iFlashcardService {
     }
 
     @Override
-    public List<FlashcardResponse> getFlashcardsByTopic(String topic, Authentication authentication) {
-        log.info("Fuzzy searching flashcards by topic: {}", topic);
+    public List<FlashcardResponse> getFlashcardsByTitle(String title, Authentication authentication) {
+        log.info("Fuzzy searching flashcards by title: {}", title);
 
-        // Validate min characters
-        if (topic == null || topic.trim().length() < 2) {
-            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+        if (title == null || title.trim().length() < 2) {
+            log.warn("Title keyword too short for fuzzy search: {}", title);
             return List.of();
         }
 
-        // Lấy tất cả flashcards trước
         List<Flashcard> allFlashcards = flashcardRepository.findAll();
 
-        // Apply fuzzy filter với threshold 0.4
-        List<Flashcard> flashcards = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
+        List<Flashcard> flashcards = FuzzySearchUtil.fuzzyFilter(
                 allFlashcards,
-                topic,
-                Flashcard::getTopic,
+                title,
+                Flashcard::getTitle,
                 0.4);
 
-        log.info("Found {} flashcards matching '{}' with fuzzy search", flashcards.size(), topic);
+        log.info("Found {} flashcards matching '{}' with fuzzy search", flashcards.size(), title);
 
-        // ================= FILTER THEO ROLE =================
         if (authentication != null && authentication.isAuthenticated()) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -378,12 +407,12 @@ public class FlashcardServiceImpl implements iFlashcardService {
                 String userId = userDetails.getUser().getId().toString();
                 flashcards = flashcards.stream()
                         .filter(f -> f.getType() == EFlashcardType.SYSTEM ||
+                                f.getVisibility().PUBLIC.equals(f.getVisibility()) ||
                                 (f.getType() == EFlashcardType.BY_MEMBER &&
                                         userId.equals(f.getCreatedBy())))
                         .toList();
             }
         }
-        // ===================================================
 
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
@@ -403,7 +432,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
 
         List<Flashcard> flashcards = flashcardRepository.findByLevel(level);
 
-        // ================= FILTER THEO ROLE =================
         if (authentication != null && authentication.isAuthenticated()) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -420,7 +448,6 @@ public class FlashcardServiceImpl implements iFlashcardService {
                         .toList();
             }
         }
-        // ===================================================
 
         List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
 
@@ -436,5 +463,235 @@ public class FlashcardServiceImpl implements iFlashcardService {
         if (level == null || level < 1 || level > 6) {
             throw new InvalidFlashcardDataException("Level phải từ 1 đến 6");
         }
+    }
+
+//    @Override
+//    @Transactional
+//    public FlashcardResponse changeVisibility(String id, EFlashcardVisibility visibility,
+//            Authentication authentication) {
+//        Flashcard flashcard = flashcardRepository.findById(id)
+//                .orElseThrow(() -> new FlashcardNotFoundException(id));
+//
+//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//        String userId = userDetails.getUser().getId().toString();
+//
+//        // Chỉ tác giả (BY_MEMBER) hoặc Admin có thể thay đổi visibility
+//        if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
+//            if (!userId.equals(flashcard.getCreatedBy())) {
+//                throw new AccessDeniedException("Bạn chỉ có thể thay đổi visibility của flashcard do chính bạn tạo");
+//            }
+//        } else if (flashcard.getType() == EFlashcardType.SYSTEM) {
+//            boolean isAdmin = userDetails.getAuthorities().stream()
+//                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+//            if (!isAdmin) {
+//                throw new AccessDeniedException("Chỉ admin mới có thể thay đổi visibility flashcard hệ thống");
+//            }
+//        }
+//
+//        // Nếu flashcard bị vi phạm, không được chuyển sang PUBLIC
+//        if (flashcard.getIsViolated() != null && flashcard.getIsViolated()
+//                && visibility == EFlashcardVisibility.PUBLIC) {
+//            throw new IllegalStateException("Flashcard này đã bị đánh dấu vi phạm, không thể chuyển sang PUBLIC");
+//        }
+//
+//        flashcard.setVisibility(visibility);
+//        flashcard.setUpdatedAt(LocalDateTime.now());
+//
+//        Flashcard updated = flashcardRepository.save(flashcard);
+//
+//        FlashcardResponse response = flashcardMapper.toResponse(updated);
+//        response.setWordCount((int) wordRepository.countByFlashcardId(id));
+//
+//        return response;
+//    }
+
+    @Override
+    @Transactional
+    public FlashcardResponse changeVisibility(String id, EFlashcardVisibility visibility,
+                                              Authentication authentication) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId().toString();
+
+        Flashcard flashcard = flashcardRepository.findById(id)
+                .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        // Check owner / admin (giữ nguyên)
+        if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
+            if (!userId.equals(flashcard.getCreatedBy())) {
+                throw new AccessDeniedException("Bạn chỉ có thể thay đổi visibility của flashcard do chính bạn tạo");
+            }
+        } else if (flashcard.getType() == EFlashcardType.SYSTEM) {
+            boolean isAdmin = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            if (!isAdmin) {
+                throw new AccessDeniedException("Chỉ admin mới có thể thay đổi visibility flashcard hệ thống");
+            }
+        }
+
+        // Check violated (giữ nguyên)
+        if (flashcard.getIsViolated() != null && flashcard.getIsViolated()
+                && visibility == EFlashcardVisibility.PUBLIC) {
+            throw new IllegalStateException("Flashcard này đã bị đánh dấu vi phạm, không thể chuyển sang PUBLIC");
+        }
+
+        Flashcard updated;
+
+        //Thêm: PUBLIC → PRIVATE cần atomic check learnerCount
+        if (flashcard.getVisibility() == EFlashcardVisibility.PUBLIC
+                && visibility == EFlashcardVisibility.PRIVATE) {
+
+            updated = setPrivateAtomically(id);
+
+            if (updated == null) {
+                long learnerCount = progressRepository.countByFlashcardId(id);
+                if (learnerCount > 0) {
+                    throw new IllegalStateException(
+                            "Không thể chuyển về PRIVATE vì đã có " + learnerCount + " người đang học");
+                }
+                throw new IllegalStateException("Không thể thay đổi trạng thái flashcard lúc này");
+            }
+
+        } else {
+            // Các trường hợp còn lại: PRIVATE → PUBLIC, PUBLIC → PUBLIC, v.v.
+            flashcard.setVisibility(visibility);
+            flashcard.setUpdatedAt(LocalDateTime.now());
+            updated = flashcardRepository.save(flashcard);
+        }
+
+        // Thêm: Notify owner
+        NotificationCenter.notifyObservers(NotificationEvent.builder()
+                .receiverId(userId)
+                .type("SYSTEM")
+                .title("Cập nhật trạng thái flashcard")
+                .content("Flashcard \"" + updated.getTitle() + "\" đã chuyển sang "
+                        + updated.getVisibility().name())
+                .build());
+
+        log.info("Flashcard {} visibility changed to {} by {}", id, updated.getVisibility(), userId);
+
+        FlashcardResponse response = flashcardMapper.toResponse(updated);
+        response.setWordCount((int) wordRepository.countByFlashcardId(id));
+        return response;
+    }
+
+    private Flashcard setPrivateAtomically(String flashcardId) {
+        long learnerCount = progressRepository.countByFlashcardId(flashcardId);
+
+        if (learnerCount > 0) {
+            return null;
+        }
+
+        Query query = new Query(Criteria.where("_id").is(flashcardId)
+                .and("visibility").is(EFlashcardVisibility.PUBLIC.name()));
+
+        Update update = new Update()
+                .set("visibility", EFlashcardVisibility.PRIVATE.name())
+                .set("updatedAt", LocalDateTime.now());
+
+        FindAndModifyOptions options = FindAndModifyOptions.options()
+                .returnNew(true)
+                .upsert(false);
+
+        return mongoTemplate.findAndModify(query, update, options, Flashcard.class);
+    }
+
+    @Override
+    public List<FlashcardResponse> getPublicFlashcards(Authentication authentication) {
+        log.info("Getting public flashcards");
+
+        List<Flashcard> flashcards = flashcardRepository.findByVisibility(EFlashcardVisibility.PUBLIC);
+
+        // Lọc ra các flashcard không bị vi phạm (optional, tuỳ logic)
+        // flashcards = flashcards.stream()
+        // .filter(f -> f.getIsViolated() == null || !f.getIsViolated())
+        // .toList();
+
+        List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
+
+        responses.forEach(response -> {
+            long count = wordRepository.countByFlashcardId(response.getId());
+            response.setWordCount((int) count);
+        });
+
+        return responses;
+    }
+
+    @Override
+    public List<FlashcardResponse> getMyFlashcards(Authentication authentication) {
+        log.info("Getting user's flashcards");
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("Bạn phải đăng nhập để xem flashcard của mình");
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId().toString();
+
+        List<Flashcard> flashcards = flashcardRepository.findByCreatedBy(userId);
+
+        List<FlashcardResponse> responses = flashcardMapper.toResponseList(flashcards);
+
+        responses.forEach(response -> {
+            long count = wordRepository.countByFlashcardId(response.getId());
+            response.setWordCount((int) count);
+            response.setIsOwner(true);
+        });
+
+        return responses;
+    }
+
+    @Override
+    public List<FlashcardResponse> getAllFlashcardWithPublic(Authentication authentication) {
+        log.info("Getting all flashcards: user's flashcards + PUBLIC flashcards from system/other members");
+
+        List<Flashcard> allFlashcards = new java.util.ArrayList<>();
+        java.util.Set<String> addedIds = new java.util.HashSet<>();
+
+        // 1. Nếu user đã đăng nhập, lấy tất cả flashcard của user
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            String userId = userDetails.getUser().getId().toString();
+
+            List<Flashcard> userFlashcards = flashcardRepository.findByCreatedBy(userId);
+            allFlashcards.addAll(userFlashcards);
+            userFlashcards.forEach(f -> addedIds.add(f.getId()));
+        }
+
+        // 2. Lấy tất cả PUBLIC flashcards (từ hệ thống và từ members khác)
+        List<Flashcard> publicFlashcards = flashcardRepository.findByVisibility(EFlashcardVisibility.PUBLIC);
+        for (Flashcard flashcard : publicFlashcards) {
+            // Tránh trùng lặp: nếu đã thêm flashcard này từ user's flashcards, thì bỏ qua
+            if (!addedIds.contains(flashcard.getId())) {
+                allFlashcards.add(flashcard);
+                addedIds.add(flashcard.getId());
+            }
+        }
+
+        List<FlashcardResponse> responses = flashcardMapper.toResponseList(allFlashcards);
+
+        // Set isOwner flag nếu authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            String userId = userDetails.getUser().getId().toString();
+
+            responses.forEach(response -> {
+                long count = wordRepository.countByFlashcardId(response.getId());
+                response.setWordCount((int) count);
+
+                // Kiểm tra xem user có phải là owner không
+                // Nếu createdBy là null hoặc trùng với userId, thì là owner
+                Boolean isOwner = response.getCreatedBy() != null && response.getCreatedBy().equals(userId);
+                response.setIsOwner(isOwner);
+            });
+        } else {
+            responses.forEach(response -> {
+                long count = wordRepository.countByFlashcardId(response.getId());
+                response.setWordCount((int) count);
+                response.setIsOwner(false);
+            });
+        }
+
+        return responses;
     }
 }

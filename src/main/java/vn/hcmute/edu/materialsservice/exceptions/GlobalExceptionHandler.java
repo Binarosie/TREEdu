@@ -155,6 +155,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage(), ex.getStatusCode()));
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+        ex.printStackTrace(); // In ra cụ thể lỗi ở dòng nào trong Console để mày sửa
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR) // Trả về 500 chuẩn chỉnh
+                .body(Map.of(
+                        "status", 500,
+                        "error", "Internal Server Error",
+                        "message", ex.getMessage() // Hiện câu chữ rõ ràng lên Postman
+                ));
+    }
 
     @ExceptionHandler(IOException.class)
     public BadRequestError handleIO(IOException ex) {

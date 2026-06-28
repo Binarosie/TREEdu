@@ -11,7 +11,9 @@ import java.util.Optional;
 @Repository
 public interface FlashcardProgressRepository extends MongoRepository<FlashcardProgress, String> {
 
-    Optional<FlashcardProgress> findByUserIdAndFlashcardId(String userId, String flashcardId);
+    Optional<FlashcardProgress> findFirstByUserIdAndFlashcardId(String userId, String flashcardId);
+
+    Optional<FlashcardProgress> findFirstByUserIdAndFlashcardIdOrderByStartedAtDesc(String userId, String flashcardId);
 
     List<FlashcardProgress> findByUserId(String userId);
 
@@ -19,7 +21,7 @@ public interface FlashcardProgressRepository extends MongoRepository<FlashcardPr
 
     List<FlashcardProgress> findByFlashcardId(String flashcardId);
 
-    boolean existsByUserIdAndFlashcardId(String userId, String flashcardId);
+    int countByFlashcardId(String flashcardId);
 
-    void deleteByFlashcardId(String flashcardId);
+    List<FlashcardProgress> findByUserIdAndFlashcardId(String userId, String flashcardId);
 }

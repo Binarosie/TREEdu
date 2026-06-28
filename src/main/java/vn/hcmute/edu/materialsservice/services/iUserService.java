@@ -18,27 +18,27 @@ public interface iUserService {
 
     User createManager(CreateUserRequest request);
 
-    Optional<User> getUserById(UUID id);
+    Optional<User> getUserById(String id); // ← UUID → String
 
-    UserInfoDTO getUserInfoById(UUID id);
+    UserInfoDTO getUserInfoById(String id); // ← UUID → String
 
-    UserDetailDTO getUserDetailById(UUID id);
+    UserDetailDTO getUserDetailById(String id); // ← UUID → String
 
     Page<User> getAllUsers(Pageable pageable);
 
     boolean existsByEmail(String email);
 
-    boolean existsByUserIdAndIsActive(UUID userId, boolean isActive);
+    boolean existsByUserIdAndIsActive(String userId, boolean isActive); // ← UUID → String
 
-    User updateMyProfile(UUID id, UpdateProfileRequest request);
+    User updateMyProfile(String id, UpdateProfileRequest request); // ← UUID → String
 
-    User updateUserByID(UUID id, UpdateUserRequest request);
+    User updateUserByID(String id, UpdateUserRequest request); // ← UUID → String
 
-    boolean changePasswordById(UUID id, String newPassword);
+    boolean changePasswordById(String id, String newPassword); // ← UUID → String
 
-    void deactivateUser(UUID id);
+    void deactivateUser(String id); // ← UUID → String
 
-    void activateUser(UUID id);
+    void activateUser(String id); // ← UUID → String
 
     int getTotalUsers();
 
@@ -48,5 +48,9 @@ public interface iUserService {
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> findById(UUID id);
+    Optional<User> findById(String id); // ← UUID → String
+
+    boolean addXpToMember(String userId, int xpToAdd);
+
+    int calculateLevel(int totalXp);
 }

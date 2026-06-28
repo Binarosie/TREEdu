@@ -30,7 +30,7 @@ public class UserSeeder {
 
         // ===== ADMIN =====
         Admin admin1 = Admin.builder()
-                .id(UUID.randomUUID())
+                .id(java.util.UUID.randomUUID().toString()) // ← String ID
                 .fullName("Admin")
                 .email("admin@example.com")
                 .password(passwordEncoder.encode("password123"))
@@ -42,7 +42,7 @@ public class UserSeeder {
 
         // ===== MODERATOR =====
         Supporter moderator1 = Supporter.builder()
-                .id(UUID.randomUUID())
+                .id(java.util.UUID.randomUUID().toString()) // ← String ID
                 .fullName("Moderator 1")
                 .email("mod1@email.com")
                 .password(passwordEncoder.encode("password123"))
@@ -54,21 +54,25 @@ public class UserSeeder {
 
         // ===== MEMBER =====
         User member = new Member();
-        member.setId(UUID.randomUUID());
+        member.setId(java.util.UUID.randomUUID().toString()); // ← String ID
         member.setFullName("Alice Nguyen");
         member.setEmail("alice@gmail.com");
         member.setPassword(passwordEncoder.encode("password123"));
         member.setActive(true);
+        member.setCreatedOn(LocalDateTime.now());
+        member.setModifiedOn(LocalDateTime.now());
 
         userRepository.save(member);
 
         // ===== MEMBER 2 =====
         User member2 = new Member();
-        member2.setId(UUID.randomUUID());
+        member2.setId(java.util.UUID.randomUUID().toString()); // ← String ID
         member2.setFullName("Bob Tran");
         member2.setEmail("bob@gmail.com");
         member2.setPassword(passwordEncoder.encode("password123"));
         member2.setActive(true);
+        member2.setCreatedOn(LocalDateTime.now());
+        member2.setModifiedOn(LocalDateTime.now());
 
         userRepository.save(member2);
 

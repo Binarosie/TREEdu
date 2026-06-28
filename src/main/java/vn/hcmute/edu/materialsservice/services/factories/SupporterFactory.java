@@ -1,13 +1,14 @@
 package vn.hcmute.edu.materialsservice.services.factories;
 
 import vn.hcmute.edu.materialsservice.models.User;
-import vn.hcmute.edu.materialsservice.models.Supporter; // ← FIX: Đổi thành Supporter
+import vn.hcmute.edu.materialsservice.models.Supporter;
 import vn.hcmute.edu.materialsservice.dtos.request.users.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j
@@ -26,15 +27,17 @@ public class SupporterFactory implements iUserFactory {
     public User createUser(CreateUserRequest request) {
         log.info("🔧 Creating SUPPORTER with email: {}", request.getEmail());
 
-        Supporter supporter = Supporter.builder() // ← FIX: Đổi thành Supporter
-                .id(UUID.randomUUID())
+        Supporter supporter = Supporter.builder()
+                .id(UUID.randomUUID().toString())
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .isActive(false)
+                .createdOn(LocalDateTime.now())
+                .modifiedOn(LocalDateTime.now())
                 .build();
 
-        log.info(" Supporter created: {} (class: {})", supporter.getEmail(), supporter.getClass().getSimpleName());
+        log.info("✅ Supporter created: {} (class: {})", supporter.getEmail(), supporter.getClass().getSimpleName());
         return supporter;
     }
 }

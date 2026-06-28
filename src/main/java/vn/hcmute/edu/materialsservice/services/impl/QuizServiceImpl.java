@@ -5,15 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.HttpStatusCode;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import vn.hcmute.edu.materialsservice.dtos.request.AnswerRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.GenerateQuizFromFileRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.QuestionRequest;
@@ -31,7 +38,6 @@ import vn.hcmute.edu.materialsservice.exceptions.ResourceNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -194,26 +200,21 @@ public class QuizServiceImpl implements iQuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> searchQuizzesByTopic(String topic) {
-        log.info("Fuzzy searching quizzes by topic keyword: {}", topic);
+    public List<QuizResponse> searchQuizzesByTitle(String title) {
+        log.info("Fuzzy searching quizzes by title keyword: {}", title);
 
-        // Validate min characters
-        if (topic == null || topic.trim().length() < 2) {
-            log.warn("Topic keyword too short for fuzzy search: {}", topic);
+        if (title == null || title.trim().length() < 2) {
             return List.of();
         }
 
-        // Lấy tất cả quiz
         List<Quiz> allQuizzes = quizRepository.findAll();
 
-        // Apply fuzzy filter với threshold 0.4
+        // SỬA Ở ĐÂY: Đổi Quiz::getTopic thành Quiz::getTitle
         List<Quiz> filteredQuizzes = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
                 allQuizzes,
-                topic,
-                Quiz::getTopic,
+                title,
+                Quiz::getTitle,
                 0.4);
-
-        log.info("Found {} quizzes matching '{}' with fuzzy search", filteredQuizzes.size(), topic);
 
         return filteredQuizzes.stream()
                 .map(quizMapper::toResponse)
@@ -259,19 +260,31 @@ public class QuizServiceImpl implements iQuizService {
             throw new IllegalArgumentException("File quá lớn, tối đa 10MB");
         }
 
-        byte[] fileBytes = file.getBytes();
-        String base64File = Base64.getEncoder().encodeToString(fileBytes);
-        String mimeType = getMimeType(file.getOriginalFilename());
+        String fileContent;
+        try {
+            fileContent = extractTextFromFile(file);
+            log.info("Extracted text length: {} chars from {}", fileContent.length(), file.getOriginalFilename());
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Không thể đọc file: {}", e.getMessage(), e);
+            throw new IllegalArgumentException("Không thể đọc nội dung file. Vui lòng kiểm tra file.");
+        }
+
+        if (fileContent.isBlank()) {
+            throw new IllegalArgumentException("File không có nội dung hoặc không thể đọc được.");
+        }
 
         String prompt = buildHighQualityQuizPrompt(
                 request.getTopic(),
                 request.getLevel(),
                 request.getQuestionCount(),
-                file.getOriginalFilename());
+                file.getOriginalFilename(),
+                fileContent);
 
         String geminiResponse;
         try {
-            geminiResponse = callGeminiWithFile(prompt, base64File, mimeType);
+            geminiResponse = callGeminiWithText(prompt);
         } catch (RuntimeException e) {
             log.error("Lỗi khi gọi Gemini API: {}", e.getMessage());
             throw new RuntimeException("AI đang quá tải hoặc lỗi kết nối. Vui lòng thử lại sau vài phút.");
@@ -285,7 +298,8 @@ public class QuizServiceImpl implements iQuizService {
             quizRequest = parseQuizRequestFromRawText(rawText, request);
         } catch (Exception e) {
             log.error("Không thể parse JSON từ Gemini. Raw text: {}", rawText, e);
-            throw new InvalidDataException("AI trả về dữ liệu không hợp lệ hoặc không đúng định dạng. Vui lòng thử lại hoặc kiểm tra file.");
+            throw new InvalidDataException(
+                    "AI trả về dữ liệu không hợp lệ hoặc không đúng định dạng. Vui lòng thử lại hoặc kiểm tra file.");
         }
 
         // Validate lại lần cuối trước khi tạo
@@ -294,15 +308,26 @@ public class QuizServiceImpl implements iQuizService {
         return createQuiz(quizRequest);
     }
 
-    private String buildHighQualityQuizPrompt(String topic, Integer level, Integer questionCount, String filename) {
+    private String buildHighQualityQuizPrompt(String topic, Integer level, Integer questionCount, String filename,
+            String fileContent) {
         String safeTopic = topic != null && !topic.isBlank() ? topic : "tài liệu đính kèm";
         int safeLevel = (level != null && level >= 1 && level <= 6) ? level : 3;
         int safeCount = (questionCount != null && questionCount > 0 && questionCount <= 50) ? questionCount : 10;
+
+        String truncatedContent = fileContent.length() > 15000
+                ? fileContent.substring(0, 15000) + "\n...[nội dung bị cắt bớt]"
+                : fileContent;
 
         return """
                 Bạn là chuyên gia tạo bài quiz trắc nghiệm chất lượng cao từ tài liệu học tập.
 
                 File đính kèm: %s
+
+                NỘI DUNG TÀI LIỆU:
+                ---
+                %s
+                ---
+
                 Yêu cầu:
                 - Chủ đề chính: %s
                 - Độ khó (level): %d (1=dễ nhất, 6=khó nhất)
@@ -337,6 +362,7 @@ public class QuizServiceImpl implements iQuizService {
                 Bắt đầu tạo ngay sau khi đọc tài liệu.
                 """.formatted(
                 filename,
+                truncatedContent,
                 safeTopic,
                 safeLevel,
                 safeCount,
@@ -346,20 +372,23 @@ public class QuizServiceImpl implements iQuizService {
                 safeCount * 2); // timer truyền vào = số câu * 2
     }
 
-    private String callGeminiWithFile(String prompt, String base64File, String mimeType) {
+    private String callGeminiWithText(String prompt) {
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(
                         Map.of("parts", List.of(
-                                Map.of("text", prompt),
-                                Map.of("inline_data", Map.of(
-                                        "mime_type", mimeType,
-                                        "data", base64File))))),
-                "generationConfig", Map.of( // Dùng generationConfig (chữ C hoa)
+                                Map.of("text", prompt)))),
+                "generationConfig", Map.of(
                         "temperature", 0.3,
                         "maxOutputTokens", 8192,
                         "topP", 0.95));
 
-        return RestClient.create()
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(10_000);
+        requestFactory.setReadTimeout(120_000);
+
+        return RestClient.builder()
+                .requestFactory(requestFactory)
+                .build()
                 .post()
                 .uri(GEMINI_URL + apiKey)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -373,6 +402,41 @@ public class QuizServiceImpl implements iQuizService {
                     throw new RuntimeException("Lỗi từ Gemini: " + error);
                 })
                 .body(String.class);
+    }
+
+    private String extractTextFromFile(MultipartFile file) throws Exception {
+        String filename = file.getOriginalFilename();
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("Tên file không hợp lệ");
+        }
+
+        String lowerName = filename.toLowerCase();
+
+        if (lowerName.endsWith(".pdf")) {
+            try (var doc = org.apache.pdfbox.Loader.loadPDF(file.getBytes())) {
+                return new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
+            }
+        }
+
+        if (lowerName.endsWith(".docx")) {
+            try (XWPFDocument document = new XWPFDocument(file.getInputStream());
+                    XWPFWordExtractor extractor = new XWPFWordExtractor(document)) {
+                return extractor.getText();
+            }
+        }
+
+        if (lowerName.endsWith(".doc")) {
+            try (HWPFDocument document = new HWPFDocument(file.getInputStream());
+                    WordExtractor extractor = new WordExtractor(document)) {
+                return extractor.getText();
+            }
+        }
+
+        if (lowerName.endsWith(".txt")) {
+            return new String(file.getBytes(), StandardCharsets.UTF_8);
+        }
+
+        throw new IllegalArgumentException("Định dạng không hỗ trợ. Dùng .pdf, .docx, .doc, .txt");
     }
 
     private String extractAndFixJsonFromResponse(String responseBody) {
@@ -440,6 +504,7 @@ public class QuizServiceImpl implements iQuizService {
 
         return json.trim();
     }
+
     private String extractRawTextFromResponse(String responseBody) {
         try {
             JsonNode root = objectMapper.readTree(responseBody);
@@ -497,7 +562,8 @@ public class QuizServiceImpl implements iQuizService {
 
         // Level - ưu tiên từ request người dùng
         int level = originalRequest.getLevel() != null ? originalRequest.getLevel() : root.path("level").asInt(3);
-        if (level < 1 || level > 6) level = 3;
+        if (level < 1 || level > 6)
+            level = 3;
         builder.level(level);
 
         // Topic - ưu tiên từ request
@@ -523,7 +589,8 @@ public class QuizServiceImpl implements iQuizService {
             if (optionsNode.isArray()) {
                 for (JsonNode oNode : optionsNode) {
                     String content = oNode.path("content").asText("").trim();
-                    if (content.isBlank()) continue;
+                    if (content.isBlank())
+                        continue;
 
                     // Hỗ trợ cả isCorrect, is_correct, correct
                     boolean isCorrect = oNode.path("isCorrect").asBoolean(false)
@@ -553,8 +620,10 @@ public class QuizServiceImpl implements iQuizService {
             } else if (correctCount > 1) {
                 // Chỉ giữ cái đầu tiên đúng
                 for (int i = 0; i < options.size(); i++) {
-                    if (i == 0) options.get(i).setIsCorrect(true);
-                    else options.get(i).setIsCorrect(false);
+                    if (i == 0)
+                        options.get(i).setIsCorrect(true);
+                    else
+                        options.get(i).setIsCorrect(false);
                 }
             }
 

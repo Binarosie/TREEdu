@@ -18,7 +18,7 @@ public class Word {
     @Id
     private String id;
 
-    private String flashcardId;  // Liên kết với Flashcard
+    private String flashcardId; // Liên kết với Flashcard
 
     private String newWord;
 
@@ -28,9 +28,7 @@ public class Word {
 
     private String phoneme;
 
-    private String imageURL;
-
-    private String audioURL;
+    private String audioURL; // Audio URL từ FPT AI TTS
 
     private LocalDateTime createdAt;
 

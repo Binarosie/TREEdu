@@ -41,7 +41,8 @@ Backend service cho ứng dụng học **Tiếng Việt trực tuyến** TREEdu,
 ### 1️⃣ Clone repository
 
 ```bash
-git clone https://github.com/Binarosie/TREEdu.git
+Back-end: git clone https://github.com/Binarosie/TREEdu.git
+Front-end: git clone https://github.com/DongQuan2212/FE-TREEdu
 ```
 
 ### 2️⃣ Cấu hình Database

@@ -13,13 +13,12 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000")  // Frontend React của bạn
+                        .allowedOriginPatterns("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        //.exposedHeaders("Authorization")  // THÊM: expose Authorization
                         .allowCredentials(true);
-                        //.maxAge(3600);  // THÊM: cache preflight response
             }
         };
     }

@@ -9,19 +9,24 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import vn.hcmute.edu.materialsservice.dtos.MemberProfileDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserDetailDTO;
 import vn.hcmute.edu.materialsservice.dtos.UserInfoDTO;
+import vn.hcmute.edu.materialsservice.dtos.request.RegisterRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.CreateUserRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateProfileRequest;
 import vn.hcmute.edu.materialsservice.dtos.request.users.UpdateUserRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.*;
 import vn.hcmute.edu.materialsservice.Enum.EUserRole;
 import vn.hcmute.edu.materialsservice.models.Admin;
+import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.models.Supporter;
 import vn.hcmute.edu.materialsservice.models.User;
 import vn.hcmute.edu.materialsservice.repository.UserRepository;
@@ -50,26 +55,98 @@ public class UserInfoAPIController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping("/newMember")
-    public ResponseEntity<SuccessResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        User user = userService.createMember(request);
-        CreatedResponse response = new CreatedResponse("User created successfully", user);
+    @PostMapping(value = "/newMember", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SuccessResponse> createUser(
+            @RequestPart(value = "fullName") String fullName,
+            @RequestPart(value = "email") String email,
+            @RequestPart(value = "password") String password,
+            @RequestPart(value = "phone", required = false) String phone,
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
+            @RequestPart(value = "birthYear", required = false) String birthYear,
+            @RequestPart(value = "address", required = false) String address,
+            @RequestPart(value = "gender", required = false) String gender) {
+
+        log.info("CREATE MEMBER ENDPOINT CALLED");
+        log.info("Request Body:");
+        log.info("  - fullName: {}", fullName);
+        log.info("  - email: {}", email);
+        log.info("  - password: {}", password != null ? "***" : "null");
+        log.info("  - phone: {}", phone);
+
+        // Debug logging for avatar file
+        if (avatarFile == null || avatarFile.isEmpty()) {
+            log.warn("No avatar file provided for new member: {}", email);
+        } else {
+            log.info("Avatar file received: {} (size: {} bytes)", avatarFile.getOriginalFilename(),
+                    avatarFile.getSize());
+        }
+
+        CreateUserRequest createRequest = new CreateUserRequest();
+
+        // Handle null string values for optional fields
+        phone = (phone == null || phone.equals("null") || phone.isBlank()) ? null : phone;
+        address = (address == null || address.equals("null") || address.isBlank()) ? null : address;
+        gender = (gender == null || gender.equals("null") || gender.isBlank()) ? null : gender;
+
+        createRequest.setUserType("MEMBER");
+        createRequest.setFullName(fullName);
+        createRequest.setEmail(email);
+        createRequest.setPassword(password);
+        createRequest.setPhoneNumber(phone);
+        createRequest.setAvatarFile(avatarFile);
+
+        // Parse optional integer fields safely
+        if (birthYear != null && !birthYear.equals("null") && !birthYear.isBlank()) {
+            try {
+                createRequest.setBirthYear(Integer.valueOf(birthYear));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid birthYear format: {}", birthYear);
+            }
+        }
+
+        createRequest.setAddress(address);
+        createRequest.setGender(gender);
+
+        Member member = (Member) userService.createMember(createRequest);
+
+        log.info("Member created successfully:");
+        log.info("  - ID: {}", member.getId());
+        log.info("  - Email: {}", member.getEmail());
+        log.info("  - Avatar URL: {}", member.getAvatarUrl());
+
+        // Chuyển đổi Entity sang DTO để giấu Password và Package Name đi
+        MemberProfileDTO profileDTO = MemberProfileDTO.builder()
+                .id(member.getId())
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .avatarUrl(member.getAvatarUrl())
+                .birthYear(member.getBirthYear())
+                .address(member.getAddress())
+                .gender(member.getGender())
+                .streakCount(member.getStreakCount())
+                .longestStreak(member.getLongestStreak())
+                .xp(member.getXp())
+                .level(member.getLevel())
+                .totalQuizCompleted(member.getTotalQuizCompleted())
+                .totalFlashcardLearned(member.getTotalFlashcardLearned())
+                .lastStudyDate(member.getLastStudyDate())
+                .build();
+
+        // Trả DTO về cho Frontend
+        SuccessResponse response = new SuccessResponse(
+                "User created successfully",
+                HttpStatus.CREATED.value(),
+                profileDTO,
+                LocalDateTime.now());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-//    @PostMapping("/newSupporter")
-//    public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
-//        User user = userService.createManager(request);
-//        CreatedResponse response = new CreatedResponse("User created successfully", user);
-//        return new ResponseEntity<>(response, HttpStatus.CREATED);
-//    }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/newSupporter")
     public ResponseEntity<SuccessResponse> createManager(@Valid @RequestBody CreateUserRequest request) {
-        log.info("🎯 === CREATE SUPPORTER ENDPOINT CALLED ===");
-        log.info("📋 Request Body:");
+        log.info("CREATE SUPPORTER ENDPOINT CALLED");
+        log.info("Request Body:");
         log.info("  - userType: {}", request.getUserType());
         log.info("  - fullName: {}", request.getFullName());
         log.info("  - email: {}", request.getEmail());
@@ -77,7 +154,7 @@ public class UserInfoAPIController {
 
         User user = userService.createManager(request);
 
-        log.info("✅ User created successfully:");
+        log.info("User created successfully:");
         log.info("  - ID: {}", user.getId());
         log.info("  - Class: {}", user.getClass().getSimpleName());
         log.info("  - Email: {}", user.getEmail());
@@ -89,31 +166,33 @@ public class UserInfoAPIController {
     // Lấy 1 user theo ID
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponse> getUser(@PathVariable UUID id) {
+    public ResponseEntity<SuccessResponse> getUser(@PathVariable String id) { // ← UUID → String
         UserInfoDTO user = userService.getUserInfoById(id);
-        if( user == null) {
+        if (user == null) {
             throw new NotFoundError("User not found");
         }
-        SuccessResponse response = new SuccessResponse("User retrieved successfully", HttpStatus.OK.value(), user, LocalDateTime.now());
+        SuccessResponse response = new SuccessResponse("User retrieved successfully", HttpStatus.OK.value(), user,
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @GetMapping("/user-detail/{userId}")
-    public ResponseEntity<SuccessResponse> getUserDetail(@PathVariable UUID userId,
-                                                         Authentication authentication) {
-        UUID trueUserId = getTrueUserId(userId, authentication);
+    public ResponseEntity<SuccessResponse> getUserDetail(@PathVariable String userId, // ← UUID → String
+            Authentication authentication) {
+        String trueUserId = getTrueUserId(userId, authentication);
 
         UserDetailDTO userInfo = userService.getUserDetailById(trueUserId);
-        if( userInfo == null) {
+        if (userInfo == null) {
             throw new NotFoundError("User not found");
         }
-        SuccessResponse response = new SuccessResponse("User retrieved successfully", HttpStatus.OK.value(), userInfo, LocalDateTime.now());
+        SuccessResponse response = new SuccessResponse("User retrieved successfully", HttpStatus.OK.value(), userInfo,
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping({"", "/"})
+    @GetMapping({ "", "/" })
     public ResponseEntity<DataTableResponse<UserInfoDTO>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -121,8 +200,7 @@ public class UserInfoAPIController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "modifiedOn,desc") String[] sort
-    ) {
+            @RequestParam(defaultValue = "modifiedOn,desc") String[] sort) {
         System.out.println(">>> GET /api/users CALLED");
         try {
             // ===== 1. SORT =====
@@ -141,23 +219,19 @@ public class UserInfoAPIController {
                     search,
                     role,
                     status,
-                    pageable
-            );
+                    pageable);
 
             // ===== 3. MAP TO DTO =====
             List<UserInfoDTO> userInfoList = usersPage.getContent().stream()
                     .map(user -> {
                         UserInfoDTO dto = new UserInfoDTO();
-                        dto.setId(user.getId().toString());
+                        dto.setId(user.getId()); // ← Bỏ .toString() vì đã là String
                         dto.setEmail(user.getEmail());
                         dto.setName(user.getFullName());
 
                         // role
                         dto.setRole(
-                                user instanceof Admin ? "Admin" :
-                                        user instanceof Supporter ? "Supporter" :
-                                                "Member"
-                        );
+                                user instanceof Admin ? "Admin" : user instanceof Supporter ? "Supporter" : "Member");
 
                         // status
                         dto.setStatus(user.isActive() ? "Active" : "Inactive");
@@ -171,9 +245,7 @@ public class UserInfoAPIController {
                             draw,
                             usersPage.getTotalElements(),
                             usersPage.getTotalElements(),
-                            userInfoList
-                    )
-            );
+                            userInfoList));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,28 +254,17 @@ public class UserInfoAPIController {
         }
     }
 
-
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
-//    @PutMapping("/{id}")
-//    public ResponseEntity<SuccessResponse> updateUser(@PathVariable UUID id,
-//                                                      @ModelAttribute UpdateUserRequest request,
-//                                                      Authentication authentication) {
-//        UUID trueUserId = getTrueUserId(id, authentication);
-//        userService.updateUserByID(trueUserId, request);
-//        return ResponseEntity.ok(new SuccessResponse("User updated successfully", 200, null, LocalDateTime.now()));
-//    }
-
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPPORTER', 'ROLE_MEMBER')")
     @PutMapping("/{id}")
     public ResponseEntity<SuccessResponse> updateUser(
-            @PathVariable UUID id,
+            @PathVariable String id, // ← UUID → String
             @RequestBody UpdateUserRequest request,
             Authentication authentication) {
 
         CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
         User currentUser = currentUserDetails.getUser();
 
-        EUserRole currentUserRole = EUserRole.fromUser(currentUser);  // ← Sử dụng ở đây
+        EUserRole currentUserRole = EUserRole.fromUser(currentUser);
 
         System.out.println("=== Update User Request ===");
         System.out.println("Current User: " + currentUser.getEmail());
@@ -211,8 +272,7 @@ public class UserInfoAPIController {
         System.out.println("Current User Role: " + currentUserRole);
         System.out.println("Target User ID: " + id);
 
-        if (currentUser.getId().equals(id)) {
-            System.out.println(" User updating themselves");
+        if (currentUser.getId().equals(id)) { // ← ID so sánh trực tiếp (String)
 
             if (request.getRole() != null && !request.getRole().isBlank()) {
                 throw new BadRequestError("Bạn không thể tự thay đổi role của mình");
@@ -224,8 +284,7 @@ public class UserInfoAPIController {
                     "Cập nhật thông tin thành công",
                     200,
                     null,
-                    LocalDateTime.now()
-            ));
+                    LocalDateTime.now()));
         }
 
         if (currentUserRole == EUserRole.ADMIN) {
@@ -237,20 +296,84 @@ public class UserInfoAPIController {
                     "Admin cập nhật user thành công",
                     200,
                     null,
-                    LocalDateTime.now()
-            ));
+                    LocalDateTime.now()));
         }
 
         System.out.println("Non-admin trying to update another user");
         throw new BadRequestError("Bạn không có quyền cập nhật thông tin user khác");
     }
 
-
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    @PutMapping("/update-my-profile/{id}")
-    public ResponseEntity<SuccessResponse> updateMyProfile(@PathVariable UUID id, @RequestBody UpdateProfileRequest request) {
-        User user = userService.updateMyProfile(id, request);
-        SuccessResponse response = new SuccessResponse("User updated successfully", HttpStatus.OK.value(), user, LocalDateTime.now());
+    @PutMapping(value = "/update-my-profile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SuccessResponse> updateMyProfile(
+            @PathVariable String id,
+            @RequestPart(value = "fullname", required = false) String fullname,
+            @RequestPart(value = "phoneNumber", required = false) String phoneNumber,
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
+            @RequestPart(value = "birthYear", required = false) String birthYear,
+            @RequestPart(value = "address", required = false) String address,
+            @RequestPart(value = "gender", required = false) String gender,
+            Authentication authentication) {
+
+        CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User currentUser = currentUserDetails.getUser();
+
+        if (!currentUser.getId().equals(id)) {
+            throw new BadRequestError("Bạn không có quyền chỉnh sửa hồ sơ của người khác!");
+        }
+
+        // Handle null string values for optional fields
+        fullname = (fullname == null || fullname.equals("null") || fullname.isBlank()) ? null : fullname;
+        phoneNumber = (phoneNumber == null || phoneNumber.equals("null") || phoneNumber.isBlank()) ? null : phoneNumber;
+        address = (address == null || address.equals("null") || address.isBlank()) ? null : address;
+        gender = (gender == null || gender.equals("null") || gender.isBlank()) ? null : gender;
+
+        // Gom các part thành DTO
+        UpdateProfileRequest request = new UpdateProfileRequest();
+        request.setFullname(fullname);
+        request.setPhoneNumber(phoneNumber);
+        request.setAvatarFile(avatarFile);
+
+        // Parse optional integer fields safely
+        if (birthYear != null && !birthYear.equals("null") && !birthYear.isBlank()) {
+            try {
+                request.setBirthYear(Integer.valueOf(birthYear));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid birthYear format: {}", birthYear);
+            }
+        }
+
+        request.setAddress(address);
+        request.setGender(gender);
+
+        // 1. Thực hiện update dưới DB và nhận về object Member sau khi cập nhật
+        Member member = (Member) userService.updateMyProfile(id, request);
+
+        // 2. Chuyển đổi Entity sang DTO để giấu Password và Package Name đi
+        MemberProfileDTO profileDTO = MemberProfileDTO.builder()
+                .id(member.getId())
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .avatarUrl(member.getAvatarUrl())
+                .birthYear(member.getBirthYear())
+                .address(member.getAddress())
+                .gender(member.getGender())
+                .streakCount(member.getStreakCount())
+                .longestStreak(member.getLongestStreak())
+                .xp(member.getXp())
+                .level(member.getLevel())
+                .totalQuizCompleted(member.getTotalQuizCompleted())
+                .totalFlashcardLearned(member.getTotalFlashcardLearned())
+                .lastStudyDate(member.getLastStudyDate())
+                .build();
+
+        // 3. Trả DTO về cho Postman/Frontend thay vì trả bừa Entity
+        SuccessResponse response = new SuccessResponse(
+                "User updated successfully",
+                HttpStatus.OK.value(),
+                profileDTO, // 🔥 Đã thay bằng DTO sạch đẹp
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
@@ -258,11 +381,12 @@ public class UserInfoAPIController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<SuccessResponse> deactivateUser(@PathVariable String id,
-                                                          Authentication authentication) {
-        UUID userId = getTrueUserId(UUID.fromString(id), authentication);
+            Authentication authentication) {
+        String userId = getTrueUserId(id, authentication); // ← Bỏ UUID.fromString()
 
         userService.deactivateUser(userId);
-        SuccessResponse response = new SuccessResponse("User deactivated successfully", HttpStatus.OK.value(), null, LocalDateTime.now());
+        SuccessResponse response = new SuccessResponse("User deactivated successfully", HttpStatus.OK.value(), null,
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
@@ -270,14 +394,14 @@ public class UserInfoAPIController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @PostMapping("/activate/{id}")
     public ResponseEntity<SuccessResponse> activateUser(@PathVariable String id,
-                                                        Authentication authentication) {
-        UUID userId = getTrueUserId(UUID.fromString(id), authentication);
+            Authentication authentication) {
+        String userId = getTrueUserId(id, authentication); // ← Bỏ UUID.fromString()
 
         userService.activateUser(userId);
-        SuccessResponse response = new SuccessResponse("User activated successfully", HttpStatus.OK.value(), null, LocalDateTime.now());
+        SuccessResponse response = new SuccessResponse("User activated successfully", HttpStatus.OK.value(), null,
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
-
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/stats")
@@ -286,17 +410,17 @@ public class UserInfoAPIController {
         stats.put("totalUsers", userService.getTotalUsers());
         stats.put("totalMembers", userService.getTotalMembers());
         stats.put("inactiveMembers", userService.getInactiveMembers());
-        SuccessResponse response = new SuccessResponse("User statistics retrieved successfully", HttpStatus.OK.value(), stats, LocalDateTime.now());
+        SuccessResponse response = new SuccessResponse("User statistics retrieved successfully", HttpStatus.OK.value(),
+                stats, LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
-
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestParam("userId") String id,
-                                            @RequestParam("newPassword") String newPassword,
-                                            Authentication authentication) {
-        UUID userId = getTrueUserId(UUID.fromString(id), authentication);
+            @RequestParam("newPassword") String newPassword,
+            Authentication authentication) {
+        String userId = getTrueUserId(id, authentication); // ← Bỏ UUID.fromString()
 
         SuccessResponse successResponse = new SuccessResponse(
                 "Đổi mật khẩu thành công!", HttpStatus.OK.value(),
@@ -304,14 +428,75 @@ public class UserInfoAPIController {
         return ResponseEntity.ok(successResponse);
     }
 
-    public UUID getTrueUserId(UUID id, Authentication authentication) {
+    public String getTrueUserId(String id, Authentication authentication) { // ← UUID → String
         CustomUserDetails currentUserDetails = (CustomUserDetails) authentication.getPrincipal();
         var user = currentUserDetails.getUser();
 
-        if(id == null || !(user instanceof Admin)) {
-            return user.getId();
+        if (id == null || !(user instanceof Admin)) {
+            return user.getId(); // ← Trả về String trực tiếp
         } else {
-            return id;
+            return id; // ← Return String id directly
         }
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+    public ResponseEntity<MemberProfileDTO> getMyProfile(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundError("User not found"));
+
+        if (!(user instanceof Member member)) {
+            throw new BadRequestError("User is not a member");
+        }
+
+        // 📐 BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
+        int totalXp = member.getXp() != null ? member.getXp() : 0;
+
+        // 🎯 Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
+        int currentLevel = userService.calculateLevel(totalXp);
+
+        // Thuật toán tính tiến trình: TotalXP = 50 * L * (L - 1)
+        int xpFloorForCurrentLevel = 50 * currentLevel * (currentLevel - 1);
+        int xpCeilForNextLevel = 50 * (currentLevel + 1) * currentLevel;
+        int totalXpInThisLevelRange = xpCeilForNextLevel - xpFloorForCurrentLevel;
+
+        int currentLevelProgressXp = totalXp - xpFloorForCurrentLevel;
+        int xpNeededForNextLevel = xpCeilForNextLevel - totalXp;
+
+        double progressPercentage = 0.0;
+        if (totalXpInThisLevelRange > 0) {
+            progressPercentage = ((double) currentLevelProgressXp / totalXpInThisLevelRange) * 100;
+            progressPercentage = Math.round(progressPercentage * 10.0) / 10.0; // Làm tròn 1 chữ số thập phân (VD:
+                                                                               // 45.5%)
+        }
+
+        MemberProfileDTO dto = MemberProfileDTO.builder()
+                .id(member.getId())
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                // === Field mới ===
+                .phoneNumber(member.getPhoneNumber())
+                .avatarUrl(member.getAvatarUrl())
+                .birthYear(member.getBirthYear())
+                .address(member.getAddress())
+                .gender(member.getGender())
+                // === Field Member ===
+                .streakCount(member.getStreakCount())
+                .longestStreak(member.getLongestStreak())
+                .xp(totalXp)
+                .level(currentLevel)
+                .totalQuizCompleted(member.getTotalQuizCompleted())
+                .totalFlashcardLearned(member.getTotalFlashcardLearned())
+                .lastStudyDate(member.getLastStudyDate())
+                // === 🚀 3 Field bổ trợ vẽ ProgressBar trên UI Frontend ===
+                .xpNeededForNextLevel(xpNeededForNextLevel)
+                .currentLevelProgressXp(currentLevelProgressXp)
+                .progressPercentage(progressPercentage)
+                .build();
+
+        return ResponseEntity.ok(dto);
     }
 }

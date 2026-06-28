@@ -15,6 +15,7 @@ import vn.hcmute.edu.materialsservice.dtos.response.ApiResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardWithWordsResponse;
 import vn.hcmute.edu.materialsservice.services.iFlashcardService;
+import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class FlashcardController {
 
     private final iFlashcardService flashcardService;
 
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<ApiResponse<FlashcardResponse>> createFlashcard(
             @Valid @RequestBody FlashcardRequest request,
@@ -92,7 +93,8 @@ public class FlashcardController {
         System.out.println("Authentication: " + authentication);
         System.out.println("=====================");
 
-        List<FlashcardResponse> responses = flashcardService.getAllFlashcard(authentication);
+        // Lấy tất cả flashcard của user + PUBLIC flashcard từ hệ thống
+        List<FlashcardResponse> responses = flashcardService.getAllFlashcardWithPublic(authentication);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
@@ -104,11 +106,29 @@ public class FlashcardController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    @GetMapping("/topic/{topic}")
-    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getFlashcardsByTopic(
-            @PathVariable String topic,
+    @GetMapping("/search/{title}")
+    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> searchFlashcards(
+            @PathVariable String title,
             Authentication authentication) {
-        List<FlashcardResponse> responses = flashcardService.getFlashcardsByTopic(topic, authentication);
+        List<FlashcardResponse> responses = flashcardService.getFlashcardsByTitle(title, authentication);
+        return ResponseEntity.ok(ApiResponse.success(responses));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
+    @PutMapping("/{id}/visibility")
+    public ResponseEntity<ApiResponse<FlashcardResponse>> changeVisibility(
+            @PathVariable String id,
+            @RequestParam EFlashcardVisibility visibility,
+            Authentication authentication) {
+        FlashcardResponse response = flashcardService.changeVisibility(id, visibility, authentication);
+        return ResponseEntity.ok(ApiResponse.success("Đổi quyền riêng tư flashcard thành công", response));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER')")
+    @GetMapping("/my-flashcards")
+    public ResponseEntity<ApiResponse<List<FlashcardResponse>>> getMyFlashcards(
+            Authentication authentication) {
+        List<FlashcardResponse> responses = flashcardService.getMyFlashcards(authentication);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 }

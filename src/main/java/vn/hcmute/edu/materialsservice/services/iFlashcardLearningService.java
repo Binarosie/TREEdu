@@ -2,6 +2,7 @@ package vn.hcmute.edu.materialsservice.services;
 
 import org.springframework.security.core.Authentication;
 import vn.hcmute.edu.materialsservice.dtos.response.FlashcardProgressResponse;
+import vn.hcmute.edu.materialsservice.dtos.response.WordCheckResponse;
 import vn.hcmute.edu.materialsservice.Enum.ELearningStatus;
 
 import java.util.List;
@@ -17,6 +18,13 @@ public interface iFlashcardLearningService {
      * Đánh dấu một word đã được xem
      */
     FlashcardProgressResponse markWordAsViewed(String flashcardId, String wordId, Authentication authentication);
+
+    /**
+     * Gõ và submit từ vựng, hệ thống check đúng/sai
+     * Chỉ khi đúng mới tính là đã học và cập nhật progress
+     */
+    WordCheckResponse submitWordAnswer(String flashcardId, String wordId, String userAnswer,
+            Authentication authentication);
 
     /**
      * Lấy tiến trình học của user với 1 flashcard cụ thể

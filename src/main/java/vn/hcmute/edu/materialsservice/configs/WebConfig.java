@@ -1,17 +1,31 @@
 package vn.hcmute.edu.materialsservice.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry; // Thêm import này
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
+
+
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/uploads/**")
-                .addResourceLocations("file:src/main/resources/static/uploads/");
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 
     @Bean
@@ -19,4 +33,8 @@ public class WebConfig implements WebMvcConfigurer {
         return new RestTemplate();
     }
 
+    @Bean
+    public WebClient webClient() {
+        return WebClient.builder().build();
+    }
 }

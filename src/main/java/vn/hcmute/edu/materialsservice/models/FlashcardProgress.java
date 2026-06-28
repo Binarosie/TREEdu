@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import vn.hcmute.edu.materialsservice.Enum.ELearningStatus;
 
@@ -17,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "flashcard_progress")
+@CompoundIndex(name = "user_flashcard_unique", def = "{'userId': 1, 'flashcardId': 1}", unique = true)
 public class FlashcardProgress {
 
     @Id

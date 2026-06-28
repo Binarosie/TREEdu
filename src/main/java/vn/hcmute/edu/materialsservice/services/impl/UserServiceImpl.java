@@ -21,6 +21,7 @@ import vn.hcmute.edu.materialsservice.Enum.EUserRole;
 import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.models.User;
 import vn.hcmute.edu.materialsservice.repository.UserRepository;
+import vn.hcmute.edu.materialsservice.services.CloudinaryService;
 import vn.hcmute.edu.materialsservice.services.EmailService;
 import vn.hcmute.edu.materialsservice.services.factories.iUserFactory;
 import vn.hcmute.edu.materialsservice.services.iUserService;
@@ -42,10 +43,13 @@ public class UserServiceImpl implements iUserService {
 
     private final EmailService emailService;
 
+    private final CloudinaryService cloudinaryService;
+
     private final List<iUserFactory> userFactories;
     private final List<iUserUpdateStrategy> updateStrategies;
 
     private final AdminUpdateOtherUserStrategy adminUpdateOtherUserStrategy;
+
     private iUserFactory getFactory(String userType) {
         return userFactories.stream()
                 .filter(factory -> factory.supports(userType))
@@ -69,13 +73,28 @@ public class UserServiceImpl implements iUserService {
         iUserFactory factory = getFactory("MEMBER");
         Member user = (Member) factory.createUser(request);
 
-        try {// ≥≤>
-            // random 6 chữ số
-            int code = (int) ((Math.random() * 900000) + 100000);
-            String verificationCode = String.valueOf(code);
+        user.setId(UUID.randomUUID().toString());
+        user.setCreatedOn(java.time.LocalDateTime.now());
+        user.setModifiedOn(java.time.LocalDateTime.now());
 
-            // Gửi email
-            emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+        // ===== Map field mới =====
+        if (request.getPhoneNumber() != null)
+            user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getAvatarFile() != null) {
+            // Upload avatar file to Cloudinary
+            String avatarUrl = uploadAvatarToCloudinary(request.getAvatarFile(), user.getId());
+            user.setAvatarUrl(avatarUrl);
+        }
+        if (request.getBirthYear() != null)
+            user.setBirthYear(request.getBirthYear());
+        if (request.getAddress() != null)
+            user.setAddress(request.getAddress());
+        if (request.getGender() != null)
+            user.setGender(request.getGender());
+
+        try {
+            int code = (int) ((Math.random() * 900000) + 100000);
+            emailService.sendVerificationEmail(user.getEmail(), String.valueOf(code));
         } catch (MessagingException e) {
             throw new InternalServerError("Could not send verification email");
         }
@@ -110,17 +129,18 @@ public class UserServiceImpl implements iUserService {
                 });
     }
 
-//    @Override
-//    public User createManager(CreateUserRequest request) {
-//        if (userRepository.existsByEmail(request.getEmail())) {
-//            throw new ConflictError("User already exists with email: " + request.getEmail());
-//        }
-//
-//        iUserFactory factory = getFactory("SUPPORTER");
-////        iUserFactory factory = getFactory(request.getUserType());
-//        User user = factory.createUser(request);
-//        return userRepository.save(user);
-//    }
+    // @Override
+    // public User createManager(CreateUserRequest request) {
+    // if (userRepository.existsByEmail(request.getEmail())) {
+    // throw new ConflictError("User already exists with email: " +
+    // request.getEmail());
+    // }
+    //
+    // iUserFactory factory = getFactory("SUPPORTER");
+    //// iUserFactory factory = getFactory(request.getUserType());
+    // User user = factory.createUser(request);
+    // return userRepository.save(user);
+    // }
 
     @Override
     public User createManager(CreateUserRequest request) {
@@ -145,12 +165,12 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public Optional<User> getUserById(UUID id) {
+    public Optional<User> getUserById(String id) { // ← UUID → String
         return userRepository.findById(id);
     }
 
     @Override
-    public UserInfoDTO getUserInfoById(UUID id) {
+    public UserInfoDTO getUserInfoById(String id) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -160,7 +180,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public UserDetailDTO getUserDetailById(UUID id) {
+    public UserDetailDTO getUserDetailById(String id) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
         return UserDetailDTO.mapTo(user);
@@ -177,13 +197,12 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public boolean existsByUserIdAndIsActive(UUID userId, boolean isActive) {
+    public boolean existsByUserIdAndIsActive(String userId, boolean isActive) { // ← UUID → String
         return userRepository.existsByIdAndIsActive(userId, isActive);
     }
 
-    // Dùng lại CreateUserRequest để update
     @Override
-    public User updateMyProfile(UUID id, UpdateProfileRequest request) {
+    public User updateMyProfile(String id, UpdateProfileRequest request) { // ← UUID → String
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
             throw new NotFoundError("User not found with id: " + id);
@@ -195,7 +214,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public User updateUserByID(UUID id, UpdateUserRequest request) {
+    public User updateUserByID(String id, UpdateUserRequest request) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -203,8 +222,9 @@ public class UserServiceImpl implements iUserService {
         return userRepository.save(user);
     }
 
-    @Transactional  // ← Thêm annotation này vào method
-    public User adminUpdateUser(UUID targetUserId, UpdateUserRequest request, EUserRole currentUserRole) {
+    @Transactional // ← Thêm annotation này vào method
+    public User adminUpdateUser(String targetUserId, UpdateUserRequest request, EUserRole currentUserRole) { // ← UUID →
+                                                                                                             // String
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + targetUserId));
 
@@ -221,7 +241,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public boolean changePasswordById(UUID id, String newPassword) {
+    public boolean changePasswordById(String id, String newPassword) { // ← UUID → String
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -239,7 +259,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public void deactivateUser(UUID id) {
+    public void deactivateUser(String id) { // ← UUID → String
         // Soft delete user by setting isActive to false
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
@@ -251,7 +271,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public void activateUser(UUID id) {
+    public void activateUser(String id) { // ← UUID → String
         // Soft delete user by setting isActive to false
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
@@ -289,7 +309,54 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
+    public Optional<User> findById(String id) { // ← UUID → String
         return userRepository.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public boolean addXpToMember(String userId, int xpToAdd) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundError("User not found with id: " + userId));
+
+        if (user instanceof Member member) {
+            int currentXp = member.getXp() != null ? member.getXp() : 0;
+            int oldLevel = member.getLevel() != null ? member.getLevel() : 1;
+
+            int newXp = currentXp + xpToAdd;
+            member.setXp(newXp);
+
+            // 🔥 ĐỒNG BỘ: Sử dụng chung một thuật toán RPG cho toàn hệ thống
+            int newLevel = calculateLevel(newXp);
+            member.setLevel(newLevel);
+
+            userRepository.save(member);
+            return newLevel > oldLevel;
+        }
+        return false;
+    }
+
+    // Trong file UserServiceImpl.java triển khai:
+    @Override
+    public int calculateLevel(int totalXp) {
+        if (totalXp <= 0)
+            return 1;
+        // Sử dụng chính xác thuật toán RPG cũ của ông để đồng bộ dữ liệu
+        return (int) Math.floor((1.0 + Math.sqrt(1.0 + (double) totalXp / 12.5)) / 2.0);
+    }
+
+    /**
+     * Upload avatar file to Cloudinary and return the URL
+     */
+    private String uploadAvatarToCloudinary(org.springframework.web.multipart.MultipartFile avatarFile, String userId) {
+        try {
+            log.info("📤 Uploading avatar for user: {}", userId);
+            String avatarUrl = cloudinaryService.uploadAvatar(avatarFile, userId);
+            log.info("✅ Avatar uploaded successfully: {}", avatarUrl);
+            return avatarUrl;
+        } catch (Exception e) {
+            log.error("❌ Error uploading avatar to Cloudinary for user {}: {}", userId, e.getMessage());
+            throw new InternalServerError("Could not upload avatar file: " + e.getMessage());
+        }
     }
 }
