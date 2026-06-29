@@ -29,9 +29,8 @@ COPY --from=build /app/target/*.jar app.jar
 # Expose port (3001 for this project)
 EXPOSE 3001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/actuator/health || exit 1
+
 
 # Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Sửa dòng ENTRYPOINT cuối cùng của bạn thành:
+ENTRYPOINT ["java", "-Xmx350m", "-jar", "app.jar"]
