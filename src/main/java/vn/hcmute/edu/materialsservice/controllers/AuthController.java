@@ -124,14 +124,11 @@ public class AuthController {
                     HttpStatus.OK.value(), null, LocalDateTime.now()));
         }
 
-        try {
-            String otp = emailService.generateOtp();
-            emailService.sendResetPasswordEmail(email, otp);
-            log.info("Reset password OTP sent to: {}", email);
-        } catch (MessagingException e) {
-            log.error("Failed to send reset password email: {}", e.getMessage());
-            throw new InternalServerError("Không thể gửi email. Vui lòng thử lại sau.");
-        }
+
+        String otp = emailService.generateOtp();
+        emailService.sendResetPasswordEmail(email, otp);
+        log.info("Reset password OTP sent to: {}", email);
+
 
         return ResponseEntity.ok(new SuccessResponse(
                 "Mã OTP đặt lại mật khẩu đã được gửi về email của bạn. Mã có hiệu lực trong 5 phút.",
@@ -153,7 +150,7 @@ public class AuthController {
                     new BadRequestError("Loại OTP không hợp lệ. Vui lòng sử dụng SIGNUP hoặc RESET_PASSWORD."));
         }
 
-        try {
+
             // 1. Kiểm tra email có tồn tại không (tùy theo type)
             var optUser = userServiceImpl.findByEmail(email);
 
@@ -199,10 +196,7 @@ public class AuthController {
                         HttpStatus.OK.value(), null, LocalDateTime.now()));
             }
 
-        } catch (MessagingException e) {
-            log.error("Failed to resend OTP to email: {}", email, e);
-            throw new InternalServerError("Không thể gửi email. Vui lòng thử lại sau.");
-        }
+
     }
 
     @PostMapping("/reset-password")

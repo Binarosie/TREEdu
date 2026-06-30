@@ -2,31 +2,39 @@ package vn.hcmute.edu.materialsservice.services;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+
+    @Value("${resend.api.key}")
+    private String resendApiKey;
+
+    @Value("${resend.from.email}")
+    private String fromEmail;
+
+    private final RestClient restClient = RestClient.create("https://api.resend.com");
 
     private final ConcurrentHashMap<String, OtpEntry> emailOtpMap = new ConcurrentHashMap<>();
 
-    // Dùng SecureRandom thay Math.random() — không thể đoán trước
     private final SecureRandom secureRandom = new SecureRandom();
 
     private static final long OTP_EXPIRY_MINUTES = 5;
 
-    // Scheduler tự dọn entry hết hạn mỗi 10 phút (tránh memory leak)
     private final ScheduledExecutorService cleaner =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "OTP-Cleaner");
@@ -49,7 +57,7 @@ public class EmailService {
     private static class OtpEntry {
         final String code;
         final LocalDateTime expiresAt;
-        volatile boolean used = false;   // ← flag chống replay attack
+        volatile boolean used = false;
 
         OtpEntry(String code) {
             this.code = code;
@@ -60,12 +68,8 @@ public class EmailService {
             return LocalDateTime.now().isAfter(expiresAt);
         }
 
-        /**
-         * Đánh dấu đã dùng — trả về false nếu entry đã bị đánh dấu trước đó
-         * (atomic check-and-set để tránh race condition)
-         */
         synchronized boolean markUsed() {
-            if (used) return false;  // đã dùng rồi → từ chối
+            if (used) return false;
             used = true;
             return true;
         }
@@ -73,17 +77,19 @@ public class EmailService {
 
     // ─── Public API ───────────────────────────────────────────────────────────
 
-    /** Tạo OTP 6 chữ số bằng SecureRandom */
     public String generateOtp() {
         int code = 100_000 + secureRandom.nextInt(900_000);
         String otp = String.valueOf(code);
-        System.out.println("[OTP DEBUG] Generated new OTP: " + otp);
+        log.debug("[OTP] Generated new OTP: {}", otp);
         return otp;
     }
 
-    /** Gửi email xác thực tài khoản */
-    public void sendVerificationEmail(String to, String otp) throws MessagingException {
-        System.out.println("[OTP DEBUG] Sending verification email to: " + to + " with OTP: " + otp);
+    /**
+     * Gửi email xác thực tài khoản — CHẠY BẤT ĐỒNG BỘ, không block request.
+     * Lưu OTP trước, gửi mail sau (kể cả gửi mail fail thì OTP vẫn được lưu để retry).
+     */
+    public void sendVerificationEmail(String to, String otp) {
+        storeOtp(to, otp);
         String html = buildEmailHtml(
                 "Xác thực tài khoản TREEdu",
                 "Mã xác thực của bạn là:",
@@ -91,13 +97,11 @@ public class EmailService {
                 "#1D9E75",
                 "Nếu bạn không đăng ký tài khoản, hãy bỏ qua email này."
         );
-        sendEmail(to, "Mã xác thực tài khoản - TREEdu", html);
-        storeOtp(to, otp);
+        sendEmailAsync(to, "Mã xác thực tài khoản - TREEdu", html);
     }
 
-    /** Gửi email đặt lại mật khẩu — KHÔNG chứa mật khẩu mới */
-    public void sendResetPasswordEmail(String to, String otp) throws MessagingException {
-        System.out.println("[OTP DEBUG] Sending reset password email to: " + to + " with OTP: " + otp);
+    public void sendResetPasswordEmail(String to, String otp) {
+        storeOtp(to, otp);
         String html = buildEmailHtml(
                 "Đặt lại mật khẩu TREEdu",
                 "Mã đặt lại mật khẩu của bạn là:",
@@ -105,62 +109,43 @@ public class EmailService {
                 "#D85A30",
                 "Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này."
         );
-        sendEmail(to, "Mã đặt lại mật khẩu - TREEdu", html);
-        storeOtp(to, otp);
+        sendEmailAsync(to, "Mã đặt lại mật khẩu - TREEdu", html);
     }
 
-    /**
-     * Xác thực OTP — kết hợp kiểm tra hết hạn + đã dùng + xoá luôn sau khi dùng.
-     *
-     * @return OtpResult chứa trạng thái cụ thể để controller trả lỗi rõ ràng
-     */
     public OtpResult verifyAndConsumeOtp(String email, String inputOtp) {
         OtpEntry entry = emailOtpMap.get(email);
 
-        // 1. Không tồn tại
         if (entry == null) {
-            System.out.println("[OTP DEBUG] NOT_FOUND - Email: " + email + ", Input OTP: " + inputOtp + 
-                    ", Entries in map: " + emailOtpMap.keySet());
+            log.debug("[OTP] NOT_FOUND - Email: {}", email);
             return OtpResult.NOT_FOUND;
         }
 
-        // 2. Hết hạn → xoá luôn
         if (entry.isExpired()) {
-            System.out.println("[OTP DEBUG] EXPIRED - Email: " + email + ", Stored OTP: " + entry.code + 
-                    ", Input OTP: " + inputOtp + ", Expired At: " + entry.expiresAt);
+            log.debug("[OTP] EXPIRED - Email: {}", email);
             emailOtpMap.remove(email);
             return OtpResult.EXPIRED;
         }
 
-        // 3. Sai mã
         if (!entry.code.equals(inputOtp)) {
-            System.out.println("[OTP DEBUG] WRONG_CODE - Email: " + email + ", Stored OTP: " + entry.code + 
-                    ", Input OTP: " + inputOtp);
+            log.debug("[OTP] WRONG_CODE - Email: {}", email);
             return OtpResult.WRONG_CODE;
         }
 
-        // 4. Đúng nhưng đã dùng rồi (replay attack) → markUsed() trả false
         if (!entry.markUsed()) {
-            System.out.println("[OTP DEBUG] ALREADY_USED - Email: " + email + ", OTP: " + entry.code);
-            emailOtpMap.remove(email);   // dọn luôn
+            log.debug("[OTP] ALREADY_USED - Email: {}", email);
+            emailOtpMap.remove(email);
             return OtpResult.ALREADY_USED;
         }
 
-        // 5. Hợp lệ → xoá khỏi map ngay lập tức
-        System.out.println("[OTP DEBUG] SUCCESS - Email: " + email + ", OTP verified and consumed");
+        log.debug("[OTP] SUCCESS - Email: {}", email);
         emailOtpMap.remove(email);
         return OtpResult.SUCCESS;
     }
 
     public enum OtpResult {
-        SUCCESS,
-        NOT_FOUND,    // không tồn tại hoặc chưa gửi OTP
-        EXPIRED,      // quá 5 phút
-        WRONG_CODE,   // sai mã
-        ALREADY_USED  // đã dùng rồi (replay)
+        SUCCESS, NOT_FOUND, EXPIRED, WRONG_CODE, ALREADY_USED
     }
 
-    /** Xoá OTP thủ công nếu cần (ví dụ: user đăng ký lại) */
     public void removeVerificationCode(String email) {
         emailOtpMap.remove(email);
     }
@@ -168,27 +153,46 @@ public class EmailService {
     // ─── Private helpers ──────────────────────────────────────────────────────
 
     private void storeOtp(String email, String otp) {
-        // put() tự ghi đè entry cũ — đảm bảo mỗi email chỉ có 1 OTP active
         emailOtpMap.put(email, new OtpEntry(otp));
-        System.out.println("[OTP DEBUG] Stored OTP - Email: " + email + ", OTP: " + otp + 
-                ", Current map size: " + emailOtpMap.size());
+        log.debug("[OTP] Stored OTP - Email: {}, Current map size: {}", email, emailOtpMap.size());
     }
 
     private void evictExpiredEntries() {
         emailOtpMap.entrySet().removeIf(e -> e.getValue().isExpired());
     }
 
-    private void sendEmail(String to, String subject, String htmlBody) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlBody, true);
-        mailSender.send(message);
+    /**
+     * Gửi email qua Resend HTTP API (port 443) — chạy ở thread riêng nhờ @Async,
+     * không làm timeout request register/login.
+     */
+    @Async
+    public void sendEmailAsync(String to, String subject, String htmlBody) {
+        try {
+            Map<String, Object> body = Map.of(
+                    "from", fromEmail,
+                    "to", List.of(to),
+                    "subject", subject,
+                    "html", htmlBody
+            );
+
+            restClient.post()
+                    .uri("/emails")
+                    .header("Authorization", "Bearer " + resendApiKey)
+                    .header("Content-Type", "application/json")
+                    .body(body)
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.debug("[EMAIL] Sent successfully to: {}", to);
+        } catch (RestClientException e) {
+            log.error("[EMAIL] Failed to send to {}: {}", to, e.getMessage());
+            // Không throw lại — vì đây là async, throw sẽ không ai catch được.
+            // OTP đã lưu sẵn nên user có thể bấm "Resend OTP" để thử lại.
+        }
     }
 
     private String buildEmailHtml(String title, String subtitle, String otp,
-                                   String color, String footer) {
+                                  String color, String footer) {
         return "<div style='font-family:sans-serif;max-width:480px;margin:0 auto'>"
                 + "<div style='text-align:center;padding:32px'>"
                 + "<h2 style='color:#1a1a1a;margin:0 0 24px'>" + title + "</h2>"
