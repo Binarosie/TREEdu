@@ -91,9 +91,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //                URLEncoder.encode(name, "UTF-8"),
 //                URLEncoder.encode(roleName, "UTF-8")
 //        );
+//        String redirectUrl = String.format(
+//                "%s/oauth2/redirect?email=%s&name=%s&role=%s",
+//                frontendUrl.replaceAll("/$", ""),
+//                URLEncoder.encode(email, "UTF-8"),
+//                URLEncoder.encode(name, "UTF-8"),
+//                URLEncoder.encode(roleName, "UTF-8"));
         String redirectUrl = String.format(
-                "%s/oauth2/redirect?email=%s&name=%s&role=%s",
+                "%s/oauth2/redirect?token=%s&email=%s&name=%s&role=%s",
                 frontendUrl.replaceAll("/$", ""),
+                URLEncoder.encode(token, "UTF-8"),
                 URLEncoder.encode(email, "UTF-8"),
                 URLEncoder.encode(name, "UTF-8"),
                 URLEncoder.encode(roleName, "UTF-8"));
