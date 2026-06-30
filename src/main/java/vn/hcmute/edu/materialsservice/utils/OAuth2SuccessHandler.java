@@ -1,9 +1,11 @@
 package vn.hcmute.edu.materialsservice.utils;
 
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -22,6 +24,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final UserServiceImpl userService;
     private final JwtTokenUtil jwtTokenUtil;
+    @Value("${app.base-url}")
+    private String frontendUrl;
 
     // ✅ FIX: Sử dụng Constructor Injection với @Lazy
     public OAuth2SuccessHandler(@Lazy UserServiceImpl userService,
@@ -60,8 +64,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
-        jwtCookie.setSecure(false); // Set true in production with HTTPS
-        response.addCookie(jwtCookie);
+        jwtCookie.setSecure(true); // Set true in production with HTTPS and set false for localhost
+        //response.addCookie(jwtCookie); //hide for production; show for localhost
+        response.setHeader("Set-Cookie",
+                String.format("JWT=%s; Path=/; Max-Age=%d; HttpOnly; Secure; SameSite=None",
+                        token, 7*24*60*60)); //show for production, hide for localhost
 
         System.out.println("JWT cookie set successfully");
 
@@ -78,12 +85,18 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         System.out.println("User role: " + roleName);
 
         // ✅ FIX: Đổi port thành 3000
+//        String redirectUrl = String.format(
+//                "http://localhost:3000/oauth2/redirect?email=%s&name=%s&role=%s",
+//                URLEncoder.encode(email, "UTF-8"),
+//                URLEncoder.encode(name, "UTF-8"),
+//                URLEncoder.encode(roleName, "UTF-8")
+//        );
         String redirectUrl = String.format(
-                "http://localhost:3000/oauth2/redirect?email=%s&name=%s&role=%s",
+                "%s/oauth2/redirect?email=%s&name=%s&role=%s",
+                frontendUrl.replaceAll("/$", ""),
                 URLEncoder.encode(email, "UTF-8"),
                 URLEncoder.encode(name, "UTF-8"),
-                URLEncoder.encode(roleName, "UTF-8")
-        );
+                URLEncoder.encode(roleName, "UTF-8"));
 
         System.out.println("Redirecting to: " + redirectUrl);
         System.out.println("=== End OAuth2 Success Handler ===");
