@@ -1,6 +1,5 @@
 package vn.hcmute.edu.materialsservice.services.impl;
 
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -92,12 +91,8 @@ public class UserServiceImpl implements iUserService {
         if (request.getGender() != null)
             user.setGender(request.getGender());
 
-        try {
-            int code = (int) ((Math.random() * 900000) + 100000);
-            emailService.sendVerificationEmail(user.getEmail(), String.valueOf(code));
-        } catch (MessagingException e) {
-            throw new InternalServerError("Could not send verification email");
-        }
+        int code = (int) ((Math.random() * 900000) + 100000);
+        emailService.sendVerificationEmail(user.getEmail(), String.valueOf(code));
 
         return userRepository.save(user);
     }
