@@ -1,5 +1,6 @@
 package vn.hcmute.edu.materialsservice.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.Customizer;
 import org.springframework.http.HttpMethod;
 import vn.hcmute.edu.materialsservice.exceptions.CustomAccessDeniedHandler;
@@ -33,6 +34,9 @@ public class SecurityConfig {
 
         @Autowired
         private OAuth2SuccessHandler oAuth2SuccessHandler;
+
+        @Value("${app.base-url}")
+        private String frontendUrl;
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -95,7 +99,8 @@ public class SecurityConfig {
                         .oauth2Login(login -> login
                                 .loginPage("/auth/login")
                                 .successHandler(oAuth2SuccessHandler)
-                                .failureUrl("http://localhost:3000/login?error=oauth_failed")
+                                //.failureUrl("http://localhost:3000/login?error=oauth_failed")
+                                .failureUrl(frontendUrl.replaceAll("/$", "") + "/login?error=oauth_failed")
                                 .permitAll());
 
                 http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
