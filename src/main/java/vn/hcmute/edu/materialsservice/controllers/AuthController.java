@@ -55,7 +55,6 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // ─── Email Verification (OTP) ────────────────────────────────────────────────
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
         log.info("Verifying OTP for email: {}", request.getEmail());
@@ -110,7 +109,6 @@ public class AuthController {
                 HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
 
-    // ─── Forgot / Reset Password (OTP) ───────────────────────────────────────────
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
         log.info("Forgot password request for email: {}", email);
@@ -124,19 +122,15 @@ public class AuthController {
                     HttpStatus.OK.value(), null, LocalDateTime.now()));
         }
 
-
         String otp = emailService.generateOtp();
         emailService.sendResetPasswordEmail(email, otp);
         log.info("Reset password OTP sent to: {}", email);
-
 
         return ResponseEntity.ok(new SuccessResponse(
                 "Mã OTP đặt lại mật khẩu đã được gửi về email của bạn. Mã có hiệu lực trong 5 phút.",
                 HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
 
-    // ─── Resend OTP (for signup or reset password)
-    // ────────────────────────────────
     @PostMapping("/resend-otp")
     public ResponseEntity<?> resendOtp(
             @RequestParam("email") String email,
@@ -150,52 +144,50 @@ public class AuthController {
                     new BadRequestError("Loại OTP không hợp lệ. Vui lòng sử dụng SIGNUP hoặc RESET_PASSWORD."));
         }
 
+        // 1. Kiểm tra email có tồn tại không (tùy theo type)
+        var optUser = userServiceImpl.findByEmail(email);
 
-            // 1. Kiểm tra email có tồn tại không (tùy theo type)
-            var optUser = userServiceImpl.findByEmail(email);
-
-            if (type.equals("SIGNUP")) {
-                // Cho phép resend nếu account chưa active
-                if (optUser.isEmpty()) {
-                    log.warn("Email not found for signup resend: {}", email);
-                    return ResponseEntity.badRequest().body(
-                            new BadRequestError("Email này chưa được đăng ký trong hệ thống."));
-                }
-                var user = optUser.get();
-                if (user.isActive()) {
-                    log.info("User already active (no need resend): {}", email);
-                    return ResponseEntity.badRequest().body(
-                            new BadRequestError("Tài khoản này đã được kích hoạt rồi. Hãy đăng nhập."));
-                }
-            } else if (type.equals("RESET_PASSWORD")) {
-                // Cho phép resend nếu account tồn tại
-                if (optUser.isEmpty()) {
-                    log.warn("Email not found for reset password resend: {}", email);
-                    // Trả về generic message để tránh email enumeration attack
-                    return ResponseEntity.ok(new SuccessResponse(
-                            "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi.",
-                            HttpStatus.OK.value(), null, LocalDateTime.now()));
-                }
+        if (type.equals("SIGNUP")) {
+            // Cho phép resend nếu account chưa active
+            if (optUser.isEmpty()) {
+                log.warn("Email not found for signup resend: {}", email);
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Email này chưa được đăng ký trong hệ thống."));
             }
-
-            // 2. Tạo OTP mới (dùng EmailService.generateOtp())
-            String otp = emailService.generateOtp();
-
-            // 3. Gửi email theo type
-            if (type.equals("SIGNUP")) {
-                emailService.sendVerificationEmail(email, otp);
-                log.info("Signup verification OTP resent to: {}", email);
+            var user = optUser.get();
+            if (user.isActive()) {
+                log.info("User already active (no need resend): {}", email);
+                return ResponseEntity.badRequest().body(
+                        new BadRequestError("Tài khoản này đã được kích hoạt rồi. Hãy đăng nhập."));
+            }
+        } else if (type.equals("RESET_PASSWORD")) {
+            // Cho phép resend nếu account tồn tại
+            if (optUser.isEmpty()) {
+                log.warn("Email not found for reset password resend: {}", email);
+                // Trả về generic message để tránh email enumeration attack
                 return ResponseEntity.ok(new SuccessResponse(
-                        "Mã OTP xác thực email đã được gửi lại. Mã có hiệu lực trong 5 phút.",
-                        HttpStatus.OK.value(), null, LocalDateTime.now()));
-            } else {
-                emailService.sendResetPasswordEmail(email, otp);
-                log.info("Reset password OTP resent to: {}", email);
-                return ResponseEntity.ok(new SuccessResponse(
-                        "Mã OTP đặt lại mật khẩu đã được gửi lại. Mã có hiệu lực trong 5 phút.",
+                        "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi.",
                         HttpStatus.OK.value(), null, LocalDateTime.now()));
             }
+        }
 
+        // 2. Tạo OTP mới (dùng EmailService.generateOtp())
+        String otp = emailService.generateOtp();
+
+        // 3. Gửi email theo type
+        if (type.equals("SIGNUP")) {
+            emailService.sendVerificationEmail(email, otp);
+            log.info("Signup verification OTP resent to: {}", email);
+            return ResponseEntity.ok(new SuccessResponse(
+                    "Mã OTP xác thực email đã được gửi lại. Mã có hiệu lực trong 5 phút.",
+                    HttpStatus.OK.value(), null, LocalDateTime.now()));
+        } else {
+            emailService.sendResetPasswordEmail(email, otp);
+            log.info("Reset password OTP resent to: {}", email);
+            return ResponseEntity.ok(new SuccessResponse(
+                    "Mã OTP đặt lại mật khẩu đã được gửi lại. Mã có hiệu lực trong 5 phút.",
+                    HttpStatus.OK.value(), null, LocalDateTime.now()));
+        }
 
     }
 
@@ -283,7 +275,6 @@ public class AuthController {
                 "Logout successful", HttpStatus.OK.value(), null, LocalDateTime.now()));
     }
 
-    // ─── Change Password (authenticated) ─────────────────────────────────────────
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_SUPPORTER')")
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestParam("oldPassword") String oldPassword,

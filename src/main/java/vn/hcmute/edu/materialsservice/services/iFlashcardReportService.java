@@ -8,29 +8,14 @@ import java.util.List;
 
 public interface iFlashcardReportService {
 
-    /**
-     * Member báo cáo flashcard
-     */
     FlashcardReportResponse reportFlashcard(String flashcardId, ReportFlashcardRequest request,
             Authentication authentication);
 
-    /**
-     * Lấy tất cả báo cáo chưa xử lý (cho Supporter)
-     */
     List<FlashcardReportResponse> getPendingReports(Authentication authentication);
 
-    /**
-     * Lấy báo cáo của một flashcard
-     */
     List<FlashcardReportResponse> getFlashcardReports(String flashcardId, Authentication authentication);
 
-    /**
-     * Cập nhật trạng thái báo cáo
-     */
     FlashcardReportResponse updateReportStatus(String reportId, String status, Authentication authentication);
 
-    /**
-     * Kiểm tra member còn lượt report không
-     */
     Integer checkReportsRemaining(Authentication authentication);
 }

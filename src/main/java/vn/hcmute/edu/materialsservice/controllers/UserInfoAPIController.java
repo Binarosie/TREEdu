@@ -372,7 +372,7 @@ public class UserInfoAPIController {
         SuccessResponse response = new SuccessResponse(
                 "User updated successfully",
                 HttpStatus.OK.value(),
-                profileDTO, // 🔥 Đã thay bằng DTO sạch đẹp
+                profileDTO, 
                 LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
@@ -452,10 +452,10 @@ public class UserInfoAPIController {
             throw new BadRequestError("User is not a member");
         }
 
-        // 📐 BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
+        // BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
         int totalXp = member.getXp() != null ? member.getXp() : 0;
 
-        // 🎯 Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
+        // Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
         int currentLevel = userService.calculateLevel(totalXp);
 
         // Thuật toán tính tiến trình: TotalXP = 50 * L * (L - 1)
@@ -491,7 +491,7 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
-                // === 🚀 3 Field bổ trợ vẽ ProgressBar trên UI Frontend ===
+                // === 3 Field bổ trợ vẽ ProgressBar trên UI Frontend ===
                 .xpNeededForNextLevel(xpNeededForNextLevel)
                 .currentLevelProgressXp(currentLevelProgressXp)
                 .progressPercentage(progressPercentage)

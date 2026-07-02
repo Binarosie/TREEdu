@@ -59,12 +59,12 @@ public class CloudinaryService {
         for (int attempt = 0; attempt < maxRetries; attempt++) {
             try {
                 if (attempt > 0) {
-                    log.debug("⏳ Retry attempt {} for word {}, waiting {}ms...",
+                    log.debug( "Retry attempt {} for word {}, waiting {}ms...",
                             attempt + 1, wordId, delays[attempt - 1]);
                     Thread.sleep(delays[attempt - 1]);
                 }
 
-                log.debug("📥 Downloading audio from FPT for word: {} (attempt {})", wordId, attempt + 1);
+                log.debug(" Downloading audio from FPT for word: {} (attempt {})", wordId, attempt + 1);
 
                 URL url = new URL(tempAudioUrl);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -74,12 +74,12 @@ public class CloudinaryService {
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != 200) {
-                    log.warn("⚠️ HTTP {} for word {} (attempt {})", responseCode, wordId, attempt + 1);
+                    log.warn(" HTTP {} for word {} (attempt {})", responseCode, wordId, attempt + 1);
                     connection.disconnect();
                     continue;
                 }
 
-                // ✅ Đọc toàn bộ bytes vào memory trước
+                //  Đọc toàn bộ bytes vào memory trước
                 byte[] audioBytes;
                 try (InputStream inputStream = connection.getInputStream()) {
                     audioBytes = inputStream.readAllBytes();
@@ -87,11 +87,11 @@ public class CloudinaryService {
                 connection.disconnect();
 
                 if (audioBytes.length == 0) {
-                    log.warn("⚠️ Empty audio bytes for word {} (attempt {})", wordId, attempt + 1);
+                    log.warn(" Empty audio bytes for word {} (attempt {})", wordId, attempt + 1);
                     continue;
                 }
 
-                // ✅ Upload byte[] lên Cloudinary (không phải InputStream)
+                //  Upload byte[] lên Cloudinary (không phải InputStream)
                 Map<?, ?> result = cloudinary.uploader().upload(
                         audioBytes,
                         ObjectUtils.asMap(
@@ -101,21 +101,21 @@ public class CloudinaryService {
                                 "overwrite", true));
 
                 String permanentUrl = (String) result.get("secure_url");
-                log.info("✅ Audio stored permanently for word {}: {}", wordId, permanentUrl);
+                log.info(" Audio stored permanently for word {}: {}", wordId, permanentUrl);
                 return permanentUrl;
 
             } catch (FileNotFoundException e) {
-                log.warn("⚠️ File not ready yet for word {} (attempt {}): {}", wordId, attempt + 1, tempAudioUrl);
+                log.warn(" File not ready yet for word {} (attempt {}): {}", wordId, attempt + 1, tempAudioUrl);
             } catch (IOException e) {
-                log.error("❌ IO error downloading audio for word {}: {}", wordId, e.getMessage());
+                log.error("IO error downloading audio for word {}: {}", wordId, e.getMessage());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.error("❌ Thread interrupted for word {}", wordId);
+                log.error("Thread interrupted for word {}", wordId);
                 return null;
             }
         }
 
-        log.error("❌ All {} attempts failed to download audio for word {}", maxRetries, wordId);
+        log.error(" All {} attempts failed to download audio for word {}", maxRetries, wordId);
         return null;
     }
 
@@ -140,11 +140,11 @@ public class CloudinaryService {
                     ));
 
             String secureUrl = (String) result.get("secure_url");
-            log.info("✅ Uploaded avatar for user {}: {}", userId, secureUrl);
+            log.info(" Uploaded avatar for user {}: {}", userId, secureUrl);
             return secureUrl;
 
         } catch (IOException e) {
-            log.error("❌ Cloudinary upload failed for user {}: {}", userId, e.getMessage(), e);
+            log.error("Cloudinary upload failed for user {}: {}", userId, e.getMessage(), e);
             throw new RuntimeException("Không thể upload ảnh lên Cloudinary: " + e.getMessage());
         }
     }
@@ -156,49 +156,49 @@ public class CloudinaryService {
     public void deleteAvatar(String userId) {
         try {
             String publicId = avatarFolder + "/" + userId;
-            log.debug("🗑️ Deleting avatar: {}", publicId);
+            log.debug(" Deleting avatar: {}", publicId);
 
             Map<?, ?> result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            log.info("✅ Avatar deleted for user {}: {}", userId, result.get("result"));
+            log.info(" Avatar deleted for user {}: {}", userId, result.get("result"));
 
         } catch (IOException e) {
-            log.warn("⚠️ Could not delete avatar for user {}: {}", userId, e.getMessage());
+            log.warn("Could not delete avatar for user {}: {}", userId, e.getMessage());
             // Không throw — tránh block flow chính
         }
     }
 
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            log.warn("⚠️ Empty file received");
+            log.warn(" Empty file received");
             throw new BadRequestError("File ảnh không được để trống");
         }
 
         String contentType = file.getContentType();
-        log.debug("📋 File validation - name: {}, size: {}, type: {}",
+        log.debug(" File validation - name: {}, size: {}, type: {}",
                 file.getOriginalFilename(), file.getSize(), contentType);
 
         if (contentType == null || !ALLOWED_TYPES.contains(contentType.toLowerCase())) {
-            log.warn("⚠️ Invalid content type: {}", contentType);
+            log.warn("Invalid content type: {}", contentType);
             throw new BadRequestError("Chỉ chấp nhận file .png hoặc .jpg/.jpeg");
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {
-            log.warn("⚠️ File too large: {} bytes (max: {} bytes)", file.getSize(), MAX_FILE_SIZE);
+            log.warn(" File too large: {} bytes (max: {} bytes)", file.getSize(), MAX_FILE_SIZE);
             throw new BadRequestError("Kích thước file không được vượt quá 5MB");
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null) {
-            log.warn("⚠️ Invalid filename");
+            log.warn(" Invalid filename");
             throw new BadRequestError("Tên file không hợp lệ");
         }
 
         String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
         if (!Set.of("png", "jpg", "jpeg").contains(ext)) {
-            log.warn("⚠️ Invalid file extension: {}", ext);
+            log.warn(" Invalid file extension: {}", ext);
             throw new BadRequestError("Chỉ chấp nhận file .png hoặc .jpg/.jpeg");
         }
 
-        log.debug("✅ File validation passed");
+        log.debug(" File validation passed");
     }
 }

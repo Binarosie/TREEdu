@@ -146,16 +146,13 @@ public class QuizServiceImpl implements iQuizService {
         Quiz existingQuiz = quizRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with ID: " + id));
 
-        // ============ KIỂM TRA QUIZ ĐÃ CÓ NGƯỜI LÀM CHƯA ============
         long attemptCount = quizAttemptRepository.countByQuizId(id);
         if (attemptCount > 0) {
             throw new IllegalStateException(
                     "Không thể cập nhật quiz này vì đã có " + attemptCount + " lượt làm bài. "
                             + "Chỉ được cập nhật quiz chưa có ai làm.");
         }
-        // ==========================================================
 
-        // Check if new title conflicts with another quiz
         if (!existingQuiz.getTitle().equals(requestDTO.getTitle())
                 && quizRepository.existsByTitle(requestDTO.getTitle())) {
             throw new DuplicateResourceException("Quiz with title '" + requestDTO.getTitle() + "' already exists");
@@ -181,14 +178,12 @@ public class QuizServiceImpl implements iQuizService {
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with ID: " + id));
 
-        // ============ KIỂM TRA QUIZ ĐÃ CÓ NGƯỜI LÀM CHƯA ============
         long attemptCount = quizAttemptRepository.countByQuizId(id);
         if (attemptCount > 0) {
             throw new IllegalStateException(
                     "Không thể xóa quiz này vì đã có " + attemptCount + " lượt làm bài. "
                             + "Chỉ được xóa quiz chưa có ai làm.");
         }
-        // ==========================================================
 
         // Soft delete - chỉ đánh dấu deleted = true
         quiz.setDeleted(true);
@@ -209,7 +204,6 @@ public class QuizServiceImpl implements iQuizService {
 
         List<Quiz> allQuizzes = quizRepository.findAll();
 
-        // SỬA Ở ĐÂY: Đổi Quiz::getTopic thành Quiz::getTitle
         List<Quiz> filteredQuizzes = vn.hcmute.edu.materialsservice.utils.FuzzySearchUtil.fuzzyFilter(
                 allQuizzes,
                 title,

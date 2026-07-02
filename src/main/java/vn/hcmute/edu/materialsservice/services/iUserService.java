@@ -13,32 +13,31 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface iUserService {
-    // Tạo user dựa trên loại được chỉ định trong request
     User createMember(CreateUserRequest request);
 
     User createManager(CreateUserRequest request);
 
-    Optional<User> getUserById(String id); // ← UUID → String
+    Optional<User> getUserById(String id);
 
-    UserInfoDTO getUserInfoById(String id); // ← UUID → String
+    UserInfoDTO getUserInfoById(String id);
 
-    UserDetailDTO getUserDetailById(String id); // ← UUID → String
+    UserDetailDTO getUserDetailById(String id);
 
     Page<User> getAllUsers(Pageable pageable);
 
     boolean existsByEmail(String email);
 
-    boolean existsByUserIdAndIsActive(String userId, boolean isActive); // ← UUID → String
+    boolean existsByUserIdAndIsActive(String userId, boolean isActive);
 
-    User updateMyProfile(String id, UpdateProfileRequest request); // ← UUID → String
+    User updateMyProfile(String id, UpdateProfileRequest request);
 
-    User updateUserByID(String id, UpdateUserRequest request); // ← UUID → String
+    User updateUserByID(String id, UpdateUserRequest request);
 
-    boolean changePasswordById(String id, String newPassword); // ← UUID → String
+    boolean changePasswordById(String id, String newPassword);
 
-    void deactivateUser(String id); // ← UUID → String
+    void deactivateUser(String id);
 
-    void activateUser(String id); // ← UUID → String
+    void activateUser(String id);
 
     int getTotalUsers();
 
@@ -48,7 +47,7 @@ public interface iUserService {
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> findById(String id); // ← UUID → String
+    Optional<User> findById(String id);
 
     boolean addXpToMember(String userId, int xpToAdd);
 

@@ -53,15 +53,10 @@ public class PronunciationServiceImpl implements iPronunciationService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=";
+    private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=";
 
     // Không final để Lombok không đưa vào constructor
     private RestClient restClient;
-
-    // =========================================================================
-    // Init
-    // =========================================================================
 
     @PostConstruct
     public void init() {
@@ -81,14 +76,9 @@ public class PronunciationServiceImpl implements iPronunciationService {
         log.info("RestClient (timeout=60s) initialized.");
     }
 
-    // =========================================================================
-    // Pronunciation Check CRUD
-    // =========================================================================
-
     @Override
     public PronunciationCheckResponse checkAndSave(PronunciationCheckRequest request) {
-        PronunciationHistory aiResult =
-                callGeminiForPronunciation(request.getAudio(), request.getExpectedText());
+        PronunciationHistory aiResult = callGeminiForPronunciation(request.getAudio(), request.getExpectedText());
         aiResult.setCreatedAt(LocalDateTime.now());
         return mapper.toResponse(repository.save(aiResult));
     }
@@ -113,10 +103,6 @@ public class PronunciationServiceImpl implements iPronunciationService {
         repository.deleteById(id);
         log.info("Deleted PronunciationHistory id={}", id);
     }
-
-    // =========================================================================
-    // Topic CRUD
-    // =========================================================================
 
     @Override
     public List<TopicResponse> getTopics() {
@@ -186,10 +172,6 @@ public class PronunciationServiceImpl implements iPronunciationService {
         log.info("Deleted topic id={}", id);
     }
 
-    // =========================================================================
-    // Sentence management
-    // =========================================================================
-
     @Override
     public TopicDetailResponse addSentences(String topicId, SentencesRequest request) {
         Topic topic = findTopicOrThrow(topicId);
@@ -237,10 +219,6 @@ public class PronunciationServiceImpl implements iPronunciationService {
         return topic.getSentences().get(random.nextInt(topic.getSentences().size()));
     }
 
-    // =========================================================================
-    // Gemini helpers (không thay đổi)
-    // =========================================================================
-
     private PronunciationHistory callGeminiForPronunciation(MultipartFile audio, String expectedText) {
         try {
             byte[] audioBytes = audio.getBytes();
@@ -255,15 +233,10 @@ public class PronunciationServiceImpl implements iPronunciationService {
                                     Map.of("text", prompt),
                                     Map.of("inline_data", Map.of(
                                             "mime_type", mimeType,
-                                            "data", base64Audio
-                                    ))
-                            ))
-                    ),
+                                            "data", base64Audio))))),
                     "generation_config", Map.of(
                             "temperature", 0.0,
-                            "max_output_tokens", 8192
-                    )
-            );
+                            "max_output_tokens", 8192));
 
             String responseBody = this.restClient.post()
                     .uri(GEMINI_URL + apiKey)
@@ -297,35 +270,36 @@ public class PronunciationServiceImpl implements iPronunciationService {
 
     private String buildPronunciationPrompt(String expectedText) {
         return """
-            Bạn là chuyên gia phát âm tiếng Việt, chuyên nghe audio và so sánh với văn bản chuẩn.
-            Văn bản chuẩn (để tham khảo): "%s"
+                Bạn là chuyên gia phát âm tiếng Việt, chuyên nghe audio và so sánh với văn bản chuẩn.
+                Văn bản chuẩn (để tham khảo): "%s"
 
-            Nhiệm vụ nghiêm ngặt:
-            - NGHE CHÍNH XÁC từ audio, KHÔNG đoán hoặc tự sửa dựa trên văn bản chuẩn.
-            - Nếu audio im lặng hoặc không nghe rõ: recognizedText = "Không nghe được âm thanh" và score = 0.
-            - Nếu audio không khớp văn bản: ghi lỗi rõ ràng.
-            - Trả về CHỈ JSON thuần túy, không thêm text nào khác.
+                Nhiệm vụ nghiêm ngặt:
+                - NGHE CHÍNH XÁC từ audio, KHÔNG đoán hoặc tự sửa dựa trên văn bản chuẩn.
+                - Nếu audio im lặng hoặc không nghe rõ: recognizedText = "Không nghe được âm thanh" và score = 0.
+                - Nếu audio không khớp văn bản: ghi lỗi rõ ràng.
+                - Trả về CHỈ JSON thuần túy, không thêm text nào khác.
 
-            Cấu trúc JSON:
-            {
-              "recognizedText": "text NGHE ĐƯỢC từ audio (KHÔNG đoán)",
-              "pronunciationScore": số nguyên 0-100 (0 nếu không nghe được),
-              "pronunciationErrors": [
+                Cấu trúc JSON:
                 {
-                  "original": "từ/cụm từ chuẩn",
-                  "recognized": "từ/cụm từ nghe được",
-                  "index": vị trí bắt đầu trong văn bản chuẩn,
-                  "type": "pronunciation|intonation|missing_word|extra_word|clarity|no_audio",
-                  "explanation": "giải thích lỗi"
+                  "recognizedText": "text NGHE ĐƯỢC từ audio (KHÔNG đoán)",
+                  "pronunciationScore": số nguyên 0-100 (0 nếu không nghe được),
+                  "pronunciationErrors": [
+                    {
+                      "original": "từ/cụm từ chuẩn",
+                      "recognized": "từ/cụm từ nghe được",
+                      "index": vị trí bắt đầu trong văn bản chuẩn,
+                      "type": "pronunciation|intonation|missing_word|extra_word|clarity|no_audio",
+                      "explanation": "giải thích lỗi"
+                    }
+                  ]
                 }
-              ]
-            }
 
-            Ví dụ 1: Audio im lặng
-            Output: {"recognizedText":"Không nghe được âm thanh","pronunciationScore":0,"pronunciationErrors":[{"original":"","recognized":"","index":0,"type":"no_audio","explanation":"Audio không có âm thanh"}]}
+                Ví dụ 1: Audio im lặng
+                Output: {"recognizedText":"Không nghe được âm thanh","pronunciationScore":0,"pronunciationErrors":[{"original":"","recognized":"","index":0,"type":"no_audio","explanation":"Audio không có âm thanh"}]}
 
-            Bây giờ NGHE CHÍNH XÁC audio đã cho, KHÔNG đoán.
-            """.formatted(expectedText);
+                Bây giờ NGHE CHÍNH XÁC audio đã cho, KHÔNG đoán.
+                """
+                .formatted(expectedText);
     }
 
     private PronunciationHistory parsePronunciationResponse(String responseBody, String expectedText) {
@@ -367,10 +341,6 @@ public class PronunciationServiceImpl implements iPronunciationService {
             throw new RuntimeException("Lỗi xử lý phản hồi AI: " + e.getMessage());
         }
     }
-
-    // =========================================================================
-    // Utility
-    // =========================================================================
 
     private Topic findTopicOrThrow(String id) {
         return topicRepository.findById(id)

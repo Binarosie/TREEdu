@@ -43,7 +43,7 @@ public class LeaderboardSnapshot {
         private Integer rank;
         private String userId;
         private String displayName;
-        private String avatarUrl; // 🌟 THÊM TRƯỜNG NÀY
+        private String avatarUrl;
         private Long value;
         private Integer level;
         private TreeStage treeStage;
