@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.edu.materialsservice.Enum.ELessonStatus;
@@ -68,6 +69,7 @@ public class DictationController {
      * API Lấy chi tiết một bài nghe chính tả cụ thể theo ID bài học
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> getLessonById(@PathVariable String id) {
         log.info("=== Lấy chi tiết bài nghe ID: {} ===", id);
         DictationLesson response = dictationService.getLessonById(id);
@@ -79,6 +81,7 @@ public class DictationController {
      * URL mang tính tường minh: /api/v1/dictation/{dictationId}/check
      */
     @PostMapping("/{dictationId}/check")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationCheckResponse>> checkAnswer(
             @PathVariable String dictationId,
             @Valid @RequestBody DictationCheckRequest request) {
@@ -90,6 +93,7 @@ public class DictationController {
     }
 
     @PostMapping("/generate-by-ai")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> generateLessonByAI(
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
@@ -138,6 +142,7 @@ public class DictationController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<String>> updateStatus(
             @PathVariable String id,
             @RequestParam("status") ELessonStatus status) {
@@ -160,6 +165,7 @@ public class DictationController {
      * URL chuẩn RESTful: PUT /api/dictation/{id}
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> updateLesson(
             @PathVariable String id,
             @RequestBody DictationUpdateRequest request) {

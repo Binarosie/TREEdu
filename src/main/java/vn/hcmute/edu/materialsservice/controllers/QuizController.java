@@ -77,10 +77,9 @@ public class QuizController {
                                 .build());
         }
 
-        // XEM CHI TIẾT QUIZ - Response: QuizResponse - ROLE_MEMBER: KHÔNG có
-        // explanation (tránh gợi ý đáp án) | ROLE_ADMIN/SUPPORTER: CÓ explanation
+
         @GetMapping("/{id}")
-        // @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
                         @PathVariable String id,
                         Authentication authentication) {
@@ -273,7 +272,7 @@ public class QuizController {
 
         // TạO QUIZ MỚI - Chỉ SUPPORTER và ADMIN
         @PostMapping
-        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
+
         public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
                         @Valid @RequestBody QuizRequest requestDTO,
                         Authentication authentication) {
@@ -348,7 +347,6 @@ public class QuizController {
         }
 
         @PostMapping("/generate-from-file")
-        // @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
                         @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
 

@@ -58,6 +58,7 @@ public class FlashcardController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<FlashcardResponse>> getFlashcardById(
             @PathVariable String id,
             Authentication authentication) {
@@ -66,6 +67,7 @@ public class FlashcardController {
     }
 
     @GetMapping("/{id}/details")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<FlashcardWithWordsResponse>> getFlashcardWithWords(
             @PathVariable String id,
             Authentication authentication) {

@@ -44,6 +44,7 @@ public class PronunciationController {
      * GET /api/pronunciation-check/random-sentence?topic=...
      */
     @GetMapping("/random-sentence")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<String>> getRandomSentence(
             @RequestParam String topic,
             Authentication authentication) {
@@ -62,6 +63,7 @@ public class PronunciationController {
      * Kiểm tra phát âm và lưu lịch sử.
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<PronunciationCheckResponse>> checkPronunciation(
             PronunciationCheckRequest request,
             Authentication authentication) {
@@ -80,6 +82,7 @@ public class PronunciationController {
      * Lấy toàn bộ lịch sử.
      */
     @GetMapping("/history")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<PronunciationCheckResponse>>> getAllHistory() {
         return ResponseEntity.ok(ApiResponse.success(service.getAll()));
     }
@@ -89,6 +92,7 @@ public class PronunciationController {
      * Lấy 1 lịch sử theo id.
      */
     @GetMapping("/history/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<PronunciationCheckResponse>> getHistoryById(
             @PathVariable String id) {
         return ResponseEntity.ok(ApiResponse.success(service.getById(id)));
@@ -99,6 +103,7 @@ public class PronunciationController {
      * Xóa 1 lịch sử. ADMIN hoặc chính chủ (hiện tại mở cho ADMIN).
      */
     @DeleteMapping("/history/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteHistory(
             @PathVariable String id,
             Authentication authentication) {
