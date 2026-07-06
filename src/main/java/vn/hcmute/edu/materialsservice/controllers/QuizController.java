@@ -139,8 +139,8 @@ public class QuizController {
 
         @GetMapping("/search")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
-                @RequestParam String title, // Sửa param name thành title
-                Authentication authentication) {
+                        @RequestParam String title, // Sửa param name thành title
+                        Authentication authentication) {
 
                 log.info("REST request to search quizzes by title: {}", title);
 
@@ -150,10 +150,10 @@ public class QuizController {
                 response.forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
 
                 return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
-                        .success(true)
-                        .message("Search completed successfully")
-                        .data(response)
-                        .build());
+                                .success(true)
+                                .message("Search completed successfully")
+                                .data(response)
+                                .build());
         }
 
         @PostMapping("/{quizId}/start")
@@ -204,7 +204,8 @@ public class QuizController {
                                 .build());
         }
 
-        // XEM LỊ DANH SÁCH LÀM BÀI CỦA USER - Lấy tất cả các lần làm quiz của user hiện
+        // XEM LỊCH DANH SÁCH LÀM BÀI CỦA USER - Lấy tất cả các lần làm quiz của user
+        // hiện
         // tại
         @GetMapping("/my-attempts")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
@@ -226,7 +227,8 @@ public class QuizController {
                                 .build());
         }
 
-        // XEM LỊ SỞ LÀM BÀI CHO 1 QUIZ CỤ THỂ - Lấy tất cả các lần user làm một quiz cụ
+        // XEM LỊCH SỞ LÀM BÀI CHO 1 QUIZ CỤ THỂ - Lấy tất cả các lần user làm một quiz
+        // cụ
         // thể
         @GetMapping("/{quizId}/my-attempts")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")

@@ -43,14 +43,6 @@ public class DictationController {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    // ==========================================
-    // PHÂN HỆ: QUẢN LÝ (SUPPORTER / ADMIN)
-    // ==========================================
-
-    /**
-     * API Tạo bài tập nghe chép chính tả mới
-     * Thường dùng bởi Supporter hoặc để import data từ script Python Whisper
-     */
     @PostMapping
     public ResponseEntity<ApiResponse<DictationLesson>> createLesson(
             @Valid @RequestBody DictationCreateRequest request) {
@@ -63,10 +55,6 @@ public class DictationController {
                 .body(ApiResponse.success("Tạo bài nghe chính tả thành công!", response));
     }
 
-
-    /**
-     * API Lấy chi tiết một bài nghe chính tả cụ thể theo ID bài học
-     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<DictationLesson>> getLessonById(@PathVariable String id) {
         log.info("=== Lấy chi tiết bài nghe ID: {} ===", id);
@@ -74,10 +62,6 @@ public class DictationController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    /**
-     * API Kiểm tra và chấm điểm bài gõ của Học viên
-     * URL mang tính tường minh: /api/v1/dictation/{dictationId}/check
-     */
     @PostMapping("/{dictationId}/check")
     public ResponseEntity<ApiResponse<DictationCheckResponse>> checkAnswer(
             @PathVariable String dictationId,
@@ -111,7 +95,7 @@ public class DictationController {
         }
 
         try {
-            // 🌟 Upload thẳng lên Cloudinary, không cần lưu disk nữa
+            // Upload thẳng lên Cloudinary, không cần lưu disk nữa
             String audioUrl = cloudinaryService.uploadAudio(file);
             log.info("Cloudinary URL: {}", audioUrl);
 
@@ -145,7 +129,8 @@ public class DictationController {
         log.info("=== Cập nhật trạng thái bài nghe ID: {} sang [{}] ===", id, status);
         dictationService.updateLessonStatus(id, status);
 
-        return ResponseEntity.ok(ApiResponse.success("Cập nhật trạng thái bài học thành công!", "Trạng thái mới: " + status));
+        return ResponseEntity
+                .ok(ApiResponse.success("Cập nhật trạng thái bài học thành công!", "Trạng thái mới: " + status));
     }
 
     @GetMapping
@@ -155,10 +140,6 @@ public class DictationController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * API Cập nhật chi tiết bài nghe chính tả (Sửa tiêu đề, level hoặc toàn bộ text/time của segments)
-     * URL chuẩn RESTful: PUT /api/dictation/{id}
-     */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<DictationLesson>> updateLesson(
             @PathVariable String id,

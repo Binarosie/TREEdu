@@ -68,14 +68,6 @@ public class TTSService {
         return null;
     }
 
-    /**
-     * Generate audio và lưu trữ vĩnh viễn trên Cloudinary
-     * Thay vì lưu URL tạm từ FPT (dễ hết hạn)
-     *
-     * @param word   - từ cần đọc
-     * @param wordId - ID của word (để public_id dễ quản lý)
-     * @return URL vĩnh viễn từ Cloudinary (hoặc null nếu lỗi)
-     */
     public String generateAudioAndStore(String word, String wordId) {
         if (word == null || word.trim().isEmpty()) {
             log.warn("Word is empty, skipping TTS generation");
@@ -97,9 +89,9 @@ public class TTSService {
             String permanentUrl = cloudinaryService.downloadAndStoreAudio(tempAudioUrl, wordId);
 
             if (permanentUrl != null) {
-                log.info("✅ Audio stored permanently for word {}: {}", word, permanentUrl);
+                log.info(" Audio stored permanently for word {}: {}", word, permanentUrl);
             } else {
-                log.warn("⚠️ Failed to store audio to Cloudinary, using temporary URL as fallback");
+                log.warn("Failed to store audio to Cloudinary, using temporary URL as fallback");
                 return tempAudioUrl; // Fallback: trả về URL tạm nếu lưu permanent thất bại
             }
 

@@ -16,7 +16,7 @@ public class UserInfoDTO {
     private String status;
 
     public UserInfoDTO mapToUserInfo(User user) {
-        this.id = user.getId(); // ← Bỏ .toString() vì id đã là String
+        this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getFullName();
         this.role = user.getClass().getSimpleName();

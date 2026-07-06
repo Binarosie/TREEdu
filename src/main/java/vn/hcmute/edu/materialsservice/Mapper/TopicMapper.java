@@ -10,21 +10,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TopicMapper {
 
-    // ── Summary (không có sentences) ─────────────────────────────────────────
-    // Dùng expression tính sentenceCount trực tiếp, tránh @AfterMapping bị bỏ qua
-    @Mapping(
-            target = "sentenceCount",
-            expression = "java(topic.getSentences() != null ? topic.getSentences().size() : 0)"
-    )
-    TopicResponse toResponse(Topic topic);
+        // Dùng expression tính sentenceCount trực tiếp, tránh @AfterMapping bị bỏ qua
+        @Mapping(target = "sentenceCount", expression = "java(topic.getSentences() != null ? topic.getSentences().size() : 0)")
+        TopicResponse toResponse(Topic topic);
 
-    // toResponseList dùng lại toResponse ở trên nên sentenceCount tự đúng
-    List<TopicResponse> toResponseList(List<Topic> topics);
+        // toResponseList dùng lại toResponse ở trên nên sentenceCount tự đúng
+        List<TopicResponse> toResponseList(List<Topic> topics);
 
-    // ── Detail (có cả sentences) ──────────────────────────────────────────────
-    @Mapping(
-            target = "sentenceCount",
-            expression = "java(topic.getSentences() != null ? topic.getSentences().size() : 0)"
-    )
-    TopicDetailResponse toDetailResponse(Topic topic);
+        @Mapping(target = "sentenceCount", expression = "java(topic.getSentences() != null ? topic.getSentences().size() : 0)")
+        TopicDetailResponse toDetailResponse(Topic topic);
 }

@@ -18,7 +18,7 @@ import java.util.List;
 @Document(collection = "dictation_lessons")
 public class DictationLesson {
     @Id
-    private String id; // Để nguyên bản thế này thôi mày
+    private String id;
     private String title;
     private String audioUrl;
     private String level;

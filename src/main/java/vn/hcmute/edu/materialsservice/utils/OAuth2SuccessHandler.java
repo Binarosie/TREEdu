@@ -27,7 +27,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${app.base-url}")
     private String frontendUrl;
 
-    // ✅ FIX: Sử dụng Constructor Injection với @Lazy
+    // Sử dụng Constructor Injection với @Lazy
     public OAuth2SuccessHandler(@Lazy UserServiceImpl userService,
                                 JwtTokenUtil jwtTokenUtil) {
         this.userService = userService;

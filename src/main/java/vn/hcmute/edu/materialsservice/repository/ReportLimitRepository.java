@@ -10,13 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ReportLimitRepository extends MongoRepository<ReportLimit, String> {
 
-    /**
-     * Tìm report limit của member theo memberID
-     */
     Optional<ReportLimit> findByMemberId(String memberId);
 
-    /**
-     * Kiểm tra xem member có còn report không
-     */
     Optional<ReportLimit> findByMemberIdAndResetDateGreaterThanEqual(String memberId, LocalDate today);
 }

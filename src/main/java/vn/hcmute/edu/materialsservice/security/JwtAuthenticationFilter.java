@@ -28,28 +28,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        // 🌟 Bỏ qua filter với OPTIONS (CORS preflight) và các path public
+        // Bỏ qua filter với OPTIONS (CORS preflight) và các path public
         String uri = request.getRequestURI();
         String method = request.getMethod();
 
-        if ("OPTIONS".equalsIgnoreCase(method)) return true;
+        if ("OPTIONS".equalsIgnoreCase(method))
+            return true;
 
         // Bỏ qua toàn bộ /uploads/ — không cần token để nghe audio
-        if (uri.startsWith("/uploads/")) return true;
+        if (uri.startsWith("/uploads/"))
+            return true;
 
         // Bỏ qua các path cố định trong danh sách
-        if (EXCLUDED_PATHS.contains(uri)) return true;
+        if (EXCLUDED_PATHS.contains(uri))
+            return true;
 
         // Bỏ qua GET /api/dictation và /api/dictation/{id}
-        if ("GET".equalsIgnoreCase(method) && uri.startsWith("/api/dictation")) return true;
+        if ("GET".equalsIgnoreCase(method) && uri.startsWith("/api/dictation"))
+            return true;
 
         return false;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         String token = null;
 
@@ -77,9 +81,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     var userDetails = customUserDetailsService.loadUserByUsername(username);
 
                     if (jwtTokenUtil.isTokenValid(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authToken =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails, null, userDetails.getAuthorities());
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
@@ -101,6 +104,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/users/newMember",
             "/api/auth/verify-email-link",
             "/api/auth/request-reset-password",
-            "/api/auth/reset-password"
-    );
+            "/api/auth/reset-password");
 }

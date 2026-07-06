@@ -16,11 +16,11 @@ public class CloudinaryConfig {
     @Bean
     public Cloudinary cloudinary() {
         // Log để kiểm tra credentials đang load
-        log.info("☁️ Cloudinary initialized with URL: {}",
+        log.info("Cloudinary initialized with URL: {}",
                 cloudinaryUrl != null ? cloudinaryUrl.replaceAll(":.*@", ":***@") : "NULL");
 
         if (cloudinaryUrl == null || cloudinaryUrl.isEmpty()) {
-            log.error("❌ cloudinary.url is missing in application.properties!");
+            log.error("cloudinary.url is missing in application.properties!");
             throw new IllegalArgumentException("Missing cloudinary.url configuration");
         }
 

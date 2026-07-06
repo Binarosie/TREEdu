@@ -25,7 +25,7 @@ public class SupporterFactory implements iUserFactory {
 
     @Override
     public User createUser(CreateUserRequest request) {
-        log.info("🔧 Creating SUPPORTER with email: {}", request.getEmail());
+        log.info(" Creating SUPPORTER with email: {}", request.getEmail());
 
         Supporter supporter = Supporter.builder()
                 .id(UUID.randomUUID().toString())
@@ -37,7 +37,7 @@ public class SupporterFactory implements iUserFactory {
                 .modifiedOn(LocalDateTime.now())
                 .build();
 
-        log.info("✅ Supporter created: {} (class: {})", supporter.getEmail(), supporter.getClass().getSimpleName());
+        log.info("Supporter created: {} (class: {})", supporter.getEmail(), supporter.getClass().getSimpleName());
         return supporter;
     }
 }

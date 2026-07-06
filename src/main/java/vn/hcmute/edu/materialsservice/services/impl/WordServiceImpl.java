@@ -205,7 +205,6 @@ public class WordServiceImpl implements iWordService {
                         System.out.println("Principal class: " + authentication.getPrincipal().getClass().getName());
                 }
 
-                // ================= FILTER THEO ROLE =================
                 // Check if user is truly authenticated (not anonymous)
                 boolean isRealUser = authentication != null
                                 && authentication.isAuthenticated()
@@ -268,18 +267,18 @@ public class WordServiceImpl implements iWordService {
                                         word.setUpdatedAt(LocalDateTime.now());
                                         wordRepository.save(word);
                                         regeneratedCount++;
-                                        log.info("✅ Regenerated audio for word: {} -> {}", word.getNewWord(),
+                                        log.info(" Regenerated audio for word: {} -> {}", word.getNewWord(),
                                                         newAudioUrl);
                                 } else {
-                                        log.warn("⚠️ Failed to regenerate audio for word: {}", word.getNewWord());
+                                        log.warn(" Failed to regenerate audio for word: {}", word.getNewWord());
                                 }
                         } catch (Exception e) {
-                                log.error("❌ Error regenerating audio for word {}: {}", word.getNewWord(),
+                                log.error("Error regenerating audio for word {}: {}", word.getNewWord(),
                                                 e.getMessage(), e);
                         }
                 }
 
-                log.info("✅ Audio regeneration complete: {} / {} words updated", regeneratedCount, words.size());
+                log.info("Audio regeneration complete: {} / {} words updated", regeneratedCount, words.size());
 
                 return regeneratedCount;
         }

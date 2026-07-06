@@ -75,8 +75,6 @@ public class UserServiceImpl implements iUserService {
         user.setId(UUID.randomUUID().toString());
         user.setCreatedOn(java.time.LocalDateTime.now());
         user.setModifiedOn(java.time.LocalDateTime.now());
-
-        // ===== Map field mới =====
         if (request.getPhoneNumber() != null)
             user.setPhoneNumber(request.getPhoneNumber());
         if (request.getAvatarFile() != null) {
@@ -139,8 +137,8 @@ public class UserServiceImpl implements iUserService {
 
     @Override
     public User createManager(CreateUserRequest request) {
-        log.info("📨 Received createManager request for: {}", request.getEmail());
-        log.info("📝 Request details - userType: {}, fullName: {}", request.getUserType(), request.getFullName());
+        log.info(" Received createManager request for: {}", request.getEmail());
+        log.info("Request details - userType: {}, fullName: {}", request.getUserType(), request.getFullName());
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ConflictError("User already exists with email: " + request.getEmail());
@@ -148,24 +146,24 @@ public class UserServiceImpl implements iUserService {
 
         // FIX: Uncomment dòng này để dùng userType từ request
         iUserFactory factory = getFactory(request.getUserType());
-        log.info("🏭 Selected factory: {}", factory.getClass().getSimpleName());
+        log.info("Selected factory: {}", factory.getClass().getSimpleName());
 
         User user = factory.createUser(request);
-        log.info("💾 Saving user to database - Type: {}, Email: {}", user.getClass().getSimpleName(), user.getEmail());
+        log.info(" Saving user to database - Type: {}, Email: {}", user.getClass().getSimpleName(), user.getEmail());
 
         User savedUser = userRepository.save(user);
-        log.info("✅ User saved successfully with ID: {}", savedUser.getId());
+        log.info(" User saved successfully with ID: {}", savedUser.getId());
 
         return savedUser;
     }
 
     @Override
-    public Optional<User> getUserById(String id) { // ← UUID → String
+    public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
     @Override
-    public UserInfoDTO getUserInfoById(String id) { // ← UUID → String
+    public UserInfoDTO getUserInfoById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -175,7 +173,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public UserDetailDTO getUserDetailById(String id) { // ← UUID → String
+    public UserDetailDTO getUserDetailById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
         return UserDetailDTO.mapTo(user);
@@ -197,7 +195,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public User updateMyProfile(String id, UpdateProfileRequest request) { // ← UUID → String
+    public User updateMyProfile(String id, UpdateProfileRequest request) {
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
             throw new NotFoundError("User not found with id: " + id);
@@ -209,7 +207,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public User updateUserByID(String id, UpdateUserRequest request) { // ← UUID → String
+    public User updateUserByID(String id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundError("User not found with id: " + id));
 
@@ -217,7 +215,7 @@ public class UserServiceImpl implements iUserService {
         return userRepository.save(user);
     }
 
-    @Transactional // ← Thêm annotation này vào method
+    @Transactional
     public User adminUpdateUser(String targetUserId, UpdateUserRequest request, EUserRole currentUserRole) { // ← UUID →
                                                                                                              // String
         User targetUser = userRepository.findById(targetUserId)
@@ -226,7 +224,6 @@ public class UserServiceImpl implements iUserService {
         EUserRole targetRole = EUserRole.fromUser(targetUser);
         log.info("Admin updating user: {} (current type: {})", targetUser.getEmail(), targetRole);
 
-        // Sử dụng AdminUpdateOtherUserStrategy
         User updatedUser = adminUpdateOtherUserStrategy.updateByAdmin(targetUser, request, currentUserRole);
 
         EUserRole newRole = EUserRole.fromUser(updatedUser);
@@ -254,7 +251,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public void deactivateUser(String id) { // ← UUID → String
+    public void deactivateUser(String id) {
         // Soft delete user by setting isActive to false
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
@@ -266,7 +263,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public void activateUser(String id) { // ← UUID → String
+    public void activateUser(String id) {
         // Soft delete user by setting isActive to false
         Optional<User> optUser = userRepository.findById(id);
         if (!optUser.isPresent()) {
@@ -304,7 +301,7 @@ public class UserServiceImpl implements iUserService {
     }
 
     @Override
-    public Optional<User> findById(String id) { // ← UUID → String
+    public Optional<User> findById(String id) {
         return userRepository.findById(id);
     }
 
@@ -321,7 +318,6 @@ public class UserServiceImpl implements iUserService {
             int newXp = currentXp + xpToAdd;
             member.setXp(newXp);
 
-            // 🔥 ĐỒNG BỘ: Sử dụng chung một thuật toán RPG cho toàn hệ thống
             int newLevel = calculateLevel(newXp);
             member.setLevel(newLevel);
 
@@ -331,7 +327,6 @@ public class UserServiceImpl implements iUserService {
         return false;
     }
 
-    // Trong file UserServiceImpl.java triển khai:
     @Override
     public int calculateLevel(int totalXp) {
         if (totalXp <= 0)
@@ -340,17 +335,14 @@ public class UserServiceImpl implements iUserService {
         return (int) Math.floor((1.0 + Math.sqrt(1.0 + (double) totalXp / 12.5)) / 2.0);
     }
 
-    /**
-     * Upload avatar file to Cloudinary and return the URL
-     */
     private String uploadAvatarToCloudinary(org.springframework.web.multipart.MultipartFile avatarFile, String userId) {
         try {
             log.info("📤 Uploading avatar for user: {}", userId);
             String avatarUrl = cloudinaryService.uploadAvatar(avatarFile, userId);
-            log.info("✅ Avatar uploaded successfully: {}", avatarUrl);
+            log.info("Avatar uploaded successfully: {}", avatarUrl);
             return avatarUrl;
         } catch (Exception e) {
-            log.error("❌ Error uploading avatar to Cloudinary for user {}: {}", userId, e.getMessage());
+            log.error("Error uploading avatar to Cloudinary for user {}: {}", userId, e.getMessage());
             throw new InternalServerError("Could not upload avatar file: " + e.getMessage());
         }
     }

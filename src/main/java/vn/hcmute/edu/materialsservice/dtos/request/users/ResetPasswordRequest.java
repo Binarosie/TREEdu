@@ -7,19 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO để đặt lại mật khẩu với OTP xác thực
- * 
- * POST /api/auth/reset-password
- * Body: {
- * "email": "user@example.com",
- * "otp": "123456",
- * "newPassword": "newPassword123"
- * }
- * 
- * ⚠️ HTTPS ONLY - Mật khẩu được truyền qua request body an toàn, không phải URL
- * parameter
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

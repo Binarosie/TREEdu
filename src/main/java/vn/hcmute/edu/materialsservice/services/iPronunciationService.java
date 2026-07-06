@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface iPronunciationService {
 
-    // ── Pronunciation Check ───────────────────────────────────────────────────
     PronunciationCheckResponse checkAndSave(PronunciationCheckRequest request);
 
     PronunciationCheckResponse getById(String id);
@@ -20,29 +19,19 @@ public interface iPronunciationService {
 
     void deleteHistory(String id);
 
-    // ── Topic ─────────────────────────────────────────────────────────────────
-    /** Trả về tất cả topics (summary, không có sentences). */
     List<TopicResponse> getTopics();
 
-    /** Trả về chi tiết 1 topic kèm full danh sách sentences. */
     TopicDetailResponse getTopicById(String id);
 
-    /** Tạo topic mới (có thể kèm sentences ban đầu). */
     TopicDetailResponse createTopic(TopicRequest request);
 
-    /** Cập nhật tên/mô tả/level của topic (KHÔNG thay đổi sentences). */
     TopicDetailResponse updateTopic(String id, TopicRequest request);
 
-    /** Xóa toàn bộ topic. */
     void deleteTopic(String id);
 
-    // ── Sentences trong Topic ─────────────────────────────────────────────────
-    /** Thêm 1 hoặc nhiều câu vào topic. */
     TopicDetailResponse addSentences(String topicId, SentencesRequest request);
 
-    /** Xóa 1 câu khỏi topic theo index trong list. */
     TopicDetailResponse removeSentence(String topicId, int sentenceIndex);
 
-    /** Lấy câu ngẫu nhiên từ topic theo tên. */
     String getRandomSentence(String topicName);
 }

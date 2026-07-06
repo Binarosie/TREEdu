@@ -28,10 +28,7 @@ public class FlashcardProgressResponse {
     private LocalDateTime startedAt;
     private LocalDateTime completedAt;
     private LocalDateTime lastAccessedAt;
-    // Thêm vào FlashcardProgressResponse
     private Integer xpGained;
     private Boolean leveledUp;
-
-    // Danh sách các từ vựng trong flashcard
     private List<WordResponse> words;
 }

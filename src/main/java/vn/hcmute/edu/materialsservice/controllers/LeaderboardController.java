@@ -20,54 +20,36 @@ public class LeaderboardController {
     private final LeaderboardService leaderboardService;
     private final UserRepository userRepository;
 
-    /**
-     * GET /api/leaderboard/weekly-xp
-     */
     @GetMapping("/weekly-xp")
     public ResponseEntity<LeaderboardResponse> getWeeklyXp(Authentication authentication) {
         String userId = getUserId(authentication);
         return ResponseEntity.ok(leaderboardService.getWeeklyXp(userId));
     }
 
-    /**
-     * GET /api/leaderboard/streak
-     */
     @GetMapping("/streak")
     public ResponseEntity<LeaderboardResponse> getStreak(Authentication authentication) {
         String userId = getUserId(authentication);
         return ResponseEntity.ok(leaderboardService.getStreak(userId));
     }
 
-    /**
-     * GET /api/leaderboard/total-xp
-     */
     @GetMapping("/total-xp")
     public ResponseEntity<LeaderboardResponse> getTotalXp(Authentication authentication) {
         String userId = getUserId(authentication);
         return ResponseEntity.ok(leaderboardService.getTotalXp(userId));
     }
 
-    /**
-     * GET /api/leaderboard/my-rank
-     * Response: { "WEEKLY_XP": 5, "STREAK": 12, "TOTAL_XP": 8 }
-     */
     @GetMapping("/my-rank")
     public ResponseEntity<Map<String, Integer>> getMyRank(Authentication authentication) {
         String userId = getUserId(authentication);
         return ResponseEntity.ok(leaderboardService.getMyRanks(userId));
     }
 
-    /**
-     * POST /api/leaderboard/rebuild
-     * API này giúp bạn ép hệ thống làm mới bảng xếp hạng ngay lập tức để test trên Postman
-     */
     @PostMapping("/rebuild")
     public ResponseEntity<String> rebuildLeaderboard() {
         leaderboardService.rebuildAllSnapshots();
         return ResponseEntity.ok("Leaderboard snapshots rebuilt successfully!");
     }
 
-    // ─── Helper: Lấy User.id từ Authentication (Hybrid: OAuth2 & Email/Pass) ──────
     private String getUserId(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("User chưa đăng nhập hoặc Token không hợp lệ!");
@@ -77,7 +59,7 @@ public class LeaderboardController {
         String email;
 
         if (principal instanceof OAuth2User oauth2User) {
-            // Trường hợp login bằng Google/Facebook
+            // Trường hợp login bằng Google
             email = oauth2User.getAttribute("email");
         } else if (principal instanceof CustomUserDetails customUserDetails) {
             // Trường hợp login bằng Email/Password (khớp với AuthController của bạn)

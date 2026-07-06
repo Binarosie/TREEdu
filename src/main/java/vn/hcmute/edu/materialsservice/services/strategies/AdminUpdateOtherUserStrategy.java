@@ -38,7 +38,7 @@ public class AdminUpdateOtherUserStrategy {
         // Lấy role hiện tại của target user
         EUserRole targetUserRole = EUserRole.fromUser(targetUser);
 
-        // ❌ KHÔNG cho phép thay đổi thông tin của Admin khác
+        // KHÔNG cho phép thay đổi thông tin của Admin khác
         if (targetUserRole == EUserRole.ADMIN) {
             throw new BadRequestError("Không thể thay đổi thông tin của Admin");
         }
@@ -61,7 +61,7 @@ public class AdminUpdateOtherUserStrategy {
 
             // Nếu role thay đổi, cần tạo user mới với type khác
             if (newRole != targetUserRole) {
-                System.out.println("🔄 Changing user type from " + targetUserRole + " to " + newRole);
+                System.out.println("Changing user type from " + targetUserRole + " to " + newRole);
 
                 // Xóa user cũ và tạo user mới với type mới
                 targetUser = changeUserType(targetUser, newRole);
