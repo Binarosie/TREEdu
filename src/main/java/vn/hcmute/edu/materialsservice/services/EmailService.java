@@ -35,12 +35,11 @@ public class EmailService {
 
     private static final long OTP_EXPIRY_MINUTES = 5;
 
-    private final ScheduledExecutorService cleaner =
-            Executors.newSingleThreadScheduledExecutor(r -> {
-                Thread t = new Thread(r, "OTP-Cleaner");
-                t.setDaemon(true);
-                return t;
-            });
+    private final ScheduledExecutorService cleaner = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "OTP-Cleaner");
+        t.setDaemon(true);
+        return t;
+    });
 
     @PostConstruct
     public void startCleaner() {
@@ -51,8 +50,6 @@ public class EmailService {
     public void stopCleaner() {
         cleaner.shutdownNow();
     }
-
-    // ─── Inner class ──────────────────────────────────────────────────────────
 
     private static class OtpEntry {
         final String code;
@@ -69,13 +66,12 @@ public class EmailService {
         }
 
         synchronized boolean markUsed() {
-            if (used) return false;
+            if (used)
+                return false;
             used = true;
             return true;
         }
     }
-
-    // ─── Public API ───────────────────────────────────────────────────────────
 
     public String generateOtp() {
         int code = 100_000 + secureRandom.nextInt(900_000);
@@ -86,7 +82,8 @@ public class EmailService {
 
     /**
      * Gửi email xác thực tài khoản — CHẠY BẤT ĐỒNG BỘ, không block request.
-     * Lưu OTP trước, gửi mail sau (kể cả gửi mail fail thì OTP vẫn được lưu để retry).
+     * Lưu OTP trước, gửi mail sau (kể cả gửi mail fail thì OTP vẫn được lưu để
+     * retry).
      */
     public void sendVerificationEmail(String to, String otp) {
         storeOtp(to, otp);
@@ -95,8 +92,7 @@ public class EmailService {
                 "Mã xác thực của bạn là:",
                 otp,
                 "#1D9E75",
-                "Nếu bạn không đăng ký tài khoản, hãy bỏ qua email này."
-        );
+                "Nếu bạn không đăng ký tài khoản, hãy bỏ qua email này.");
         sendEmailAsync(to, "Mã xác thực tài khoản - TREEdu", html);
     }
 
@@ -107,8 +103,7 @@ public class EmailService {
                 "Mã đặt lại mật khẩu của bạn là:",
                 otp,
                 "#D85A30",
-                "Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này."
-        );
+                "Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này.");
         sendEmailAsync(to, "Mã đặt lại mật khẩu - TREEdu", html);
     }
 
@@ -150,8 +145,6 @@ public class EmailService {
         emailOtpMap.remove(email);
     }
 
-    // ─── Private helpers ──────────────────────────────────────────────────────
-
     private void storeOtp(String email, String otp) {
         emailOtpMap.put(email, new OtpEntry(otp));
         log.debug("[OTP] Stored OTP - Email: {}, Current map size: {}", email, emailOtpMap.size());
@@ -172,8 +165,7 @@ public class EmailService {
                     "from", fromEmail,
                     "to", List.of(to),
                     "subject", subject,
-                    "html", htmlBody
-            );
+                    "html", htmlBody);
 
             restClient.post()
                     .uri("/emails")
@@ -192,7 +184,7 @@ public class EmailService {
     }
 
     private String buildEmailHtml(String title, String subtitle, String otp,
-                                  String color, String footer) {
+            String color, String footer) {
         return "<div style='font-family:sans-serif;max-width:480px;margin:0 auto'>"
                 + "<div style='text-align:center;padding:32px'>"
                 + "<h2 style='color:#1a1a1a;margin:0 0 24px'>" + title + "</h2>"

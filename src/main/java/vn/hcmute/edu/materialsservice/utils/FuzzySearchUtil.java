@@ -20,27 +20,33 @@ public class FuzzySearchUtil {
     private static final int MIN_CHARACTERS = 2;
 
     /**
-     * Normalize Vietnamese string - bỏ dấu tiếng Việt
+     * Normalize Vietnamese string - bỏ dấu tiếng Việt * Chuyen: "Xin chao" -> "xin
+     * chao"
+     * Muc dich: De cac tim kiem khong bi anh huong boi dau
      */
     public static String normalizeVietnamese(String text) {
         if (text == null) {
             return "";
         }
 
-        // Normalize Unicode
+        // Normalize Unicode - tach dau va ky tu
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
 
-        // Remove diacritical marks
+        // Xoa cac dau (nhu dau mua, huyen, sac...)
         normalized = normalized.replaceAll("\\p{M}", "");
 
-        // Replace Đ/đ
+        // Thay the Đ/đ bang D/d
         normalized = normalized.replace("Đ", "D").replace("đ", "d");
 
         return normalized.toLowerCase().trim();
     }
 
     /**
-     * Tính Levenshtein Distance giữa 2 chuỗi
+     * Tính Levenshtein Distance giữa 2 chuỗi * Khoang cach: so luot sua doi
+     * (them/xoa/thay) de dua 2 chuoi ve giong nhau
+     * Vi du: "kitten" -> "sitting" = 3
+     * 
+     * @return so luot thay doi toi thieu
      */
     public static int levenshteinDistance(String s1, String s2) {
         s1 = s1.toLowerCase();
@@ -73,7 +79,13 @@ public class FuzzySearchUtil {
     /**
      * Tính similarity score (0.0 - 1.0) với Vietnamese normalization
      * 1.0 = hoàn toàn giống nhau
-     * 0.0 = hoàn toàn khác nhau
+     * 0.0 = hoàn toàn khác nhau *
+     * Uu tien kiem tra:
+     * 1. Exact match (voi hoac khong dau) -> 1.0
+     * 2. StartsWith match -> 0.9
+     * 3. Contains match -> 0.85
+     * 4. Word boundary match -> 0.8
+     * 5. Levenshtein distance -> 0.0-0.8
      */
     public static double calculateSimilarity(String s1, String s2) {
         if (s1 == null || s2 == null) {
@@ -135,10 +147,10 @@ public class FuzzySearchUtil {
     /**
      * Kiểm tra xem chuỗi có match với keyword theo fuzzy search không
      * 
-     * @param text      Chuỗi cần kiểm tra
-     * @param keyword   Keyword tìm kiếm
-     * @param threshold Ngưỡng similarity (0.0 - 1.0), mặc định 0.4
-     * @return true nếu similarity >= threshold
+     * @param text      Chuoi can kiem tra (vi du: "Xin chao")
+     * @param keyword   Keyword tim kiem (vi du: "xin")
+     * @param threshold Nguong similarity (0.0 - 1.0), mac dinh 0.4 = 40% giong nhau
+     * @return true neu similarity >= threshold, nghia la match duoc
      */
     public static boolean isFuzzyMatch(String text, String keyword, double threshold) {
         if (text == null || keyword == null) {
@@ -154,20 +166,22 @@ public class FuzzySearchUtil {
     }
 
     /**
-     * Kiểm tra fuzzy match với default threshold (0.4)
+     * Kiem tra fuzzy match voi default threshold (0.4 = 40%)
+     * Dung so huu thuc phong: tim kiem co cho phep loi tu
      */
     public static boolean isFuzzyMatch(String text, String keyword) {
         return isFuzzyMatch(text, keyword, DEFAULT_THRESHOLD);
     }
 
     /**
-     * Filter danh sách items theo fuzzy search
+     * Filter danh sach items theo fuzzy search va sap xep theo thu tu tuong tu
      * 
-     * @param items     Danh sách items cần filter
-     * @param keyword   Keyword tìm kiếm
-     * @param extractor Function để lấy text từ item
-     * @param threshold Ngưỡng similarity
-     * @return Danh sách items đã filter và sort theo similarity (cao nhất trước)
+     * @param items     Danh sach items can filter (vi du: list cac flashcard)
+     * @param keyword   Keyword tim kiem (vi du: "xin")
+     * @param extractor Function de lay text tu item (vi du: Flashcard::getTitle)
+     * @param threshold Nguong similarity toi thieu
+     * @return Danh sach items duoc filter va sort theo similarity (cao nhat dau,
+     *         thap nhat cuoi)
      */
     public static <T> List<T> fuzzyFilter(List<T> items, String keyword,
             java.util.function.Function<T, String> extractor,
@@ -179,21 +193,24 @@ public class FuzzySearchUtil {
         // Tạo list các item với similarity score
         List<ScoredItem<T>> scoredItems = items.stream()
                 .map(item -> {
-                    String text = extractor.apply(item);
-                    double score = calculateSimilarity(text, keyword);
+                    String text = extractor.apply(item); // Lay text tu item
+                    double score = calculateSimilarity(text, keyword); // Tinh similarity
                     return new ScoredItem<>(item, score);
                 })
+                // Loc chi nhung item co similarity >= threshold
                 .filter(scored -> scored.score >= threshold)
+                // Sap xep giam dan theo score (cao nhat truoc)
                 .sorted(Comparator.comparingDouble((ScoredItem<T> s) -> s.score).reversed())
                 .collect(Collectors.toList());
 
+        // Tra ve chi items, bo score
         return scoredItems.stream()
                 .map(scored -> scored.item)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Fuzzy filter với default threshold (0.4)
+     * Fuzzy filter voi default threshold (0.4 = 40%)
      */
     public static <T> List<T> fuzzyFilter(List<T> items, String keyword,
             java.util.function.Function<T, String> extractor) {
@@ -202,7 +219,9 @@ public class FuzzySearchUtil {
 
     /**
      * Tạo regex pattern cho MongoDB fuzzy search
-     * Chuyển keyword thành pattern cho phép sai sót 1-2 ký tự
+     * Da fuzzy: cho phep 0-1 ky tu bat ky giua cac ky tu de phat hien loi go
+     * Vi du: "hello" -> "h.{0,1}e.{0,1}l.{0,1}l.{0,1}o"
+     * Dieu nay match: "hello", "helo", "h3llo" (voi 1 loi)
      */
     public static String createFuzzyRegexPattern(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -231,7 +250,8 @@ public class FuzzySearchUtil {
     }
 
     /**
-     * Helper class để lưu item với similarity score
+     * Helper class luu item voi similarity score
+     * Giup sap xep danh sach theo thu tu tuong tu
      */
     private static class ScoredItem<T> {
         final T item;

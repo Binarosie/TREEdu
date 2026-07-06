@@ -6,15 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO để xác thực OTP (Email Verification hoặc Password Reset)
- * 
- * POST /api/auth/verify-otp
- * Body: {
- * "email": "user@example.com",
- * "otp": "123456"
- * }
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

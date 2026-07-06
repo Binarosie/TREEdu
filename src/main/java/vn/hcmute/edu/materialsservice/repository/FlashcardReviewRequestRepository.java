@@ -11,28 +11,15 @@ import java.util.Optional;
 @Repository
 public interface FlashcardReviewRequestRepository extends MongoRepository<FlashcardReviewRequest, String> {
 
-    /**
-     * Tìm review request theo flashcard ID
-     */
     Optional<FlashcardReviewRequest> findByFlashcardIdAndStatus(
             String flashcardId,
-            EFlashcardReportReviewStatus status
-    );
+            EFlashcardReportReviewStatus status);
 
     List<FlashcardReviewRequest> findAllByFlashcardId(String flashcardId);
 
-    /**
-     * Tìm tất cả review request theo trạng thái
-     */
     List<FlashcardReviewRequest> findByStatus(EFlashcardReportReviewStatus status);
 
-    /**
-     * Lấy tất cả review request chờ xử lý (PENDING)
-     */
     List<FlashcardReviewRequest> findByStatusOrderByRequestedAtDesc(EFlashcardReportReviewStatus status);
 
-    /**
-     * Kiểm tra supporter đã tạo request cho flashcard này chưa
-     */
     Optional<FlashcardReviewRequest> findByFlashcardIdAndSupporterId(String flashcardId, String supporterId);
 }

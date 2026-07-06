@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.edu.materialsservice.Enum.ELessonStatus;
@@ -43,14 +44,6 @@ public class DictationController {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    // ==========================================
-    // PHÂN HỆ: QUẢN LÝ (SUPPORTER / ADMIN)
-    // ==========================================
-
-    /**
-     * API Tạo bài tập nghe chép chính tả mới
-     * Thường dùng bởi Supporter hoặc để import data từ script Python Whisper
-     */
     @PostMapping
     public ResponseEntity<ApiResponse<DictationLesson>> createLesson(
             @Valid @RequestBody DictationCreateRequest request) {
@@ -63,22 +56,16 @@ public class DictationController {
                 .body(ApiResponse.success("Tạo bài nghe chính tả thành công!", response));
     }
 
-
-    /**
-     * API Lấy chi tiết một bài nghe chính tả cụ thể theo ID bài học
-     */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> getLessonById(@PathVariable String id) {
         log.info("=== Lấy chi tiết bài nghe ID: {} ===", id);
         DictationLesson response = dictationService.getLessonById(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    /**
-     * API Kiểm tra và chấm điểm bài gõ của Học viên
-     * URL mang tính tường minh: /api/v1/dictation/{dictationId}/check
-     */
     @PostMapping("/{dictationId}/check")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationCheckResponse>> checkAnswer(
             @PathVariable String dictationId,
             @Valid @RequestBody DictationCheckRequest request) {
@@ -90,6 +77,7 @@ public class DictationController {
     }
 
     @PostMapping("/generate-by-ai")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> generateLessonByAI(
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
@@ -111,7 +99,7 @@ public class DictationController {
         }
 
         try {
-            // 🌟 Upload thẳng lên Cloudinary, không cần lưu disk nữa
+            // Upload thẳng lên Cloudinary, không cần lưu disk nữa
             String audioUrl = cloudinaryService.uploadAudio(file);
             log.info("Cloudinary URL: {}", audioUrl);
 
@@ -138,6 +126,7 @@ public class DictationController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<String>> updateStatus(
             @PathVariable String id,
             @RequestParam("status") ELessonStatus status) {
@@ -145,7 +134,8 @@ public class DictationController {
         log.info("=== Cập nhật trạng thái bài nghe ID: {} sang [{}] ===", id, status);
         dictationService.updateLessonStatus(id, status);
 
-        return ResponseEntity.ok(ApiResponse.success("Cập nhật trạng thái bài học thành công!", "Trạng thái mới: " + status));
+        return ResponseEntity
+                .ok(ApiResponse.success("Cập nhật trạng thái bài học thành công!", "Trạng thái mới: " + status));
     }
 
     @GetMapping
@@ -155,11 +145,8 @@ public class DictationController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    /**
-     * API Cập nhật chi tiết bài nghe chính tả (Sửa tiêu đề, level hoặc toàn bộ text/time của segments)
-     * URL chuẩn RESTful: PUT /api/dictation/{id}
-     */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> updateLesson(
             @PathVariable String id,
             @RequestBody DictationUpdateRequest request) {

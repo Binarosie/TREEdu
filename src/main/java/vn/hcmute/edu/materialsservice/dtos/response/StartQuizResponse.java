@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 public class StartQuizResponse {
     private String attemptId;
-    private QuizResponse quiz; // Đổi từ Model Quiz sang QuizResponse (không có isCorrect)
+    private QuizResponse quiz;
     private Long timeRemainingSeconds;
     private String expiresAt;
 }

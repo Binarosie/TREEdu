@@ -10,5 +10,5 @@ public class WordCheckResponse {
     private boolean correct;
     private String correctAnswer;
     private String userAnswer;
-    private FlashcardProgressResponse progress; // null nếu sai (chưa cập nhật progress)
+    private FlashcardProgressResponse progress;
 }

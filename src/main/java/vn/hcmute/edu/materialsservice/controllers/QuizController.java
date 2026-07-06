@@ -77,10 +77,9 @@ public class QuizController {
                                 .build());
         }
 
-        // XEM CHI TIẾT QUIZ - Response: QuizResponse - ROLE_MEMBER: KHÔNG có
-        // explanation (tránh gợi ý đáp án) | ROLE_ADMIN/SUPPORTER: CÓ explanation
+
         @GetMapping("/{id}")
-        // @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
+        @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> getQuizById(
                         @PathVariable String id,
                         Authentication authentication) {
@@ -139,8 +138,8 @@ public class QuizController {
 
         @GetMapping("/search")
         public ResponseEntity<ApiResponse<List<QuizResponse>>> searchQuizzes(
-                @RequestParam String title, // Sửa param name thành title
-                Authentication authentication) {
+                        @RequestParam String title, // Sửa param name thành title
+                        Authentication authentication) {
 
                 log.info("REST request to search quizzes by title: {}", title);
 
@@ -150,10 +149,10 @@ public class QuizController {
                 response.forEach(quiz -> filterQuizResponseByRole(quiz, authentication));
 
                 return ResponseEntity.ok(ApiResponse.<List<QuizResponse>>builder()
-                        .success(true)
-                        .message("Search completed successfully")
-                        .data(response)
-                        .build());
+                                .success(true)
+                                .message("Search completed successfully")
+                                .data(response)
+                                .build());
         }
 
         @PostMapping("/{quizId}/start")
@@ -204,7 +203,8 @@ public class QuizController {
                                 .build());
         }
 
-        // XEM LỊ DANH SÁCH LÀM BÀI CỦA USER - Lấy tất cả các lần làm quiz của user hiện
+        // XEM LỊCH DANH SÁCH LÀM BÀI CỦA USER - Lấy tất cả các lần làm quiz của user
+        // hiện
         // tại
         @GetMapping("/my-attempts")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
@@ -226,7 +226,8 @@ public class QuizController {
                                 .build());
         }
 
-        // XEM LỊ SỞ LÀM BÀI CHO 1 QUIZ CỤ THỂ - Lấy tất cả các lần user làm một quiz cụ
+        // XEM LỊCH SỞ LÀM BÀI CHO 1 QUIZ CỤ THỂ - Lấy tất cả các lần user làm một quiz
+        // cụ
         // thể
         @GetMapping("/{quizId}/my-attempts")
         @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_SUPPORTER', 'ROLE_ADMIN')")
@@ -273,7 +274,7 @@ public class QuizController {
 
         // TạO QUIZ MỚI - Chỉ SUPPORTER và ADMIN
         @PostMapping
-        @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
+
         public ResponseEntity<ApiResponse<QuizResponse>> createQuiz(
                         @Valid @RequestBody QuizRequest requestDTO,
                         Authentication authentication) {
@@ -348,7 +349,6 @@ public class QuizController {
         }
 
         @PostMapping("/generate-from-file")
-        // @PreAuthorize("hasAnyRole('ROLE_SUPPORTER', 'ROLE_ADMIN')")
         public ResponseEntity<ApiResponse<QuizResponse>> generateQuizFromFile(
                         @ModelAttribute GenerateQuizFromFileRequest request) throws IOException {
 

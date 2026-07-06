@@ -117,23 +117,23 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
 
                 if (isNewWord && progress.isCompleted() && progress.getCompletedAt() == null) {
                         progress.setCompletedAt(LocalDateTime.now());
-                        progress.setStatus(ELearningStatus.DONE); // 🎯 Lúc này là chuyển sang Done nè
+                        progress.setStatus(ELearningStatus.DONE); // Lúc này là chuyển sang Done nè
 
                         // ---- TÍNH XP CHO NGƯỜI HỌC ----
                         int baseXP = 2;
                         double multiplier = 1.0 + (0.1 * flashcard.getLevel());
                         xpGained = (int) (progress.getTotalWords() * baseXP * multiplier);
 
-                        // ✅ 1. Gọi service cộng điểm và check Level Up
+                        // Gọi service cộng điểm và check Level Up
                         leveledUp = userService.addXpToMember(userId, xpGained);
 
-                        // ✅ 2. Cập nhật Streak VÀ Tăng tổng số Flashcard đã học
+                        //  Cập nhật Streak VÀ Tăng tổng số Flashcard đã học
                         User user = userService.findById(userId).orElse(null);
                         if (user instanceof Member member) {
                                 // Cập nhật chuỗi ngày học
                                 streakService.updateStreak(member);
 
-                                // 🚀 THÊM LOGIC TĂNG BỘ ĐẾM FLASHCARD Ở ĐÂY:
+                                //  THÊM LOGIC TĂNG BỘ ĐẾM FLASHCARD Ở ĐÂY:
                                 int currentFlashcardTotal = member.getTotalFlashcardLearned() != null
                                                 ? member.getTotalFlashcardLearned()
                                                 : 0;
@@ -144,7 +144,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
                                 missionService.fireMissionEvent(userId, EMissionType.LEARN_FLASHCARD, 1);
                         }
 
-                        // ---- TÍNH XP THỤ ĐỘNG CHO NGƯỜI TẠO ----
+                        
                         if (flashcard.getType() == EFlashcardType.BY_MEMBER
                                         && !flashcard.getCreatedBy().equals(userId)) {
 
@@ -152,10 +152,10 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
                                 userService.addXpToMember(flashcard.getCreatedBy(), creatorPassiveXp);
                         }
                 }
-                // 6. Lưu progress
+                // Lưu progress
                 FlashcardProgress saved = progressRepository.save(progress);
 
-                // 7. Dùng chung hàm toResponse để đảm bảo trả về đủ data cho Frontend
+                // Dùng chung hàm toResponse để đảm bảo trả về đủ data cho Frontend
                 FlashcardProgressResponse response = toResponse(saved, flashcard);
 
                 // Gắn thêm data Gamification vào DTO trả về
@@ -245,7 +245,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
                 response.setXpGained(xpGained);
                 response.setLeveledUp(leveledUp);
 
-                log.info("✅ Correct answer! User {} learned word {}", userId, wordId);
+                log.info("Correct answer! User {} learned word {}", userId, wordId);
 
                 return WordCheckResponse.builder()
                                 .wordId(wordId)
@@ -336,7 +336,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
         }
 
         private void validateFlashcardAccess(Flashcard flashcard, String userId, CustomUserDetails userDetails) {
-                // 1. Nếu là Admin hoặc Supporter thì luôn có quyền truy cập
+                // Nếu là Admin hoặc Supporter thì luôn có quyền truy cập
                 boolean isAdminOrSupporter = userDetails.getAuthorities().stream()
                                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
                                                 a.getAuthority().equals("ROLE_SUPPORTER"));
@@ -344,7 +344,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
                         return;
                 }
 
-                // 2. Đối với người dùng thông thường (ROLE_MEMBER)
+                // Đối với người dùng thông thường (ROLE_MEMBER)
                 if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
                         // Nếu bộ thẻ là RIÊNG TƯ (PRIVATE) VÀ người đang đăng nhập KHÔNG PHẢI tác giả
                         if (flashcard.getVisibility() == vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility.PRIVATE
@@ -359,7 +359,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
         private FlashcardProgressResponse toResponse(FlashcardProgress progress, Flashcard flashcard) {
                 List<Word> words = wordRepository.findByFlashcardId(flashcard.getId());
 
-                // ✅ Fix: lấy totalWords thực tế thay vì từ entity (phòng lệch dữ liệu)
+                // lấy totalWords thực tế thay vì từ entity (phòng lệch dữ liệu)
                 int actualTotalWords = words.size();
 
                 List<WordResponse> wordResponses = words.stream()
@@ -376,7 +376,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
                                                 .build())
                                 .collect(Collectors.toList());
 
-                // ✅ Fix: tránh chia cho 0
+                // : tránh chia cho 0
                 double progressPercentage = 0.0;
                 if (actualTotalWords > 0) {
                         progressPercentage = Math.round(
@@ -413,9 +413,7 @@ public FlashcardProgressResponse startOrContinueLearning(String flashcardId, Aut
                                 .build();
         }
 
-        /**
-         * Normalize string: trim, lowercase, remove extra spaces
-         */
+        
         private String normalize(String s) {
                 return s == null ? "" : s.trim().toLowerCase();
         }

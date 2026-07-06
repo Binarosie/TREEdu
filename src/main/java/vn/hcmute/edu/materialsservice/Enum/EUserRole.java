@@ -10,9 +10,6 @@ public enum EUserRole {
     MEMBER,
     SUPPORTER;
 
-    /**
-     * Lấy role từ User instance (dựa vào class type)
-     */
     public static EUserRole fromUser(User user) {
         if (user instanceof Admin) {
             return ADMIN;

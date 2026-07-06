@@ -22,7 +22,7 @@ public class MissionController {
         return userDetails.getUser().getId().toString();
     }
 
-    // 1️⃣ Lấy danh sách nhiệm vụ hôm nay (1/3, 2/3...)
+    // Lấy danh sách nhiệm vụ hôm nay (1/3, 2/3...)
     @GetMapping("/daily")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<UserDailyMission> getDailyMissions(Authentication authentication) {
@@ -30,7 +30,7 @@ public class MissionController {
         return ResponseEntity.ok(missionService.getOrCreateDailyMissions(userId));
     }
 
-    // 2️⃣ Điểm danh ngày mới
+    // Điểm danh ngày mới
     @PostMapping("/check-in")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<UserDailyMission> checkIn(Authentication authentication) {
@@ -38,7 +38,7 @@ public class MissionController {
         return ResponseEntity.ok(missionService.checkIn(userId));
     }
 
-    // 3️⃣ Nhận thưởng XP (Cần ID của nhiệm vụ)
+    // Nhận thưởng XP (Cần ID của nhiệm vụ)
     @PostMapping("/{missionId}/claim-reward")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<UserDailyMission> claimReward(

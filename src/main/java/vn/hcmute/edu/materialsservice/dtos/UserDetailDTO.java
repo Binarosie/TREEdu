@@ -1,6 +1,5 @@
 package vn.hcmute.edu.materialsservice.dtos;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,7 @@ public class UserDetailDTO {
         dto.setCreatedOn(user.getCreatedOn());
         dto.setModifiedOn(user.getModifiedOn());
 
-        if (user instanceof Supporter moderator) {
+        if (user instanceof Supporter supporter) {
             dto.setRole("Supporter");
         } else {
             dto.setRole("Admin");

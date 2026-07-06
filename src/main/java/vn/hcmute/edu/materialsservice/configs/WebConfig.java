@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.CorsRegistry; // Thêm import này
+import org.springframework.web.servlet.config.annotation.CorsRegistry; 
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
