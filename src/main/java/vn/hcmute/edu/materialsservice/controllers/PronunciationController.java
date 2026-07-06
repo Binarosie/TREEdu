@@ -34,6 +34,7 @@ public class PronunciationController {
     }
 
     @GetMapping("/random-sentence")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<String>> getRandomSentence(
             @RequestParam String topic,
             Authentication authentication) {
@@ -44,6 +45,7 @@ public class PronunciationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<PronunciationCheckResponse>> checkPronunciation(
             PronunciationCheckRequest request,
             Authentication authentication) {
@@ -58,17 +60,20 @@ public class PronunciationController {
     }
 
     @GetMapping("/history")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<PronunciationCheckResponse>>> getAllHistory() {
         return ResponseEntity.ok(ApiResponse.success(service.getAll()));
     }
 
     @GetMapping("/history/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<PronunciationCheckResponse>> getHistoryById(
             @PathVariable String id) {
         return ResponseEntity.ok(ApiResponse.success(service.getById(id)));
     }
 
     @DeleteMapping("/history/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteHistory(
             @PathVariable String id,
             Authentication authentication) {
