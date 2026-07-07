@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import vn.hcmute.edu.materialsservice.dtos.request.AppealRequest;
+import vn.hcmute.edu.materialsservice.dtos.request.SendNotificationRequest;
 import vn.hcmute.edu.materialsservice.dtos.response.ApiResponse;
 import vn.hcmute.edu.materialsservice.dtos.response.NotificationDTO;
 import vn.hcmute.edu.materialsservice.security.CustomUserDetails;
@@ -63,5 +65,24 @@ public class NotificationController {
     private String extractUserId(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return userDetails.getUser().getId().toString();
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/send-to-user")
+    public ResponseEntity<ApiResponse<Void>> sendToUser(@RequestBody SendNotificationRequest request) {
+        notificationService.sendToUser(request.getReceiverId(), request.getTitle(), request.getContent());
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi thông báo", null));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/appeal")
+    public ResponseEntity<ApiResponse<Void>> appeal(
+            @RequestBody AppealRequest request,
+            Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        notificationService.sendAppealToAdmins(
+                userDetails.getUser().getId(),
+                userDetails.getUser().getEmail(),
+                request.getContent());
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi phản hồi tới quản trị viên", null));
     }
 }
