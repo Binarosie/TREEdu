@@ -16,7 +16,7 @@ public class UserInfoDTO {
     private String status;
 
     public UserInfoDTO mapToUserInfo(User user) {
-        this.id = user.getId();
+        this.id = user.getId(); // ← Bỏ .toString() vì id đã là String
         this.email = user.getEmail();
         this.name = user.getFullName();
         this.role = user.getClass().getSimpleName();
@@ -24,4 +24,7 @@ public class UserInfoDTO {
 
         return this;
     }
+
+    private Boolean canPublishFlashcard;
+    private Boolean canReportFlashcard;
 }

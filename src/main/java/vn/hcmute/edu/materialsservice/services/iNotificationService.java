@@ -8,4 +8,6 @@ public interface iNotificationService {
     long countUnread(String receiverId);
     void markAsRead(String notificationId);
     void markAllAsRead(String receiverId);
+    void sendToUser(String receiverId, String title, String content);
+    void sendAppealToAdmins(String fromUserId, String fromUserEmail, String content);
 }
