@@ -131,6 +131,8 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
+                .canPublishFlashcard(member.getCanPublishFlashcard())
+                .canReportFlashcard(member.getCanReportFlashcard())
                 .build();
 
         // Trả DTO về cho Frontend
@@ -179,7 +181,7 @@ public class UserInfoAPIController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @GetMapping("/user-detail/{userId}")
     public ResponseEntity<SuccessResponse> getUserDetail(@PathVariable String userId, // ← UUID → String
-            Authentication authentication) {
+                                                         Authentication authentication) {
         String trueUserId = getTrueUserId(userId, authentication);
 
         UserDetailDTO userInfo = userService.getUserDetailById(trueUserId);
@@ -235,6 +237,10 @@ public class UserInfoAPIController {
 
                         // status
                         dto.setStatus(user.isActive() ? "Active" : "Inactive");
+                        if (user instanceof Member member) {
+                            dto.setCanPublishFlashcard(member.getCanPublishFlashcard());
+                            dto.setCanReportFlashcard(member.getCanReportFlashcard());
+                        }
                         return dto;
                     })
                     .toList();
@@ -366,13 +372,15 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
+                .canPublishFlashcard(member.getCanPublishFlashcard())
+                .canReportFlashcard(member.getCanReportFlashcard())
                 .build();
 
         // 3. Trả DTO về cho Postman/Frontend thay vì trả bừa Entity
         SuccessResponse response = new SuccessResponse(
                 "User updated successfully",
                 HttpStatus.OK.value(),
-                profileDTO, 
+                profileDTO, //   Đã thay bằng DTO sạch đẹp
                 LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
@@ -381,7 +389,7 @@ public class UserInfoAPIController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<SuccessResponse> deactivateUser(@PathVariable String id,
-            Authentication authentication) {
+                                                          Authentication authentication) {
         String userId = getTrueUserId(id, authentication); // ← Bỏ UUID.fromString()
 
         userService.deactivateUser(userId);
@@ -394,7 +402,7 @@ public class UserInfoAPIController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @PostMapping("/activate/{id}")
     public ResponseEntity<SuccessResponse> activateUser(@PathVariable String id,
-            Authentication authentication) {
+                                                        Authentication authentication) {
         String userId = getTrueUserId(id, authentication); // ← Bỏ UUID.fromString()
 
         userService.activateUser(userId);
@@ -418,8 +426,8 @@ public class UserInfoAPIController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestParam("userId") String id,
-            @RequestParam("newPassword") String newPassword,
-            Authentication authentication) {
+                                            @RequestParam("newPassword") String newPassword,
+                                            Authentication authentication) {
         String userId = getTrueUserId(id, authentication); // ← Bỏ UUID.fromString()
 
         SuccessResponse successResponse = new SuccessResponse(
@@ -452,10 +460,10 @@ public class UserInfoAPIController {
             throw new BadRequestError("User is not a member");
         }
 
-        // BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
+        //  BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
         int totalXp = member.getXp() != null ? member.getXp() : 0;
 
-        // Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
+        //  Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
         int currentLevel = userService.calculateLevel(totalXp);
 
         // Thuật toán tính tiến trình: TotalXP = 50 * L * (L - 1)
@@ -470,7 +478,7 @@ public class UserInfoAPIController {
         if (totalXpInThisLevelRange > 0) {
             progressPercentage = ((double) currentLevelProgressXp / totalXpInThisLevelRange) * 100;
             progressPercentage = Math.round(progressPercentage * 10.0) / 10.0; // Làm tròn 1 chữ số thập phân (VD:
-                                                                               // 45.5%)
+            // 45.5%)
         }
 
         MemberProfileDTO dto = MemberProfileDTO.builder()
@@ -483,7 +491,6 @@ public class UserInfoAPIController {
                 .birthYear(member.getBirthYear())
                 .address(member.getAddress())
                 .gender(member.getGender())
-                // === Field Member ===
                 .streakCount(member.getStreakCount())
                 .longestStreak(member.getLongestStreak())
                 .xp(totalXp)
@@ -491,10 +498,11 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
-                // === 3 Field bổ trợ vẽ ProgressBar trên UI Frontend ===
                 .xpNeededForNextLevel(xpNeededForNextLevel)
                 .currentLevelProgressXp(currentLevelProgressXp)
                 .progressPercentage(progressPercentage)
+                .canPublishFlashcard(member.getCanPublishFlashcard())
+                .canReportFlashcard(member.getCanReportFlashcard())
                 .build();
 
         return ResponseEntity.ok(dto);

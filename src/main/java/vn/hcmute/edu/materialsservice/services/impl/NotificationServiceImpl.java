@@ -5,8 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.hcmute.edu.materialsservice.dtos.response.NotificationDTO;
 import vn.hcmute.edu.materialsservice.models.Notification;
+import vn.hcmute.edu.materialsservice.models.NotificationEvent;
 import vn.hcmute.edu.materialsservice.repository.NotificationRepository;
+import vn.hcmute.edu.materialsservice.repository.UserRepository;
 import vn.hcmute.edu.materialsservice.services.iNotificationService;
+import vn.hcmute.edu.materialsservice.services.observer.NotificationCenter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.List;
 public class NotificationServiceImpl implements iNotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<NotificationDTO> getMyNotifications(String receiverId) {
@@ -55,6 +59,37 @@ public class NotificationServiceImpl implements iNotificationService {
         });
 
         notificationRepository.saveAll(unread);
+    }
+
+    @Override
+    public void sendToUser(String receiverId, String title, String content) {
+        NotificationCenter.notifyObservers(NotificationEvent.builder()
+                .receiverId(receiverId)
+                .title(title)
+                .content(content)
+                .type("ADMIN_MESSAGE")
+                .build());
+    }
+
+    @Override
+    public void sendAppealToAdmins(String fromUserId, String fromUserEmail, String content) {
+        List<String> adminIds = userRepository
+                .findByUserType("vn.hcmute.edu.materialsservice.models.Admin")
+                .stream()
+                .map(vn.hcmute.edu.materialsservice.models.User::getId)
+                .toList();
+
+        if (adminIds.isEmpty()) {
+            log.warn("[NOTI] APPEAL | SKIPPED - no admins found");
+            return;
+        }
+
+        NotificationCenter.notifyObservers(NotificationEvent.builder()
+                .receiverIds(adminIds)
+                .title("Kháng cáo từ người dùng")
+                .content("User " + fromUserEmail + " (" + fromUserId + ") gửi phản hồi: " + content)
+                .type("APPEAL")
+                .build());
     }
 
     private NotificationDTO toDTO(Notification n) {

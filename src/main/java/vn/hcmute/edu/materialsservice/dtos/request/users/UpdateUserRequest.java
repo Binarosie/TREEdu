@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 public class UpdateUserRequest {
     private String fullName;
     // Field để admin thay đổi role của user khác
-    private String role; // "MEMBER", "SUPPORTER", "ADMIN"}
+    private String role; // "MEMBER", "SUPPORTER"}
+    private Boolean canPublishFlashcard;
+    private Boolean canReportFlashcard;
 }
