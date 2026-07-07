@@ -3,6 +3,7 @@ package vn.hcmute.edu.materialsservice.models;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
 
@@ -33,4 +34,12 @@ public class Member extends User {
 
     @Builder.Default
     private Integer level = 1;
+
+    @Field("can_publish_flashcard")
+    @Builder.Default
+    private Boolean canPublishFlashcard = true;
+
+    @Field("can_report_flashcard")
+    @Builder.Default
+    private Boolean canReportFlashcard = true;
 }

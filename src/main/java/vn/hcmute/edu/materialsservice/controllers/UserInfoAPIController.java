@@ -131,6 +131,8 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
+                .canPublishFlashcard(member.getCanPublishFlashcard())
+                .canReportFlashcard(member.getCanReportFlashcard())
                 .build();
 
         // Trả DTO về cho Frontend
@@ -235,6 +237,10 @@ public class UserInfoAPIController {
 
                         // status
                         dto.setStatus(user.isActive() ? "Active" : "Inactive");
+                        if (user instanceof Member member) {
+                            dto.setCanPublishFlashcard(member.getCanPublishFlashcard());
+                            dto.setCanReportFlashcard(member.getCanReportFlashcard());
+                        }
                         return dto;
                     })
                     .toList();
@@ -366,13 +372,15 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
+                .canPublishFlashcard(member.getCanPublishFlashcard())
+                .canReportFlashcard(member.getCanReportFlashcard())
                 .build();
 
         // 3. Trả DTO về cho Postman/Frontend thay vì trả bừa Entity
         SuccessResponse response = new SuccessResponse(
                 "User updated successfully",
                 HttpStatus.OK.value(),
-                profileDTO, // 🔥 Đã thay bằng DTO sạch đẹp
+                profileDTO, //   Đã thay bằng DTO sạch đẹp
                 LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
@@ -452,10 +460,10 @@ public class UserInfoAPIController {
             throw new BadRequestError("User is not a member");
         }
 
-        // 📐 BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
+        //  BIẾN SỐ GAMIFICATION TÍNH TOÁN TẠI ĐÂY
         int totalXp = member.getXp() != null ? member.getXp() : 0;
 
-        // 🎯 Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
+        //  Gọi UserService để lấy level chuẩn hóa theo công thức RPG chung
         int currentLevel = userService.calculateLevel(totalXp);
 
         // Thuật toán tính tiến trình: TotalXP = 50 * L * (L - 1)
@@ -483,7 +491,6 @@ public class UserInfoAPIController {
                 .birthYear(member.getBirthYear())
                 .address(member.getAddress())
                 .gender(member.getGender())
-                // === Field Member ===
                 .streakCount(member.getStreakCount())
                 .longestStreak(member.getLongestStreak())
                 .xp(totalXp)
@@ -491,10 +498,11 @@ public class UserInfoAPIController {
                 .totalQuizCompleted(member.getTotalQuizCompleted())
                 .totalFlashcardLearned(member.getTotalFlashcardLearned())
                 .lastStudyDate(member.getLastStudyDate())
-                // === 🚀 3 Field bổ trợ vẽ ProgressBar trên UI Frontend ===
                 .xpNeededForNextLevel(xpNeededForNextLevel)
                 .currentLevelProgressXp(currentLevelProgressXp)
                 .progressPercentage(progressPercentage)
+                .canPublishFlashcard(member.getCanPublishFlashcard())
+                .canReportFlashcard(member.getCanReportFlashcard())
                 .build();
 
         return ResponseEntity.ok(dto);

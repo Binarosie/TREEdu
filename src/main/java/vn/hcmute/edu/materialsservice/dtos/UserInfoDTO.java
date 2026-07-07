@@ -24,4 +24,7 @@ public class UserInfoDTO {
 
         return this;
     }
+
+    private Boolean canPublishFlashcard;
+    private Boolean canReportFlashcard;
 }

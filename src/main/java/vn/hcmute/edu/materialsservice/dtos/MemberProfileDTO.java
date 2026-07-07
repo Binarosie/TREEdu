@@ -33,4 +33,7 @@ public class MemberProfileDTO {
     private Integer xpNeededForNextLevel;   // Số XP cần thêm (ví dụ: 400 XP để lên cấp)
     private Integer currentLevelProgressXp; // Số XP đã tích lũy tính riêng trong level này
     private Double progressPercentage;      // Phần trăm thanh tiến trình (ví dụ: 50.0%)
+
+    private Boolean canPublishFlashcard;
+    private Boolean canReportFlashcard;
 }

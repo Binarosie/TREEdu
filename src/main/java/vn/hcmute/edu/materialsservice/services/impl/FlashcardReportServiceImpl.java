@@ -55,6 +55,11 @@ public class FlashcardReportServiceImpl implements iFlashcardReportService {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String memberId = userDetails.getUser().getId().toString();
 
+        User reporter = userRepository.findById(memberId).orElse(null);
+        if (reporter instanceof Member member && Boolean.FALSE.equals(member.getCanReportFlashcard())) {
+            throw new AccessDeniedException("Tài khoản của bạn hiện không có quyền báo cáo flashcard. Vui lòng liên hệ quản trị viên.");
+        }
+
         // Lấy flashcard
         Flashcard flashcard = flashcardRepository.findById(flashcardId)
                 .orElseThrow(() -> new IllegalArgumentException("Flashcard không tồn tại"));

@@ -21,6 +21,7 @@ import vn.hcmute.edu.materialsservice.Enum.EFlashcardVisibility;
 import vn.hcmute.edu.materialsservice.Mapper.FlashcardMapper;
 import vn.hcmute.edu.materialsservice.Mapper.WordMapper;
 import vn.hcmute.edu.materialsservice.models.Flashcard;
+import vn.hcmute.edu.materialsservice.models.Member;
 import vn.hcmute.edu.materialsservice.models.NotificationEvent;
 import vn.hcmute.edu.materialsservice.models.Word;
 import vn.hcmute.edu.materialsservice.repository.FlashcardProgressRepository;
@@ -515,6 +516,13 @@ public class FlashcardServiceImpl implements iFlashcardService {
 
         Flashcard flashcard = flashcardRepository.findById(id)
                 .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        if (visibility == EFlashcardVisibility.PUBLIC
+                && userDetails.getUser() instanceof Member member
+                && Boolean.FALSE.equals(member.getCanPublishFlashcard())) {
+            throw new AccessDeniedException(
+                    "Tài khoản của bạn hiện không có quyền công khai flashcard. Vui lòng liên hệ quản trị viên.");
+        }
 
         // Check owner / admin (giữ nguyên)
         if (flashcard.getType() == EFlashcardType.BY_MEMBER) {
