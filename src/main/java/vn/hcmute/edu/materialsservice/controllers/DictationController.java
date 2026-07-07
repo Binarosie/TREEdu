@@ -57,7 +57,6 @@ public class DictationController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER','ROLE_SUPPORTER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<DictationLesson>> getLessonById(@PathVariable String id) {
         log.info("=== Lấy chi tiết bài nghe ID: {} ===", id);
         DictationLesson response = dictationService.getLessonById(id);
