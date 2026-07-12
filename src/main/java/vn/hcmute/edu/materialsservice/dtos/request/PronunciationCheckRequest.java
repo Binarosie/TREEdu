@@ -11,4 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PronunciationCheckRequest {
     private MultipartFile audio;
     private String expectedText;
+    @Builder.Default
+    private Boolean retry = false;
 }
