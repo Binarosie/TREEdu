@@ -26,6 +26,5 @@ public class FlashcardRequest {
     @NotBlank(message = "Topic không được để trống")
     private String topic;
 
-    // VISIBILITY: PRIVATE hoặc PUBLIC (mặc định: PRIVATE)
     private EFlashcardVisibility visibility = EFlashcardVisibility.PRIVATE;
 }

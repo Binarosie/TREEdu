@@ -14,5 +14,5 @@ public class ReviewDecisionRequest {
     @NotNull(message = "Trạng thái review không được để trống")
     private EFlashcardReportReviewStatus status; // REVIEW_APPROVED hoặc REVIEW_VIOLATION
 
-    private String adminComment; // Ghi chú của admin
+    private String adminComment;
 }

@@ -22,11 +22,9 @@ public class CreateUserRequest {
     @Size(min = 6, message = "Mật khẩu phải ít nhất 6 ký tự")
     private String password;
 
-    // ===== Field mới — optional =====
     @Pattern(regexp = "^(0[3|5|7|8|9])+([0-9]{8})$", message = "Số điện thoại không hợp lệ")
     private String phoneNumber;
 
-    // avatarFile: file upload, tự động overwrite trên Cloudinary
     private MultipartFile avatarFile;
 
     @Min(value = 1900, message = "Năm sinh không hợp lệ")
