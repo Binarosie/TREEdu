@@ -72,13 +72,7 @@ public class WordController {
         return ResponseEntity.ok(ApiResponse.success("Xóa từ thành công", null));
     }
 
-    /**
-     * ADMIN ONLY: Regenerate broken audio URLs
-     * Dùng khi audio từ FPT TTS hết hạn và không còn phát được
-     * Endpoint sẽ re-generate audio cho tất cả words và lưu trữ lâu dài
-     * 
-     * POST /api/flashcards/{flashcardId}/words/admin/regenerate-audio
-     */
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/admin/regenerate-audio")
     public ResponseEntity<ApiResponse<String>> regenerateBrokenAudio(
