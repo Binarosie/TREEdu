@@ -87,10 +87,23 @@ public class PronunciationServiceImpl implements iPronunciationService {
 
     @Override
     public PronunciationCheckResponse checkAndSave(PronunciationCheckRequest request) {
+        // Nếu là retry → không lưu DB, chỉ trả kết quả
+        if (Boolean.TRUE.equals(request.getRetry())) {
+            return checkOnly(request);
+        }
+
         PronunciationHistory aiResult =
                 callGeminiForPronunciation(request.getAudio(), request.getExpectedText());
         aiResult.setCreatedAt(LocalDateTime.now());
         return mapper.toResponse(repository.save(aiResult));
+    }
+
+    @Override
+    public PronunciationCheckResponse checkOnly(PronunciationCheckRequest request) {
+        PronunciationHistory aiResult =
+                callGeminiForPronunciation(request.getAudio(), request.getExpectedText());
+        // Không set createdAt, không save — chỉ map và trả về
+        return mapper.toResponse(aiResult);
     }
 
     @Override

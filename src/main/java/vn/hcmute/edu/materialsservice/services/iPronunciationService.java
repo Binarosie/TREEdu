@@ -14,6 +14,9 @@ public interface iPronunciationService {
     // ── Pronunciation Check ───────────────────────────────────────────────────
     PronunciationCheckResponse checkAndSave(PronunciationCheckRequest request);
 
+    // Thêm method chỉ check, không lưu DB
+    PronunciationCheckResponse checkOnly(PronunciationCheckRequest request);
+
     PronunciationCheckResponse getById(String id);
 
     List<PronunciationCheckResponse> getAll();

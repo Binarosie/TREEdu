@@ -67,12 +67,19 @@ public class PronunciationController {
             Authentication authentication) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        log.info("User {} checking pronunciation: {}", userDetails.getUser().getId(),
+        log.info("User {} checking pronunciation | retry={} | text='{}'",
+                userDetails.getUser().getId(),
+                request.getRetry(),
                 request.getExpectedText());
 
         PronunciationCheckResponse response = service.checkAndSave(request);
-        log.info("Pronunciation score={}", response.getPronunciationScore());
-        return ResponseEntity.ok(ApiResponse.success("Kiểm tra phát âm thành công", response));
+
+        String message = Boolean.TRUE.equals(request.getRetry())
+                ? "Luyện lại thành công (không lưu lịch sử)"
+                : "Kiểm tra phát âm thành công";
+
+        log.info("Pronunciation score={} | retry={}", response.getPronunciationScore(), request.getRetry());
+        return ResponseEntity.ok(ApiResponse.success(message, response));
     }
 
     /**
